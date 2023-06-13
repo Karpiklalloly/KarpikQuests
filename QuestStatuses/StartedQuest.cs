@@ -1,11 +1,13 @@
 ﻿using KarpikQuests.Interfaces;
+using System;
 
-namespace KarpikQuests.QuestStatuses;
-
-public class StartedQuest : IQuestStatus
+namespace KarpikQuests.QuestStatuses
 {
-    public string GetStatus()
+    public class StartedQuest : IQuestStatus
     {
-        throw new NotImplementedException();
+        public string GetStatus()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

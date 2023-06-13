@@ -1,5 +1,9 @@
-﻿namespace KarpikQuests.Interfaces;
+﻿using System.Collections.Generic;
 
-public interface IQuestTaskCollection : ICollection<IQuestTask>, IReadOnlyCollection<IQuestTask>
+namespace KarpikQuests.Interfaces
 {
+    public interface IQuestTaskCollection : ICollection<IQuestTask>, IReadOnlyCollection<IQuestTask>
+    {
+
+    }
 }

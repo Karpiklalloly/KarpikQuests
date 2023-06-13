@@ -1,35 +1,36 @@
-﻿namespace KarpikQuests;
-
-public class DataObserver<T>
+﻿namespace KarpikQuests
 {
-    unsafe private T* _value;
-    public T Value
+    public class DataObserver<T>
     {
-        get
+        unsafe private T* _value;
+        public T Value
         {
-            T value;
+            get
+            {
+                T value;
+                unsafe
+                {
+                    value = *_value;
+                }
+                return value;
+            }
+        }
+
+        public DataObserver(ref T value)
+        {
             unsafe
             {
-                value = *_value;
-            }
-            return value;
-        }
-    }
+                fixed (T* ptr = &value)
+                {
+                    _value = ptr;
+                }
 
-    public DataObserver(ref T value)
-    {
-        unsafe
+            }
+        }
+
+        public override string ToString()
         {
-            fixed (T* ptr = &value)
-            {
-                _value = ptr;
-            }
-
+            return Value.ToString();
         }
-    }
-
-    public override string ToString()
-    {
-        return Value.ToString();
     }
 }

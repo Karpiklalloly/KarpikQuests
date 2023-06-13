@@ -1,35 +1,38 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.QuestSample;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace KarpikQuests.TaskCompleters;
-
-public class BoolQuestTaskCompleter : IQuestTaskCompleter<bool>
+namespace KarpikQuests.TaskCompleters
 {
-    public IQuestTaskCollection Tasks { get; private set; } = new QuestTaskCollection();
-
-    public List<DataObserver<bool>> Datas { get; private set; } = new();
-
-    public List<bool> RequieredValues { get; private set; } = new();
-
-    public void Subscribe(IQuestTask task, ref bool observableData, bool requiredValue)
+    public class BoolQuestTaskCompleter : IQuestTaskCompleter<bool>
     {
-        Tasks.Add(task);
-        Datas.Add(new DataObserver<bool>(ref observableData));
-        RequieredValues.Add(requiredValue);
-    }
+        public IQuestTaskCollection Tasks { get; private set; } = new QuestTaskCollection();
 
-    public void Update()
-    {
-        for (int i = 0; i < RequieredValues.Count; i++)
+        public List<DataObserver<bool>> Datas { get; private set; } = new List<DataObserver<bool>>();
+
+        public List<bool> RequiredValues { get; private set; } = new List<bool>();
+
+        public void Subscribe(IQuestTask task, ref bool observableData, bool requiredValue)
         {
-            if (Datas[i] == null)
-            {
-                continue;
-            }
+            Tasks.Add(task);
+            Datas.Add(new DataObserver<bool>(ref observableData));
+            RequiredValues.Add(requiredValue);
+        }
 
-            if (Datas[i].Value.Equals(RequieredValues[i]))
+        public void Update()
+        {
+            for (int i = 0; i < RequiredValues.Count; i++)
             {
-                Tasks.ElementAt(i)?.Complete();
+                if (Datas[i] == null)
+                {
+                    continue;
+                }
+
+                if (Datas[i].Value.Equals(RequiredValues[i]))
+                {
+                    Tasks.ElementAt(i)?.Complete();
+                }
             }
         }
     }

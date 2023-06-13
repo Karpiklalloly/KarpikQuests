@@ -1,6 +1,7 @@
-﻿namespace KarpikQuests.Interfaces;
-
-public interface IQuestStatus
+﻿namespace KarpikQuests.Interfaces
 {
-    public string GetStatus();
+    public interface IQuestStatus
+    {
+        public string GetStatus();
+    }
 }

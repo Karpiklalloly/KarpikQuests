@@ -1,23 +1,27 @@
-﻿namespace KarpikQuests.Interfaces;
+﻿using System;
+using System.Collections.Generic;
 
-public interface IQuest: IEquatable<IQuest>
+namespace KarpikQuests.Interfaces
 {
-    public string Key { get; }
+    public interface IQuest : IEquatable<IQuest>
+    {
+        public string Key { get; }
 
-    public string Name { get; }
-    public string Description { get; }
+        public string Name { get; }
+        public string Description { get; }
 
-    public IEnumerable<IQuestTask> Tasks { get; }
+        public IEnumerable<IQuestTask> Tasks { get; }
 
-    public IQuestStatus Status { get; }
+        public IQuestStatus Status { get; }
 
-    public event Action<IQuest> Started;
-    public event Action<IQuest, IQuestTask> Updated;
-    public event Action<IQuest> Completed;
+        public event Action<IQuest> Started;
+        public event Action<IQuest, IQuestTask> Updated;
+        public event Action<IQuest> Completed;
 
-    protected internal void Init(string key, string name, string description);
-    protected internal void Start();
-    protected internal void SetKey(string key);
-    protected internal void AddTask(IQuestTask task);
-    protected internal void OnTaskComplete(IQuestTask task);
+        internal void Init(string key, string name, string description);
+        internal void Start();
+        internal void SetKey(string key);
+        internal void AddTask(IQuestTask task);
+        internal void OnTaskComplete(IQuestTask task);
+    }
 }

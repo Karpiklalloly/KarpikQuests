@@ -1,48 +1,51 @@
 ﻿using KarpikQuests.Interfaces;
 using System.Collections;
+using System.Collections.Generic;
 
-namespace KarpikQuests.QuestSample;
-
-public class QuestTaskCollection : IQuestTaskCollection
+namespace KarpikQuests.QuestSample
 {
-    private readonly List<IQuestTask> _tasks = new();
-
-    public int Count => _tasks.Count;
-
-    public bool IsReadOnly => false;
-
-    public void Add(IQuestTask item)
+    [System.Serializable]
+    public class QuestTaskCollection : IQuestTaskCollection
     {
-        _tasks.Add(item);
-    }
+        private readonly List<IQuestTask> _tasks = new List<IQuestTask>();
 
-    public void Clear()
-    {
-        _tasks.Clear();
-    }
+        public int Count => _tasks.Count;
 
-    public bool Contains(IQuestTask item)
-    {
-        return _tasks.Contains(item);
-    }
+        public bool IsReadOnly => false;
 
-    public void CopyTo(IQuestTask[] array, int arrayIndex)
-    {
-        _tasks.CopyTo(array, arrayIndex);
-    }
+        public void Add(IQuestTask item)
+        {
+            _tasks.Add(item);
+        }
 
-    public IEnumerator<IQuestTask> GetEnumerator()
-    {
-        return _tasks.GetEnumerator();
-    }
+        public void Clear()
+        {
+            _tasks.Clear();
+        }
 
-    public bool Remove(IQuestTask item)
-    {
-        return _tasks.Remove(item);
-    }
+        public bool Contains(IQuestTask item)
+        {
+            return _tasks.Contains(item);
+        }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _tasks.GetEnumerator();
+        public void CopyTo(IQuestTask[] array, int arrayIndex)
+        {
+            _tasks.CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<IQuestTask> GetEnumerator()
+        {
+            return _tasks.GetEnumerator();
+        }
+
+        public bool Remove(IQuestTask item)
+        {
+            return _tasks.Remove(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _tasks.GetEnumerator();
+        }
     }
 }
