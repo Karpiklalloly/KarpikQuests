@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace KarpikQuests.TaskCompleters
 {
+    [System.Serializable]
     public class QuestTaskCompleter<T> : IQuestTaskCompleter<T>
     where T : IEquatable<T>
     {

@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace KarpikQuests.TaskCompleters
 {
+    [System.Serializable]
     public class BoolQuestTaskCompleter : IQuestTaskCompleter<bool>
     {
         public IQuestTaskCollection Tasks { get; private set; } = new QuestTaskCollection();

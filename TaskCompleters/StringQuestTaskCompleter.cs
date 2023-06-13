@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace KarpikQuests.TaskCompleters
 {
+    [System.Serializable]
     public class StringQuestTaskCompleter : IQuestTaskCompleter<string>
     {
         public IQuestTaskCollection Tasks { get; private set; } = new QuestTaskCollection();
