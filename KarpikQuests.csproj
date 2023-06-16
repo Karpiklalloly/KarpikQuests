@@ -7,7 +7,6 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <VersionPrefix>0.2.0</VersionPrefix>
-	  <DefineConstants>UNITY;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
