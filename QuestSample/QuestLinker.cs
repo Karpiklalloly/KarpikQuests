@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 
+#if UNITY
+using UnityEngine;
+#endif
+
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestLinker : IQuestLinker
     {
+#if UNITY
+[SerializeField]
+#endif
         private readonly Dictionary<IQuest, IQuestCollection> _dependencies = new Dictionary<IQuest, IQuestCollection>();
 
         public IQuestCollection GetQuestDependencies(IQuest quest)

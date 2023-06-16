@@ -2,11 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 
+#if UNITY
+using UnityEngine;
+#endif
+
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestTaskCollection : IQuestTaskCollection
     {
+#if UNITY
+[SerializeField]
+#endif
         private readonly List<IQuestTask> _tasks = new List<IQuestTask>();
 
         public int Count => _tasks.Count;

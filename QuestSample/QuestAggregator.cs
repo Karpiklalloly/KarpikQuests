@@ -2,12 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 
+#if UNITY
+using UnityEngine;
+#endif
+
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestAggregator : IQuestAggregator
     {
+#if UNITY
+[SerializeField]
+#endif
         private readonly IQuestCollection _quests = new QuestCollection();
+#if UNITY
+[SerializeField]
+#endif
         private readonly IQuestLinker _linker = new QuestLinker();
 
         public IReadOnlyCollection<IQuest> Quests => _quests;

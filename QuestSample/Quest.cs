@@ -5,21 +5,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+#if UNITY
+using UnityEngine;
+#endif
+
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class Quest : IQuest
     {
+#if UNITY
+        [SerializeField]
+#endif
         private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
-
+#if UNITY
+        [field: SerializeField]
+#endif
         public string Key { get; private set; }
 
+#if UNITY
+        [field: SerializeField]
+#endif
         public string Name
         {
             get;
             private set;
         }
 
+#if UNITY
+        [field: SerializeField]
+#endif
         public string Description
         {
             get;
@@ -32,6 +47,9 @@ namespace KarpikQuests.QuestSample
 
         public IEnumerable<IQuestTask> Tasks => _tasks;
 
+#if UNITY
+        [field: SerializeField]
+#endif
         public IQuestStatus Status { get; private set; } = new UnStartedQuest();
 
         void IQuest.Init(string key, string name, string description)
