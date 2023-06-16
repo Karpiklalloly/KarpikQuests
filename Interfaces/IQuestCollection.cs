@@ -1,6 +1,9 @@
-﻿namespace KarpikQuests.Interfaces;
+﻿using System.Collections.Generic;
 
-public interface IQuestCollection : ICollection<IQuest>, IReadOnlyCollection<IQuest>
+namespace KarpikQuests.Interfaces
 {
+    public interface IQuestCollection : ICollection<IQuest>, IReadOnlyCollection<IQuest>
+    {
 
+    }
 }

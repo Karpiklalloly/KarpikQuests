@@ -1,60 +1,72 @@
 ﻿using KarpikQuests.Interfaces;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
-namespace KarpikQuests.QuestSample;
+#if UNITY
+using UnityEngine;
+#endif
 
-public class QuestCollection : IQuestCollection
+namespace KarpikQuests.QuestSample
 {
-    private readonly List<IQuest> _data = new();
-
-    public int Count => _data.Count;
-
-    public bool IsReadOnly => false;
-
-    public void Add(IQuest item)
+    [System.Serializable]
+    public class QuestCollection : IQuestCollection
     {
-        _data.Add(item);
-    }
+#if UNITY
+[SerializeField]
+#endif
+        private readonly List<IQuest> _data = new List<IQuest>();
 
-    public void Clear()
-    {
-        _data.Clear();
-    }
+        public int Count => _data.Count;
 
-    public bool Contains(IQuest item)
-    {
-        return _data.Contains(item);
-    }
+        public bool IsReadOnly => false;
 
-    public void CopyTo(IQuest[] array, int arrayIndex)
-    {
-        _data.CopyTo(array, arrayIndex);
-    }
-
-    public IEnumerator<IQuest> GetEnumerator()
-    {
-        return _data.GetEnumerator();
-    }
-
-    public bool Remove(IQuest item)
-    {
-        return _data.Remove(item);
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _data.GetEnumerator();
-    }
-
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-        builder.Append($" Count:{Count}\n");
-        foreach (IQuest item in _data)
+        public void Add(IQuest item)
         {
-            builder.Append(item.ToString() + '\n');
+            _data.Add(item);
         }
-        return builder.ToString();
+
+        public void Clear()
+        {
+            _data.Clear();
+        }
+
+        public bool Contains(IQuest item)
+        {
+            return _data.Contains(item);
+        }
+
+        public void CopyTo(IQuest[] array, int arrayIndex)
+        {
+            _data.CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<IQuest> GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        public bool Remove(IQuest item)
+        {
+            return _data.Remove(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append($" Count:{Count}\n");
+            foreach (IQuest item in _data)
+            {
+                builder.Append(item.ToString() + '\n');
+            }
+            return builder.ToString();
+        }
     }
 }
+
+

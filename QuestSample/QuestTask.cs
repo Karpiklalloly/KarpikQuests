@@ -1,40 +1,56 @@
 ﻿using KarpikQuests.Interfaces;
+using System;
 
-namespace KarpikQuests.QuestSample;
+#if UNITY
+using UnityEngine;
+#endif
 
-public class QuestTask : IQuestTask
+namespace KarpikQuests.QuestSample
 {
-    public string Name { get; private set; }
-
-    public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
-
-    bool IQuestTask.CanBeCompleted { get; set; }
-
-    public event Action<IQuestTask> Completed;
-
-    public void Init(string name)
+    [System.Serializable]
+    public class QuestTask : IQuestTask
     {
-        Name = name;
-    }
+#if UNITY
+[field: SerializeField]
+#endif
+        public string Name { get; private set; }
 
-    void IQuestTask.Complete()
-    {
-        if (!(this as IQuestTask).CanBeCompleted)
+#if UNITY
+[field: SerializeField]
+#endif
+        public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
+
+#if UNITY
+[field: SerializeField]
+#endif
+        bool IQuestTask.CanBeCompleted { get; set; }
+
+        public event Action<IQuestTask> Completed;
+
+        public void Init(string name)
         {
-            return;
+            Name = name;
         }
 
-        Status = IQuestTask.TaskStatus.Completed;
-        Completed?.Invoke(this);
-    }
+        void IQuestTask.Complete()
+        {
+            if (!(this as IQuestTask).CanBeCompleted)
+            {
+                return;
+            }
 
-    public override string ToString()
-    {
-        return $"{Name} -> {Status}";
-    }
+            Status = IQuestTask.TaskStatus.Completed;
+            Completed?.Invoke(this);
+        }
 
-    void IQuestTask.ForceBeCompleted()
-    {
-        (this as IQuestTask).CanBeCompleted = true;
+        public override string ToString()
+        {
+            return $"{Name} -> {Status}";
+        }
+
+        void IQuestTask.ForceBeCompleted()
+        {
+            (this as IQuestTask).CanBeCompleted = true;
+        }
     }
 }

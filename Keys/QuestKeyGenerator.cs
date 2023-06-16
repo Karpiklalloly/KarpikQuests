@@ -1,21 +1,22 @@
-﻿namespace KarpikQuests.Keys;
-
-public static class QuestKeyGenerator
+﻿namespace KarpikQuests.Keys
 {
-    private static uint _autoUintKey = 0;
-
-    public static string GenerateNextAutoKey()
+    public static class QuestKeyGenerator
     {
-        return _autoUintKey++.ToString();
-    }
+        private static uint _autoUintKey = 0;
 
-    public static string[] GenerateNextAutoKeys(int count)
-    {
-        string[] keys = new string[count];
-        for (int i = 0; i < count; i++)
+        public static string GenerateNextAutoKey()
         {
-            keys[i] = GenerateNextAutoKey();
+            return _autoUintKey++.ToString();
         }
-        return keys;
+
+        public static string[] GenerateNextAutoKeys(int count)
+        {
+            string[] keys = new string[count];
+            for (int i = 0; i < count; i++)
+            {
+                keys[i] = GenerateNextAutoKey();
+            }
+            return keys;
+        }
     }
 }
