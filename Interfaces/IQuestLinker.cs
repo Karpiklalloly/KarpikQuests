@@ -1,13 +1,15 @@
-﻿namespace KarpikQuests.Interfaces
+﻿using System.Collections.Generic;
+
+namespace KarpikQuests.Interfaces
 {
     public interface IQuestLinker
     {
-        public IQuestCollection GetQuestDependencies(IQuest quest);
+        public IReadOnlyCollection<string> GetQuestKeyDependencies(string key);
 
-        public IQuestCollection GetQuestDependents(IQuest quest);
+        public IReadOnlyCollection<string> GetQuestKeyDependents(string key);
 
-        public bool TryAddDependence(IQuest quest, IQuest dependence);
+        public bool TryAddDependence(string key, string dependenceKey);
 
-        public bool TryRemoveDependence(IQuest quest, IQuest dependence);
+        public bool TryRemoveDependence(string key, string dependenceKey);
     }
 }
