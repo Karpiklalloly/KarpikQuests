@@ -22,6 +22,6 @@ namespace KarpikQuests.Interfaces
 
         internal void Complete();
 
-        internal void ForceBeCompleted();
+        internal void ForceCanBeCompleted();
     }
 }

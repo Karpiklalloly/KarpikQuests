@@ -24,7 +24,7 @@ namespace KarpikQuests.Interfaces
         }
         protected abstract void Complete();
 
-        void IQuestTask.ForceBeCompleted()
+        void IQuestTask.ForceCanBeCompleted()
         {
             ForceBeCompleted();
         }

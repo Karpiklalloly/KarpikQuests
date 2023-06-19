@@ -114,7 +114,7 @@ namespace KarpikQuests.QuestSample
             Status = new StartedQuest();
             foreach (var task in _tasks)
             {
-                task.ForceBeCompleted();
+                task.ForceCanBeCompleted();
             }
         }
     }

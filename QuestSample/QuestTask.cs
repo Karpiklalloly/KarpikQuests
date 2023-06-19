@@ -45,10 +45,10 @@ namespace KarpikQuests.QuestSample
 
         public override string ToString()
         {
-            return $"{Name} -> {Status}";
+            return $"{Name}\t\t\t{Status}";
         }
 
-        void IQuestTask.ForceBeCompleted()
+        void IQuestTask.ForceCanBeCompleted()
         {
             (this as IQuestTask).CanBeCompleted = true;
         }
