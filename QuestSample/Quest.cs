@@ -1,5 +1,6 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.QuestStatuses;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,39 +18,37 @@ namespace KarpikQuests.QuestSample
 #if UNITY
         [SerializeField]
 #endif
+        [JsonProperty("Tasks")]
         private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
 #if UNITY
         [field: SerializeField]
 #endif
+        [JsonProperty("Key")]
         public string Key { get; private set; }
 
 #if UNITY
         [field: SerializeField]
 #endif
-        public string Name
-        {
-            get;
-            private set;
-        }
+        [JsonProperty("Name")]
+        public string Name { get; private set; }
 
 #if UNITY
         [field: SerializeField]
 #endif
-        public string Description
-        {
-            get;
-            private set;
-        }
+        [JsonProperty("Description")]
+        public string Description { get; private set; }
 
         public event Action<IQuest> Started;
         public event Action<IQuest, IQuestTask> Updated;
         public event Action<IQuest> Completed;
 
+        [JsonIgnore]
         public IEnumerable<IQuestTask> Tasks => _tasks;
 
 #if UNITY
         [field: SerializeField]
 #endif
+        [JsonProperty("Status")]
         public IQuestStatus Status { get; private set; } = new UnStartedQuest();
 
         void IQuest.Init(string key, string name, string description)

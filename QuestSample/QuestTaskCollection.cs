@@ -1,4 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,6 +15,7 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [SerializeField]
 #endif
+        [JsonProperty("Tasks")]
         private readonly List<IQuestTask> _tasks = new List<IQuestTask>();
 
         public int Count => _tasks.Count;

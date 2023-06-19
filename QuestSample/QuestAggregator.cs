@@ -1,5 +1,7 @@
 ﻿using KarpikQuests.Interfaces;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 #if UNITY
@@ -14,12 +16,15 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [SerializeField]
 #endif
+        [JsonProperty("Quests")]
         private readonly IQuestCollection _quests = new QuestCollection();
 #if UNITY
 [SerializeField]
 #endif
+        [JsonProperty("Links")]
         private readonly IQuestLinker _linker = new QuestLinker();
 
+        [JsonIgnore]
         public IReadOnlyCollection<IQuest> Quests => _quests;
 
         public bool TryAddQuest(IQuest quest)
@@ -41,7 +46,7 @@ namespace KarpikQuests.QuestSample
                 return false;
             }
 
-            var dependencies = _linker.GetQuestDependencies(quest);
+            var dependencies = _linker.GetQuestKeyDependencies(quest.Key);
 
             if (dependencies.Count() > 1)
             {
@@ -49,12 +54,12 @@ namespace KarpikQuests.QuestSample
             }
 
             var baseQuest = dependencies.ElementAt(0);
-            _linker.TryRemoveDependence(quest, baseQuest);
+            _linker.TryRemoveDependence(quest.Key, baseQuest);
 
-            var dependents = _linker.GetQuestDependents(quest);
+            var dependents = _linker.GetQuestKeyDependents(quest.Key);
             foreach (var dep in dependents)
             {
-                _linker.TryRemoveDependence(dep, quest);
+                _linker.TryRemoveDependence(dep, quest.Key);
                 _linker.TryAddDependence(dep, baseQuest);
             }
 
@@ -64,22 +69,34 @@ namespace KarpikQuests.QuestSample
 
         public bool TryAddDependence(IQuest quest, IQuest dependence)
         {
-            return _linker.TryAddDependence(quest, dependence);
+            return _linker.TryAddDependence(quest.Key, dependence.Key);
         }
 
         public bool TryRemoveDependence(IQuest quest, IQuest dependence)
         {
-            return _linker.TryRemoveDependence(quest, dependence);
+            return _linker.TryRemoveDependence(quest.Key, dependence.Key);
         }
 
         public IQuestCollection GetDependencies(IQuest quest)
         {
-            return _linker.GetQuestDependencies(quest);
+            var keys = _linker.GetQuestKeyDependencies(quest.Key);
+            var collection = new QuestCollection();
+            foreach (var dep in keys)
+            {
+                collection.Add(GetQuest(dep));
+            }
+            return collection;
         }
 
         public IQuestCollection GetDependents(IQuest quest)
         {
-            return _linker.GetQuestDependents(quest);
+            var keys = _linker.GetQuestKeyDependents(quest.Key);
+            var collection = new QuestCollection();
+            foreach (var dep in keys)
+            {
+                collection.Add(GetQuest(dep));
+            }
+            return collection;
         }
 
         public bool CheckKeyCollisions()
@@ -94,6 +111,17 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
+        public void Start()
+        {
+            foreach (var quest in _quests)
+            {
+                if (!GetDependencies(quest).Any())
+                {
+                    quest.Start();
+                }
+            }
+        }
+
         private void OnQuestCompleted(IQuest quest)
         {
             quest.Completed -= OnQuestCompleted;
@@ -104,15 +132,9 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        public void Start()
+        private IQuest GetQuest(string key)
         {
-            foreach (var quest in _quests)
-            {
-                if (!GetDependencies(quest).Any())
-                {
-                    quest.Start();
-                }
-            }
+            return _quests.First(x =>  x.Key == key);
         }
     }
 }

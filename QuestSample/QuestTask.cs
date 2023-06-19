@@ -1,4 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
+using Newtonsoft.Json;
 using System;
 
 #if UNITY
@@ -13,16 +14,19 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [field: SerializeField]
 #endif
+        [JsonProperty("Name")]
         public string Name { get; private set; }
 
 #if UNITY
 [field: SerializeField]
 #endif
+        [JsonProperty("Status")]
         public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
 
 #if UNITY
 [field: SerializeField]
 #endif
+        [JsonProperty("CanBeCompleted")]
         bool IQuestTask.CanBeCompleted { get; set; }
 
         public event Action<IQuestTask> Completed;
