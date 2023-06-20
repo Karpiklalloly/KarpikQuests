@@ -27,6 +27,12 @@ namespace KarpikQuests
             return this;
         }
 
+        public QuestBuilder Start<T>(T quest) where T : IQuest
+        {
+            _quest = quest;
+            return this;
+        }
+
         public QuestBuilder AddTask(IQuestTask task)
         {
             _quest.AddTask(task);

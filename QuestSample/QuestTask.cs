@@ -14,6 +14,12 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [field: SerializeField]
 #endif
+        [JsonProperty("Key")]
+        public string Key { get; private set; }
+
+#if UNITY
+[field: SerializeField]
+#endif
         [JsonProperty("Name")]
         public string Name { get; private set; }
 
@@ -31,25 +37,29 @@ namespace KarpikQuests.QuestSample
 
         public event Action<IQuestTask> Completed;
 
-        public void Init(string name)
+        public void Init(string key, string name)
         {
+            Key = key;
             Name = name;
         }
 
-        void IQuestTask.Complete()
+        bool IQuestTask.TryToComplete()
         {
             if (!(this as IQuestTask).CanBeCompleted)
             {
-                return;
+                return false;
             }
 
             Status = IQuestTask.TaskStatus.Completed;
+            (this as IQuestTask).CanBeCompleted = false;
             Completed?.Invoke(this);
+
+            return true;
         }
 
         public override string ToString()
         {
-            return $"{Name}\t\t\t{Status}";
+            return $"{Key} {Name}";
         }
 
         void IQuestTask.ForceCanBeCompleted()

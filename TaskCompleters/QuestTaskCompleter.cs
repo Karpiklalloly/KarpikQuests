@@ -1,9 +1,6 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.QuestSample;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Utilities;
 
 namespace KarpikQuests.TaskCompleters
 {
@@ -11,31 +8,50 @@ namespace KarpikQuests.TaskCompleters
     public class QuestTaskCompleter<T> : IQuestTaskCompleter<T>
     where T : IEquatable<T>
     {
-        public IQuestTaskCollection Tasks { get; private set; } = new QuestTaskCollection();
+        private Dictionary<IQuestTask, T[]> _requiredValues = new Dictionary<IQuestTask, T[]>();
 
-        public List<DataObserver<T>> Datas { get; private set; } = new List<DataObserver<T>>();
-
-        public List<T> RequiredValues { get; private set; } = new List<T>();
-
-        public void Subscribe(IQuestTask task, ref T observableData, T requiredValue)
+        public void Subscribe(IQuestTask task, params T[] requiredValues)
         {
-            Tasks.Add(task);
-            Datas.Add(new DataObserver<T>(ref observableData));
-            RequiredValues.Add(requiredValue);
+            Unsubscribe(task);
+            _requiredValues.Add(task, requiredValues);
         }
 
-        public void Update()
+        public bool Unsubscribe(IQuestTask task)
         {
-            for (int i = 0; i < RequiredValues.Count; i++)
+            if (!_requiredValues.ContainsKey(task))
             {
-                if (Datas[i] == null)
+                return false;
+            }
+
+            _requiredValues.Remove(task);
+            return true;
+        }
+
+        public void Update(T value, params T[] values)
+        {
+            var data = new T[values.Length + 1];
+            data[0] = value;
+            values.CopyTo(data, 1);
+
+            foreach (var item in _requiredValues)
+            {
+                if (item.Value.Length != data.Length)
                 {
                     continue;
                 }
 
-                if (Datas[i].Value.Equals(RequiredValues[i]))
+                bool breaked = false;
+                for (int i = 0; i < data.Length; i++)
                 {
-                    Tasks.ElementAt(i)?.Complete();
+                    if (!data[i].Equals(item.Value[i]))
+                    {
+                        breaked = true;
+                        break;
+                    }
+                }
+                if (!breaked)
+                {
+                    item.Key.TryToComplete();
                 }
             }
         }

@@ -4,6 +4,8 @@ namespace KarpikQuests.Interfaces
 {
     public abstract class QuestTaskBase : IQuestTask
     {
+        public abstract string Key { get; }
+
         public abstract string Name { get; }
 
         public abstract IQuestTask.TaskStatus Status { get; }
@@ -16,13 +18,13 @@ namespace KarpikQuests.Interfaces
 
         public abstract event Action<IQuestTask> Completed;
 
-        public abstract void Init(string name);
+        public abstract void Init(string key, string name);
 
-        void IQuestTask.Complete()
+        bool IQuestTask.TryToComplete()
         {
-            Complete();
+            return TryToComplete();
         }
-        protected abstract void Complete();
+        protected abstract bool TryToComplete();
 
         void IQuestTask.ForceCanBeCompleted()
         {

@@ -1,13 +1,16 @@
-﻿using KarpikQuests.Interfaces;
+﻿using KarpikQuests.Extensions;
+using KarpikQuests.Interfaces;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 
 #if UNITY
 using UnityEngine;
 #endif
 
+//TODO: После сериализации обновлять данные (пока хз какие-то уже 2 ночи :( )
+//Сохарнять комплитеры и ивенты
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
@@ -135,6 +138,30 @@ namespace KarpikQuests.QuestSample
         private IQuest GetQuest(string key)
         {
             return _quests.First(x =>  x.Key == key);
+        }
+
+        /// <summary>
+        /// Subscribe to events
+        /// </summary>
+        /// <param name="context"></param>
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            //OnComplete
+            foreach (var quest in _quests)
+            {
+                if (quest.IsCompleted())
+                {
+                    continue;
+                }
+
+                quest.Completed += OnQuestCompleted;
+            }
+        }
+
+        public override string ToString()
+        {
+            return _quests.ToString() + '\n' + _linker.ToString();
         }
     }
 }
