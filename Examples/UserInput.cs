@@ -24,12 +24,12 @@ namespace KarpikQuests.Examples
         public void Work()
         {
             var task = new QuestTask();
-            task.Init("UwU");
+            task.Init("1", "UwU");
 
             void OnTaskComplete(IQuestTask task) => Console.WriteLine("Yay, you completed quest");
 
             task.Completed += OnTaskComplete;
-            _completer.Subscribe(task, ref _targetString, _targetValue);
+            _completer.Subscribe(task, _targetValue);
 
             var quest = _builder
                 .Start<Quest>("Say UwU", "Impressive quest!")
@@ -42,7 +42,7 @@ namespace KarpikQuests.Examples
             while (true)
             {
                 _targetString = Console.ReadLine();
-                _completer.Update();
+                _completer.Update(_targetString);
                 if (quest.IsCompleted())
                 {
                     break;

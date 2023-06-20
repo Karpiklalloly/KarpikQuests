@@ -1,4 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
+using Newtonsoft.Json;
 using System;
 
 #if UNITY
@@ -8,49 +9,63 @@ using UnityEngine;
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
-    public class QuestTask : IQuestTask
+    public class QuestTask : QuestTaskBase
     {
 #if UNITY
 [field: SerializeField]
 #endif
-        public string Name { get; private set; }
+        [JsonProperty("Key")]
+        public override string Key { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
 #endif
-        public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
+        [JsonProperty("Name")]
+        public override string Name { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
 #endif
-        bool IQuestTask.CanBeCompleted { get; set; }
+        [JsonProperty("Status")]
+        public override IQuestTask.TaskStatus Status { get; protected set; } = IQuestTask.TaskStatus.UnCompleted;
 
-        public event Action<IQuestTask> Completed;
+#if UNITY
+[field: SerializeField]
+#endif
 
-        public void Init(string name)
+        [JsonProperty("CanBeCompleted")]
+        public override bool CanBeCompleted { get; protected set; }
+
+        public override event Action<IQuestTask> Completed;
+
+        public override void Init(string key, string name)
         {
+            Key = key;
             Name = name;
         }
 
-        void IQuestTask.Complete()
+        protected override bool TryToComplete()
         {
             if (!(this as IQuestTask).CanBeCompleted)
             {
-                return;
+                return false;
             }
 
             Status = IQuestTask.TaskStatus.Completed;
+            (this as IQuestTask).CanBeCompleted = false;
             Completed?.Invoke(this);
+
+            return true;
         }
 
         public override string ToString()
         {
-            return $"{Name} -> {Status}";
+            return $"{Key} {Name}";
         }
 
-        void IQuestTask.ForceBeCompleted()
+        protected override void ForceBeCompleted()
         {
-            (this as IQuestTask).CanBeCompleted = true;
+            CanBeCompleted = true;
         }
     }
 }

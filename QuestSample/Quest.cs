@@ -1,8 +1,10 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.QuestStatuses;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 #if UNITY
@@ -12,64 +14,63 @@ using UnityEngine;
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
-    public class Quest : IQuest
+    public class Quest : QuestBase
     {
+#if UNITY
+        [field: SerializeField]
+#endif
+        [JsonProperty("Key", Order = 1)]
+        public override string Key { get; protected set; }
+
+#if UNITY
+        [field: SerializeField]
+#endif
+        [JsonProperty("Name", Order = 2)]
+        public override string Name { get; protected set; }
+
+#if UNITY
+        [field: SerializeField]
+#endif
+        [JsonProperty("Description", Order = 3)]
+        public override string Description { get; protected set; }
+
 #if UNITY
         [SerializeField]
 #endif
+        [JsonProperty("Tasks", Order = 5)]
         private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
-#if UNITY
-        [field: SerializeField]
-#endif
-        public string Key { get; private set; }
+
+        public override event Action<IQuest> Started;
+        public override event Action<IQuest, IQuestTask> Updated;
+        public override event Action<IQuest> Completed;
+
+        [JsonIgnore]
+        public override IEnumerable<IQuestTask> Tasks => _tasks;
 
 #if UNITY
         [field: SerializeField]
 #endif
-        public string Name
-        {
-            get;
-            private set;
-        }
+        [JsonProperty("Status", Order = 4)]
+        public override IQuestStatus Status { get; protected set; } = new UnStartedQuest();
 
-#if UNITY
-        [field: SerializeField]
-#endif
-        public string Description
-        {
-            get;
-            private set;
-        }
-
-        public event Action<IQuest> Started;
-        public event Action<IQuest, IQuestTask> Updated;
-        public event Action<IQuest> Completed;
-
-        public IEnumerable<IQuestTask> Tasks => _tasks;
-
-#if UNITY
-        [field: SerializeField]
-#endif
-        public IQuestStatus Status { get; private set; } = new UnStartedQuest();
-
-        void IQuest.Init(string key, string name, string description)
+        protected override void Init(string key, string name, string description)
         {
             Key = key;
             Name = name;
             Description = description;
         }
 
-        void IQuest.SetKey(string key)
+        protected override void SetKey(string key)
         {
             Key = key;
         }
 
-        void IQuest.AddTask(IQuestTask task)
+        protected override void AddTask(IQuestTask task)
         {
             _tasks.Add(task);
         }
 
-        public bool Equals(IQuest other)
+        public override bool Equals(IQuest other)
         {
             if (other == null)
             {
@@ -81,8 +82,9 @@ namespace KarpikQuests.QuestSample
         public override string ToString()
         {
             StringBuilder str = new StringBuilder();
-            str.Append($"{Key}: {Name}:\n" +
+            str.Append($"'{Key}': {Name}:\n" +
                 $"{Description}\n" +
+                $"Status: {Status}\n" +
                 $"\tTasks:\n");
             foreach (var task in Tasks)
             {
@@ -92,7 +94,7 @@ namespace KarpikQuests.QuestSample
             return str.ToString();
         }
 
-        void IQuest.OnTaskComplete(IQuestTask task)
+        protected override void OnTaskComplete(IQuestTask task)
         {
             if (Status is UnStartedQuest)
             {
@@ -109,12 +111,23 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        void IQuest.Start()
+        protected override void Start()
         {
             Status = new StartedQuest();
             foreach (var task in _tasks)
             {
-                task.ForceBeCompleted();
+                task.ForceCanBeCompleted();
+            }
+            Started?.Invoke(this);
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            var interf = this as IQuest;
+            foreach (var task in Tasks)
+            {
+                task.Completed += interf.OnTaskComplete;
             }
         }
     }

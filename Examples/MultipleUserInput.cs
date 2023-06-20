@@ -25,12 +25,12 @@ namespace KarpikQuests.Examples
         public void Work()
         {
             var task1 = new QuestTask();
-            task1.Init(_targetValue1);
+            task1.Init("1", _targetValue1);
             var task2 = new QuestTask();
-            task2.Init(_targetValue2);
+            task2.Init("2", _targetValue2);
 
-            _completer.Subscribe(task1, ref _targetString, _targetValue1);
-            _completer.Subscribe(task2, ref _targetString, _targetValue2);
+            _completer.Subscribe(task1, _targetValue1);
+            _completer.Subscribe(task2, _targetValue2);
 
             var quest1 = _builder
                 .Start<Quest>("Say " + _targetValue1, "Impressive quest!1")
@@ -62,7 +62,7 @@ namespace KarpikQuests.Examples
             {
                 Console.WriteLine(currentQuest.Name);
                 _targetString = Console.ReadLine();
-                _completer.Update();
+                _completer.Update(_targetString);
                 if (currentQuest.IsCompleted())
                 {
                     break;

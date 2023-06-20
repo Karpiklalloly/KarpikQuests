@@ -1,4 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,20 +15,21 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [SerializeField]
 #endif
-        private readonly Dictionary<IQuest, IQuestCollection> _dependencies = new Dictionary<IQuest, IQuestCollection>();
+        [JsonProperty("Quest_dependencies")]
+        private readonly Dictionary<string, List<string>> _dependencies = new Dictionary<string, List<string>>();
 
-        public IQuestCollection GetQuestDependencies(IQuest quest)
+        public IReadOnlyCollection<string> GetQuestKeyDependencies(string key)
         {
-            if (!_dependencies.ContainsKey(quest))
+            if (!_dependencies.ContainsKey(key))
             {
-                return new QuestCollection();
+                return new List<string>();
             }
-            return _dependencies[quest];
+            return _dependencies[key];
         }
 
-        public IQuestCollection GetQuestDependents(IQuest quest)
+        public IReadOnlyCollection<string> GetQuestKeyDependents(string key)
         {
-            QuestCollection collection = new QuestCollection();
+            List<string> collection = new List<string>();
             foreach (var pair in _dependencies)
             {
                 if (pair.Value == null || !pair.Value.Any())
@@ -35,12 +37,12 @@ namespace KarpikQuests.QuestSample
                     continue;
                 }
 
-                if (pair.Key.Equals(quest))
+                if (pair.Key.Equals(key))
                 {
                     continue;
                 }
 
-                if (pair.Value.Contains(quest))
+                if (pair.Value.Contains(key))
                 {
                     collection.Add(pair.Key);
                 }
@@ -48,49 +50,49 @@ namespace KarpikQuests.QuestSample
             return collection;
         }
 
-        public bool TryAddDependence(IQuest quest, IQuest dependence)
+        public bool TryAddDependence(string key, string dependenceKey)
         {
-            if (!_dependencies.ContainsKey(quest))
+            if (!_dependencies.ContainsKey(key))
             {
-                _dependencies.Add(quest, new QuestCollection());
+                _dependencies.Add(key, new List<string>());
             }
 
-            if (_dependencies[quest].Contains(dependence))
+            if (_dependencies[key].Contains(dependenceKey))
             {
                 return false;
             }
 
-            if (quest.Equals(dependence))
+            if (key.Equals(dependenceKey))
             {
                 return false;
             }
 
             //Check to not link to each other
-            if (_dependencies.ContainsKey(dependence))
+            if (_dependencies.ContainsKey(dependenceKey))
             {
-                if (_dependencies[dependence].Contains(quest))
+                if (_dependencies[dependenceKey].Contains(key))
                 {
                     return false;
                 }
             }
 
-            _dependencies[quest].Add(dependence);
+            _dependencies[key].Add(dependenceKey);
             return true;
         }
 
-        public bool TryRemoveDependence(IQuest quest, IQuest dependent)
+        public bool TryRemoveDependence(string key, string dependentKey)
         {
-            if (!_dependencies.ContainsKey(quest))
+            if (!_dependencies.ContainsKey(key))
             {
                 return false;
             }
 
-            if (!_dependencies[quest].Contains(dependent))
+            if (!_dependencies[key].Contains(dependentKey))
             {
                 return false;
             }
 
-            _dependencies[quest].Remove(dependent);
+            _dependencies[key].Remove(dependentKey);
             return true;
         }
     }
