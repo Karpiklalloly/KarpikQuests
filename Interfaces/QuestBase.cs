@@ -5,15 +5,15 @@ namespace KarpikQuests.Interfaces
 {
     public abstract class QuestBase : IQuest
     {
-        public abstract string Key { get; }
+        public abstract string Key { get; protected set; }
 
-        public abstract string Name { get; }
+        public abstract string Name { get; protected set; }
 
-        public abstract string Description { get; }
+        public abstract string Description { get; protected set; }
 
         public abstract IEnumerable<IQuestTask> Tasks { get; }
 
-        public abstract IQuestStatus Status { get; }
+        public abstract IQuestStatus Status { get; protected set; }
 
         public abstract event Action<IQuest> Started;
         public abstract event Action<IQuest, IQuestTask> Updated;
