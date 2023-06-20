@@ -20,9 +20,10 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="Utilities">
-      <HintPath>Utilities.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TaskCompleters\" />
   </ItemGroup>
 
 </Project>
