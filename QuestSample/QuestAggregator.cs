@@ -9,8 +9,6 @@ using System.Runtime.Serialization;
 using UnityEngine;
 #endif
 
-//TODO: После сериализации обновлять данные (пока хз какие-то уже 2 ночи :( )
-//Сохарнять комплитеры и ивенты
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
