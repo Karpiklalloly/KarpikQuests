@@ -28,6 +28,11 @@ namespace KarpikQuests.QuestSample
         [JsonIgnore]
         public IReadOnlyCollection<IQuest> Quests => _quests;
 
+        public QuestAggregator()
+        {
+            QuestInfo.RegisterAggregator(this);
+        }
+
         public bool TryAddQuest(IQuest quest)
         {
             if (_quests.Contains(quest))
