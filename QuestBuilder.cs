@@ -1,6 +1,7 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
 using System;
+using System.Linq;
 
 namespace KarpikQuests
 {
@@ -27,14 +28,12 @@ namespace KarpikQuests
             return this;
         }
 
-        public QuestBuilder Start<T>(T quest) where T : IQuest
-        {
-            _quest = quest;
-            return this;
-        }
-
         public QuestBuilder AddTask(IQuestTask task)
         {
+            if (_quest.Tasks.Select(x => x.Key).Contains(task.Key))
+            {
+                throw new InvalidOperationException("Quest can't contain equel tasks' keys");
+            }
             _quest.AddTask(task);
             task.Completed += _quest.OnTaskComplete;
             return this;
