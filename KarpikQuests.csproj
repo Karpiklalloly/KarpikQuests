@@ -23,8 +23,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="TaskCompleters\" />
-  </ItemGroup>
-
 </Project>
