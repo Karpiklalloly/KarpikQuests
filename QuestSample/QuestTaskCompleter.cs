@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace KarpikQuests.TaskCompleters
+namespace KarpikQuests.QuestSample
 {
-    [System.Serializable]
+    [Serializable]
     public class QuestTaskCompleter<T> : IQuestTaskCompleter<T>
     where T : IEquatable<T>
     {
