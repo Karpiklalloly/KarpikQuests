@@ -6,8 +6,8 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <VersionPrefix>0.3.0</VersionPrefix>
-  <DefineConstants>UNITY;</DefineConstants>
+    <VersionPrefix>0.4.0</VersionPrefix>
+  <DefineConstants>JSON;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

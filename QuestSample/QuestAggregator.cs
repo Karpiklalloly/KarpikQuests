@@ -1,10 +1,13 @@
 ﻿using KarpikQuests.Extensions;
 using KarpikQuests.Interfaces;
 using KarpikQuests.Interfaces.AbstractBases;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+
+#if JSON
+using Newtonsoft.Json;
+#endif
 
 #if UNITY
 using UnityEngine;
@@ -18,15 +21,21 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [SerializeField]
 #endif
+#if JSON
         [JsonProperty("Quests")]
+#endif
         private readonly IQuestCollection _quests = new QuestCollection();
 #if UNITY
 [SerializeField]
 #endif
+#if JSON
         [JsonProperty("Links")]
+#endif
         private readonly IQuestLinker _linker = new QuestLinker();
 
+#if JSON
         [JsonIgnore]
+#endif
         public override IReadOnlyCollection<IQuest> Quests => _quests;
 
         public QuestAggregator()
@@ -318,7 +327,5 @@ namespace KarpikQuests.QuestSample
         {
             return _quests.ToString() + '\n' + _linker.ToString();
         }
-
-
     }
 }
