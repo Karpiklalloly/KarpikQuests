@@ -23,6 +23,12 @@ namespace KarpikQuests.QuestSample
 
         public bool IsReadOnly => false;
 
+        public IQuest this[int index]
+        {
+            get { return _data[index]; }
+            set { _data[index] = value; }
+        }
+
         public void Add(IQuest item)
         {
             _data.Add(item);
@@ -67,6 +73,21 @@ namespace KarpikQuests.QuestSample
                 builder.Append(item.ToString() + '\n');
             }
             return builder.ToString();
+        }
+
+        public int IndexOf(IQuest item)
+        {
+            return _data.IndexOf(item);
+        }
+
+        public void Insert(int index, IQuest item)
+        {
+            _data.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _data.RemoveAt(index);
         }
     }
 }

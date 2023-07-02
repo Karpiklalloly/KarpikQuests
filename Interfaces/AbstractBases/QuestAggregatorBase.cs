@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces.AbstractBases
 {
@@ -25,14 +24,18 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public abstract bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel);
 
+        public abstract bool TryRemoveDependencies(IQuest quest);
+
+        public abstract bool TryRemoveDependents(IQuest quest);
+
         void IQuestAggregator.Start(IQuest quest)
         {
             quest.Start();
         }
-
         protected void Start(IQuest quest)
         {
             (this as IQuestAggregator).Start(quest);
         }
+
     }
 }

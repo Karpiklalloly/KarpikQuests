@@ -1,5 +1,6 @@
 ﻿using KarpikQuests.Extensions;
 using KarpikQuests.Interfaces;
+using KarpikQuests.Interfaces.AbstractBases;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,10 @@ using System.Runtime.Serialization;
 using UnityEngine;
 #endif
 
-//TODO: в ремув удалять и ссылки (ивенты всякие)
-//Добавить метод для замены квеста (типа просто заменяется на новый, соответственно и ссылки переназначить)
-//Добавить возможно убрать всее зависимости у квеста
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
-    public class QuestAggregator : IQuestAggregator
+    public class QuestAggregator : QuestAggregatorBase
     {
 #if UNITY
 [SerializeField]
@@ -29,14 +27,14 @@ namespace KarpikQuests.QuestSample
         private readonly IQuestLinker _linker = new QuestLinker();
 
         [JsonIgnore]
-        public IReadOnlyCollection<IQuest> Quests => _quests;
+        public override IReadOnlyCollection<IQuest> Quests => _quests;
 
         public QuestAggregator()
         {
 
         }
 
-        public bool TryAddQuest(IQuest quest)
+        public override bool TryAddQuest(IQuest quest)
         {
             if (Contains(quest))
             {
@@ -48,7 +46,13 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true)
+        /// <summary>
+        /// Note that if there are many dependencies this method will not delete quest
+        /// </summary>
+        /// <param name="quest"></param>
+        /// <param name="autoChangeDependencies"></param>
+        /// <returns></returns>
+        public override bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true)
         {
             if (!Contains(quest))
             {
@@ -60,7 +64,6 @@ namespace KarpikQuests.QuestSample
                 var dependencies = _linker.GetQuestKeyDependencies(quest.Key);
                 var dependents = _linker.GetQuestKeyDependents(quest.Key);
 
-                //TODO: Как нибудь придумать переадресацию (ну или пусть вручную все делают :), гдавное чтобы все едино было, а не как сейчас)
                 if (dependencies.Count() > 1)
                 {
                     return false;
@@ -81,25 +84,24 @@ namespace KarpikQuests.QuestSample
                 {
                     _linker.TryRemoveDependence(dep, quest.Key);
                 }
-
-                quest.Completed -= OnQuestCompleted;
             }
 
+            quest.Completed -= OnQuestCompleted;
             _quests.Remove(quest);
             return true;
         }
 
-        public bool TryAddDependence(IQuest quest, IQuest dependence)
+        public override bool TryAddDependence(IQuest quest, IQuest dependence)
         {
             return _linker.TryAddDependence(quest.Key, dependence.Key);
         }
 
-        public bool TryRemoveDependence(IQuest quest, IQuest dependence)
+        public override bool TryRemoveDependence(IQuest quest, IQuest dependence)
         {
             return _linker.TryRemoveDependence(quest.Key, dependence.Key);
         }
 
-        public bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
+        public override bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
         {
             if (!keysMayBeEquel)
             {
@@ -140,7 +142,7 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public IQuestCollection GetDependencies(IQuest quest)
+        public override IQuestCollection GetDependencies(IQuest quest)
         {
             var keys = _linker.GetQuestKeyDependencies(quest.Key);
             var collection = new QuestCollection();
@@ -151,7 +153,7 @@ namespace KarpikQuests.QuestSample
             return collection;
         }
 
-        public IQuestCollection GetDependents(IQuest quest)
+        public override IQuestCollection GetDependents(IQuest quest)
         {
             var keys = _linker.GetQuestKeyDependents(quest.Key);
             var collection = new QuestCollection();
@@ -162,7 +164,7 @@ namespace KarpikQuests.QuestSample
             return collection;
         }
 
-        public bool CheckKeyCollisions()
+        public override bool CheckKeyCollisions()
         {
             var keys = _quests.GroupBy(x => x.Key)
                 .Where(group => group.Count() > 1)
@@ -174,15 +176,55 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public void Start()
+        public override void Start()
         {
             foreach (var quest in _quests)
             {
                 if (!GetDependencies(quest).Any() && quest.IsNotStarted())
                 {
-                    quest.Start();
+                    Start(quest);
                 }
             }
+        }
+
+        public override bool TryRemoveDependencies(IQuest quest)
+        {
+            if (!Contains(quest))
+            {
+                return false;
+            }
+
+            var dependencies = GetDependencies(quest);
+
+            foreach (var dep in dependencies)
+            {
+                if (!TryRemoveDependence(quest, dep))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override bool TryRemoveDependents(IQuest quest)
+        {
+            if (!Contains(quest))
+            {
+                return false;
+            }
+
+            var dependents = GetDependents(quest);
+
+            foreach (var dep in dependents)
+            {
+                if (!TryRemoveDependence(dep, quest))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void OnQuestCompleted(IQuest quest)
@@ -191,7 +233,7 @@ namespace KarpikQuests.QuestSample
             var dependents = GetDependents(quest);
             foreach (var dependent in dependents)
             {
-                dependent.Start();
+                Start(dependent);
             }
         }
 
@@ -202,6 +244,10 @@ namespace KarpikQuests.QuestSample
 
         private bool Contains(IQuest quest)
         {
+            if (quest == null)
+            {
+                return false;
+            }
             foreach (var another in _quests)
             {
                 if (another.Equals(quest))
@@ -273,9 +319,6 @@ namespace KarpikQuests.QuestSample
             return _quests.ToString() + '\n' + _linker.ToString();
         }
 
-        void IQuestAggregator.Start(IQuest quest)
-        {
-            throw new System.NotImplementedException();
-        }
+
     }
 }

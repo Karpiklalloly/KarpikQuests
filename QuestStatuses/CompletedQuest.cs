@@ -1,23 +1,17 @@
 ﻿using KarpikQuests.Interfaces;
-using System;
+using KarpikQuests.Interfaces.AbstractBases;
 
 namespace KarpikQuests.QuestStatuses
 {
-    //TODO: Add base class
-    public class CompletedQuest : IQuestStatus
+    public class CompletedQuest : QuestStatusBase
     {
-        public bool Equals(IQuestStatus other)
+        public override bool Equals(IQuestStatus other)
         {
             if (other is CompletedQuest)
             {
                 return true;
             }
             return false;
-        }
-
-        public string GetStatus()
-        {
-            throw new NotImplementedException();
         }
     }
 }

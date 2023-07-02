@@ -6,7 +6,6 @@ using System.Linq;
 namespace KarpikQuests
 {
     //TODO: optimize getters
-    //TODO: Везде вместо комлит нормальные сравнения сделать
     public static class QuestInfo
     {
         private static readonly List<IQuestAggregator> _aggregators = new List<IQuestAggregator>();
@@ -31,9 +30,15 @@ namespace KarpikQuests
             _aggregators.Remove(aggregator);
         }
 
-        public static IQuest GetQuest(string questKey)
+        public static IQuest? GetQuest(string questKey)
         {
             var aggregator = GetAggregator(questKey);
+
+            if (aggregator == null)
+            {
+                return null;
+            }
+
             foreach (var quest in aggregator.Quests)
             {
                 if (quest.Key.Equals(questKey))
@@ -45,7 +50,7 @@ namespace KarpikQuests
             return null;
         }
 
-        public static IQuestAggregator GetAggregator(string questKey)
+        public static IQuestAggregator? GetAggregator(string questKey)
         {
             foreach (var item in _aggregators)
             {
@@ -61,7 +66,7 @@ namespace KarpikQuests
             return null;
         }
 
-        public static IQuest GetQuestByTask(string taskKey)
+        public static IQuest? GetQuestByTask(string taskKey)
         {
             var quests = GetQuests();
 
@@ -113,13 +118,13 @@ namespace KarpikQuests
             return collection;
         }
 
-        public static IQuestTask GetTask(string taskKey)
+        public static IQuestTask? GetTask(string taskKey)
         {
             var quest = GetQuestByTask(taskKey);
             return quest?.Tasks.First(x => x.Key.Equals(taskKey));
         }
 
-        private static bool Contains(IQuestAggregator aggregator)
+        public static bool Contains(IQuestAggregator aggregator)
         {
             foreach (var item in _aggregators)
             {
@@ -129,6 +134,11 @@ namespace KarpikQuests
                 }
             }
             return false;
+        }
+
+        public static bool Contains(string questKey)
+        {
+            return GetQuest(questKey) != null;
         }
     }
 }

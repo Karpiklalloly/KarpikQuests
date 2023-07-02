@@ -71,26 +71,27 @@ namespace KarpikQuests.Interfaces.AbstractBases
         }
         protected abstract void Start();
 
-        protected virtual void Dispose(bool disposing)
+        protected abstract void Disposing();
+
+        protected abstract void FreeResources();
+
+        private void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    // TODO: освободить управляемое состояние (управляемые объекты)
+                    Disposing();
                 }
 
-                // TODO: освободить неуправляемые ресурсы (неуправляемые объекты) и переопределить метод завершения
-                // TODO: установить значение NULL для больших полей
+                FreeResources();
 
                 disposedValue = true;
             }
         }
 
-        // // TODO: переопределить метод завершения, только если "Dispose(bool disposing)" содержит код для освобождения неуправляемых ресурсов
         ~QuestBase()
         {
-            // Не изменяйте этот код. Разместите код очистки в методе "Dispose(bool disposing)".
             Dispose(disposing: false);
         }
 
@@ -99,7 +100,5 @@ namespace KarpikQuests.Interfaces.AbstractBases
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-
     }
 }

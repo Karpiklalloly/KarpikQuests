@@ -126,12 +126,6 @@ namespace KarpikQuests.QuestSample
             Started = null;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            _tasks.Clear();
-        }
-
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
@@ -140,6 +134,16 @@ namespace KarpikQuests.QuestSample
             {
                 task.Completed += interf.OnTaskComplete;
             }
+        }
+
+        protected override void Disposing()
+        {
+            _tasks.Clear();
+        }
+
+        protected override void FreeResources()
+        {
+            
         }
     }
 }
