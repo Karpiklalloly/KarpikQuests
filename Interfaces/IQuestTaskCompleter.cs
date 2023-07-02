@@ -1,13 +1,10 @@
-﻿using System;
-
-namespace KarpikQuests.Interfaces
+﻿namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTaskCompleter<T>
-    where T : IEquatable<T>
+    public interface IQuestTaskCompleter
     {
-        public void Subscribe(IQuestTask task, params T[] requiredValues);
+        public void Subscribe(IQuestTask task);
         public bool Unsubscribe(IQuestTask task);
 
-        public void Update(T value, params T[] values);
+        public bool Complete(IQuestTask task);
     }
 }

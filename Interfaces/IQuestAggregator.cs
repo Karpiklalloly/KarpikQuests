@@ -7,9 +7,10 @@ namespace KarpikQuests.Interfaces
         public IReadOnlyCollection<IQuest> Quests { get; }
 
         public bool TryAddQuest(IQuest quest);
-        public bool TryRemoveQuest(IQuest quest);
+        public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true);
         public bool TryAddDependence(IQuest quest, IQuest dependence);
         public bool TryRemoveDependence(IQuest quest, IQuest dependence);
+        public bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel);
         public IQuestCollection GetDependencies(IQuest quest);
         public IQuestCollection GetDependents(IQuest quest);
 

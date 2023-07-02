@@ -1,59 +1,43 @@
 ﻿using KarpikQuests.Interfaces;
-using System;
-using System.Collections.Generic;
 
 namespace KarpikQuests.QuestSample
 {
-    [Serializable]
-    public class QuestTaskCompleter<T> : IQuestTaskCompleter<T>
-    where T : IEquatable<T>
+    public class QuestTaskCompleter : IQuestTaskCompleter
     {
-        private Dictionary<IQuestTask, T[]> _requiredValues = new Dictionary<IQuestTask, T[]>();
+        private IQuestTaskCollection _tasks = new QuestTaskCollection();
 
-        public void Subscribe(IQuestTask task, params T[] requiredValues)
+        public bool Complete(IQuestTask task)
+        {
+            if (!_tasks.Contains(task))
+            {
+                return false;
+            }
+            return task.TryToComplete();
+        }
+
+        public void CompleteAll()
+        {
+            foreach (var task in _tasks)
+            {
+                task.TryToComplete();
+            }
+        }
+
+        public void Subscribe(IQuestTask task)
         {
             Unsubscribe(task);
-            _requiredValues.Add(task, requiredValues);
+            _tasks.Add(task);
         }
 
         public bool Unsubscribe(IQuestTask task)
         {
-            if (!_requiredValues.ContainsKey(task))
+            if (!_tasks.Contains(task))
             {
                 return false;
             }
 
-            _requiredValues.Remove(task);
+            _tasks.Remove(task);
             return true;
-        }
-
-        public void Update(T value, params T[] values)
-        {
-            var data = new T[values.Length + 1];
-            data[0] = value;
-            values.CopyTo(data, 1);
-
-            foreach (var item in _requiredValues)
-            {
-                if (item.Value.Length != data.Length)
-                {
-                    continue;
-                }
-
-                bool breaked = false;
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (!data[i].Equals(item.Value[i]))
-                    {
-                        breaked = true;
-                        break;
-                    }
-                }
-                if (!breaked)
-                {
-                    item.Key.TryToComplete();
-                }
-            }
         }
     }
 }

@@ -9,6 +9,9 @@ using System.Runtime.Serialization;
 using UnityEngine;
 #endif
 
+//TODO: в ремув удалять и ссылки (ивенты всякие)
+//Добавить метод для замены квеста (типа просто заменяется на новый, соответственно и ссылки переназначить)
+//Добавить возможно убрать всее зависимости у квеста
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
@@ -30,12 +33,12 @@ namespace KarpikQuests.QuestSample
 
         public QuestAggregator()
         {
-            QuestInfo.RegisterAggregator(this);
+
         }
 
         public bool TryAddQuest(IQuest quest)
         {
-            if (_quests.Contains(quest))
+            if (Contains(quest))
             {
                 return false;
             }
@@ -45,28 +48,41 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public bool TryRemoveQuest(IQuest quest)
+        public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true)
         {
-            if (!_quests.Contains(quest))
+            if (!Contains(quest))
             {
                 return false;
             }
 
-            var dependencies = _linker.GetQuestKeyDependencies(quest.Key);
-
-            if (dependencies.Count() > 1)
+            if (autoChangeDependencies)
             {
-                return false;
-            }
+                var dependencies = _linker.GetQuestKeyDependencies(quest.Key);
+                var dependents = _linker.GetQuestKeyDependents(quest.Key);
 
-            var baseQuest = dependencies.ElementAt(0);
-            _linker.TryRemoveDependence(quest.Key, baseQuest);
+                //TODO: Как нибудь придумать переадресацию (ну или пусть вручную все делают :), гдавное чтобы все едино было, а не как сейчас)
+                if (dependencies.Count() > 1)
+                {
+                    return false;
+                }
 
-            var dependents = _linker.GetQuestKeyDependents(quest.Key);
-            foreach (var dep in dependents)
-            {
-                _linker.TryRemoveDependence(dep, quest.Key);
-                _linker.TryAddDependence(dep, baseQuest);
+                if (dependencies.Count() > 0)
+                {
+                    var baseQuest = dependencies.ElementAt(0);
+                    _linker.TryRemoveDependence(quest.Key, baseQuest);
+
+                    foreach (var dep in dependents)
+                    {
+                        _linker.TryAddDependence(dep, baseQuest);
+                    }
+                }
+
+                foreach (var dep in dependents)
+                {
+                    _linker.TryRemoveDependence(dep, quest.Key);
+                }
+
+                quest.Completed -= OnQuestCompleted;
             }
 
             _quests.Remove(quest);
@@ -81,6 +97,47 @@ namespace KarpikQuests.QuestSample
         public bool TryRemoveDependence(IQuest quest, IQuest dependence)
         {
             return _linker.TryRemoveDependence(quest.Key, dependence.Key);
+        }
+
+        public bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
+        {
+            if (!keysMayBeEquel)
+            {
+                if (quest1.Equals(quest2))
+                {
+                    return false;
+                }
+
+                if (Contains(quest2))
+                {
+                    return false;
+                }
+            }
+
+            if (!Contains(quest1))
+            {
+                return false;
+            }
+
+            var dependencies = GetDependencies(quest1);
+            var dependents = GetDependents(quest1);
+
+            foreach (var dep in dependencies)
+            {
+                TryRemoveDependence(quest1, dep);
+                TryAddDependence(quest2, dep);
+            }
+
+            foreach (var dep in dependents)
+            {
+                TryRemoveDependence(dep, quest1);
+                TryAddDependence(dep, quest2);
+            }
+
+            TryRemoveQuest(quest1, false);
+            TryAddQuest(quest2);
+
+            return true;
         }
 
         public IQuestCollection GetDependencies(IQuest quest)
@@ -121,7 +178,7 @@ namespace KarpikQuests.QuestSample
         {
             foreach (var quest in _quests)
             {
-                if (!GetDependencies(quest).Any())
+                if (!GetDependencies(quest).Any() && quest.IsNotStarted())
                 {
                     quest.Start();
                 }
@@ -141,6 +198,55 @@ namespace KarpikQuests.QuestSample
         private IQuest GetQuest(string key)
         {
             return _quests.First(x =>  x.Key == key);
+        }
+
+        private bool Contains(IQuest quest)
+        {
+            foreach (var another in _quests)
+            {
+                if (another.Equals(quest))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is IQuestAggregator a2)
+            {
+                var a1 = this;
+                if (a1 == null && a2 == null)
+                {
+                    return true;
+                }
+
+                if (a1 == null || a2 == null)
+                {
+                    return false;
+                }
+
+                if (a1.Quests.Count != a2.Quests.Count)
+                {
+                    return false;
+                }
+
+                var quests1 = a1.Quests.ToList();
+                var quests2 = a2.Quests.ToList();
+
+                for (int i = 0; i < quests1.Count; i++)
+                {
+                    if (!quests1[i].Equals(quests2[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

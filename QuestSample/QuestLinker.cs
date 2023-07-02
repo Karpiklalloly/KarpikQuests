@@ -93,6 +93,11 @@ namespace KarpikQuests.QuestSample
             }
 
             _dependencies[key].Remove(dependentKey);
+
+            if (_dependencies[key].Count == 0)
+            {
+                _dependencies.Remove(key);
+            }
             return true;
         }
     }

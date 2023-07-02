@@ -2,7 +2,7 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestCollection : ICollection<IQuest>, IReadOnlyCollection<IQuest>
+    public interface IQuestCollection : ICollection<IQuest>, IReadOnlyCollection<IQuest>, IEnumerable<IQuest>
     {
 
     }

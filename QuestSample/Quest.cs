@@ -67,16 +67,16 @@ namespace KarpikQuests.QuestSample
 
         protected override void AddTask(IQuestTask task)
         {
+            if (_tasks.Contains(task)) return;
             _tasks.Add(task);
         }
 
-        public override bool Equals(IQuest other)
+        protected override void RemoveTask(IQuestTask task)
         {
-            if (other == null)
+            if (_tasks.Contains(task))
             {
-                return false;
+                _tasks.Remove(task);
             }
-            return Key.Equals(other.Key);
         }
 
         public override string ToString()
@@ -98,7 +98,7 @@ namespace KarpikQuests.QuestSample
         {
             if (Status is UnStartedQuest)
             {
-                (this as IQuest).Start();
+                Start();
             }
 
             Updated?.Invoke(this, task);
@@ -108,6 +108,9 @@ namespace KarpikQuests.QuestSample
             {
                 Status = new CompletedQuest();
                 Completed?.Invoke(this);
+
+                Updated = null;
+                Completed = null;
             }
         }
 
@@ -119,6 +122,13 @@ namespace KarpikQuests.QuestSample
                 task.ForceCanBeCompleted();
             }
             Started?.Invoke(this);
+            Started = null;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            _tasks.Clear();
         }
 
         [OnDeserialized]

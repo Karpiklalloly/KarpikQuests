@@ -9,12 +9,14 @@ namespace KarpikQuests.Interfaces
         public abstract string Name { get; protected set; }
 
         public abstract IQuestTask.TaskStatus Status { get; protected set; }
+        
         bool IQuestTask.CanBeCompleted
         {
             get => CanBeCompleted;
             set => CanBeCompleted = value;
         }
         public abstract bool CanBeCompleted { get; protected set; }
+        
 
         public abstract event Action<IQuestTask> Completed;
 
@@ -31,5 +33,19 @@ namespace KarpikQuests.Interfaces
             ForceBeCompleted();
         }
         protected abstract void ForceBeCompleted();
+
+        public bool Equals(IQuestTask other)
+        {
+            return Key.Equals(other.Key);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is IQuestTask task)
+            {
+                return Equals(task);
+            }
+            return false;
+        }
     }
 }
