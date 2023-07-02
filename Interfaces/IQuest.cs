@@ -18,7 +18,6 @@ namespace KarpikQuests.Interfaces
         public event Action<IQuest, IQuestTask> Updated;
         public event Action<IQuest> Completed;
 
-        //TODO: подумать о том, что QuestCompleter может вызывать подобное
         internal void Init(string key, string name, string description);
         internal void Start();
         internal void SetKey(string key);

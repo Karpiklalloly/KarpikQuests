@@ -272,5 +272,10 @@ namespace KarpikQuests.QuestSample
         {
             return _quests.ToString() + '\n' + _linker.ToString();
         }
+
+        void IQuestAggregator.Start(IQuest quest)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

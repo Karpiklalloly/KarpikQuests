@@ -1,4 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
+using KarpikQuests.Interfaces.AbstractBases;
 using Newtonsoft.Json;
 using System;
 

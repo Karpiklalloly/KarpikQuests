@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KarpikQuests.Interfaces
+namespace KarpikQuests.Interfaces.AbstractBases
 {
     public abstract class QuestTaskBase : IQuestTask
     {
@@ -9,14 +9,14 @@ namespace KarpikQuests.Interfaces
         public abstract string Name { get; protected set; }
 
         public abstract IQuestTask.TaskStatus Status { get; protected set; }
-        
+
         bool IQuestTask.CanBeCompleted
         {
             get => CanBeCompleted;
             set => CanBeCompleted = value;
         }
         public abstract bool CanBeCompleted { get; protected set; }
-        
+
 
         public abstract event Action<IQuestTask> Completed;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace KarpikQuests.Interfaces
+namespace KarpikQuests.Interfaces.AbstractBases
 {
     public abstract class QuestBase : IQuest
     {
