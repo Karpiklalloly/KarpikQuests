@@ -34,6 +34,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Contains(IQuestTask item)
         {
+            if (item == null) return false;
             return _tasks.Contains(item);
         }
 

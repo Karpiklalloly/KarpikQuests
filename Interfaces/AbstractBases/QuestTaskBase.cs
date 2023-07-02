@@ -36,6 +36,8 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public bool Equals(IQuestTask other)
         {
+            if (other == null) return false;
+            if (Key == null) return false;
             return Key.Equals(other.Key);
         }
 
