@@ -1,6 +1,7 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
 using System;
+using System.Linq;
 
 namespace KarpikQuests
 {
@@ -24,10 +25,16 @@ namespace KarpikQuests
         {
             _quest = new T();
             _quest.Init(key, name, description);
+            _addToAggregator = true;
             return this;
         }
 
-        public QuestBuilder Start<T>(T quest) where T : IQuest
+        /// <summary>
+        /// Uses to modify quest (not to copy)
+        /// </summary>
+        /// <param name="quest"></param>
+        /// <returns></returns>
+        public QuestBuilder Start(IQuest quest)
         {
             _quest = quest;
             return this;
@@ -35,8 +42,22 @@ namespace KarpikQuests
 
         public QuestBuilder AddTask(IQuestTask task)
         {
+            if (_quest.Tasks.Select(x => x.Key).Contains(task.Key))
+            {
+                throw new InvalidOperationException("Quest can't contain equel tasks' keys");
+            }
             _quest.AddTask(task);
             task.Completed += _quest.OnTaskComplete;
+            return this;
+        }
+
+        public QuestBuilder RemoveTask(IQuestTask task)
+        {
+            if (!_quest.Tasks.Select(x => x.Key).Contains(task.Key))
+            {
+                throw new InvalidOperationException("Quest does not contain equel tasks' keys");
+            }
+            _quest.RemoveTask(task);
             return this;
         }
 

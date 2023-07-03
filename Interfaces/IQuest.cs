@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuest : IEquatable<IQuest>
+    public interface IQuest : IEquatable<IQuest>, IDisposable
     {
         public string Key { get; }
 
@@ -22,6 +22,7 @@ namespace KarpikQuests.Interfaces
         internal void Start();
         internal void SetKey(string key);
         internal void AddTask(IQuestTask task);
+        internal void RemoveTask(IQuestTask task);
         internal void OnTaskComplete(IQuestTask task);
     }
 }

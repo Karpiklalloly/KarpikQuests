@@ -1,11 +1,15 @@
 ﻿using KarpikQuests.Interfaces;
+using KarpikQuests.Interfaces.AbstractBases;
 using KarpikQuests.QuestStatuses;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+
+#if JSON
+using Newtonsoft.Json;
+#endif
 
 #if UNITY
 using UnityEngine;
@@ -19,38 +23,50 @@ namespace KarpikQuests.QuestSample
 #if UNITY
         [field: SerializeField]
 #endif
+#if JSON
         [JsonProperty("Key", Order = 1)]
+#endif
         public override string Key { get; protected set; }
 
 #if UNITY
         [field: SerializeField]
 #endif
+#if JSON
         [JsonProperty("Name", Order = 2)]
+#endif
         public override string Name { get; protected set; }
 
 #if UNITY
         [field: SerializeField]
 #endif
+#if JSON
         [JsonProperty("Description", Order = 3)]
+#endif
         public override string Description { get; protected set; }
 
 #if UNITY
         [SerializeField]
 #endif
+#if JSON
         [JsonProperty("Tasks", Order = 5)]
+#endif
         private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
 
         public override event Action<IQuest> Started;
         public override event Action<IQuest, IQuestTask> Updated;
         public override event Action<IQuest> Completed;
 
+#if JSON
         [JsonIgnore]
+#endif
         public override IEnumerable<IQuestTask> Tasks => _tasks;
 
 #if UNITY
         [field: SerializeField]
 #endif
+#if JSON
         [JsonProperty("Status", Order = 4)]
+#endif
         public override IQuestStatus Status { get; protected set; } = new UnStartedQuest();
 
         protected override void Init(string key, string name, string description)
@@ -67,16 +83,16 @@ namespace KarpikQuests.QuestSample
 
         protected override void AddTask(IQuestTask task)
         {
+            if (_tasks.Contains(task)) return;
             _tasks.Add(task);
         }
 
-        public override bool Equals(IQuest other)
+        protected override void RemoveTask(IQuestTask task)
         {
-            if (other == null)
+            if (_tasks.Contains(task))
             {
-                return false;
+                _tasks.Remove(task);
             }
-            return Key.Equals(other.Key);
         }
 
         public override string ToString()
@@ -98,7 +114,7 @@ namespace KarpikQuests.QuestSample
         {
             if (Status is UnStartedQuest)
             {
-                (this as IQuest).Start();
+                Start();
             }
 
             Updated?.Invoke(this, task);
@@ -108,6 +124,9 @@ namespace KarpikQuests.QuestSample
             {
                 Status = new CompletedQuest();
                 Completed?.Invoke(this);
+
+                Updated = null;
+                Completed = null;
             }
         }
 
@@ -119,6 +138,7 @@ namespace KarpikQuests.QuestSample
                 task.ForceCanBeCompleted();
             }
             Started?.Invoke(this);
+            Started = null;
         }
 
         [OnDeserialized]
@@ -129,6 +149,16 @@ namespace KarpikQuests.QuestSample
             {
                 task.Completed += interf.OnTaskComplete;
             }
+        }
+
+        protected override void Disposing()
+        {
+            _tasks.Clear();
+        }
+
+        protected override void FreeResources()
+        {
+            
         }
     }
 }

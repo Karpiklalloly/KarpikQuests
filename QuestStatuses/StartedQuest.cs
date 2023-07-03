@@ -1,13 +1,17 @@
 ﻿using KarpikQuests.Interfaces;
-using System;
+using KarpikQuests.Interfaces.AbstractBases;
 
 namespace KarpikQuests.QuestStatuses
 {
-    public class StartedQuest : IQuestStatus
+    public class StartedQuest : QuestStatusBase
     {
-        public string GetStatus()
+        public override bool Equals(IQuestStatus other)
         {
-            throw new NotImplementedException();
+            if (other is StartedQuest)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

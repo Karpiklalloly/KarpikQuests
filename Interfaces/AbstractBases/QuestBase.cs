@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace KarpikQuests.Interfaces
+namespace KarpikQuests.Interfaces.AbstractBases
 {
     public abstract class QuestBase : IQuest
     {
+        private bool disposedValue;
+
         public abstract string Key { get; protected set; }
 
         public abstract string Name { get; protected set; }
@@ -19,13 +21,31 @@ namespace KarpikQuests.Interfaces
         public abstract event Action<IQuest, IQuestTask> Updated;
         public abstract event Action<IQuest> Completed;
 
-        public abstract bool Equals(IQuest other);
+        public virtual bool Equals(IQuest other)
+        {
+            return Key.Equals(other.Key);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is IQuest quest)
+            {
+                return Equals(quest);
+            }
+            return false;
+        }
 
         void IQuest.AddTask(IQuestTask task)
         {
             AddTask(task);
         }
         protected abstract void AddTask(IQuestTask task);
+
+        void IQuest.RemoveTask(IQuestTask task)
+        {
+            RemoveTask(task);
+        }
+        protected abstract void RemoveTask(IQuestTask task);
 
         void IQuest.Init(string key, string name, string description)
         {
@@ -50,5 +70,35 @@ namespace KarpikQuests.Interfaces
             Start();
         }
         protected abstract void Start();
+
+        protected abstract void Disposing();
+
+        protected abstract void FreeResources();
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Disposing();
+                }
+
+                FreeResources();
+
+                disposedValue = true;
+            }
+        }
+
+        ~QuestBase()
+        {
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
