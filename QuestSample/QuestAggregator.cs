@@ -4,6 +4,7 @@ using KarpikQuests.Interfaces.AbstractBases;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System;
 
 #if JSON
 using Newtonsoft.Json;
@@ -45,6 +46,11 @@ namespace KarpikQuests.QuestSample
 
         public override bool TryAddQuest(IQuest quest)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException("quest");
+            }
+
             if (Contains(quest))
             {
                 return false;
@@ -63,6 +69,11 @@ namespace KarpikQuests.QuestSample
         /// <returns></returns>
         public override bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
             if (!Contains(quest))
             {
                 return false;
@@ -102,16 +113,45 @@ namespace KarpikQuests.QuestSample
 
         public override bool TryAddDependence(IQuest quest, IQuest dependence)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
+            if (dependence == null)
+            {
+                throw new ArgumentNullException(nameof(dependence));
+            }
             return _linker.TryAddDependence(quest.Key, dependence.Key);
         }
 
         public override bool TryRemoveDependence(IQuest quest, IQuest dependence)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
+            if (dependence == null)
+            {
+                throw new ArgumentNullException(nameof(dependence));
+            }
+
             return _linker.TryRemoveDependence(quest.Key, dependence.Key);
         }
 
         public override bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
         {
+            if (quest1 == null)
+            {
+                throw new ArgumentNullException(nameof(quest1));
+            }
+
+            if (quest2 == null)
+            {
+                throw new ArgumentNullException(nameof(quest2));
+            }
+
             if (!keysMayBeEquel)
             {
                 if (quest1.Equals(quest2))
@@ -153,6 +193,11 @@ namespace KarpikQuests.QuestSample
 
         public override IQuestCollection GetDependencies(IQuest quest)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
             var keys = _linker.GetQuestKeyDependencies(quest.Key);
             var collection = new QuestCollection();
             foreach (var dep in keys)
@@ -164,6 +209,11 @@ namespace KarpikQuests.QuestSample
 
         public override IQuestCollection GetDependents(IQuest quest)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
             var keys = _linker.GetQuestKeyDependents(quest.Key);
             var collection = new QuestCollection();
             foreach (var dep in keys)
@@ -198,6 +248,11 @@ namespace KarpikQuests.QuestSample
 
         public override bool TryRemoveDependencies(IQuest quest)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
             if (!Contains(quest))
             {
                 return false;
@@ -218,6 +273,11 @@ namespace KarpikQuests.QuestSample
 
         public override bool TryRemoveDependents(IQuest quest)
         {
+            if (quest == null)
+            {
+                throw new ArgumentNullException(nameof(quest));
+            }
+
             if (!Contains(quest))
             {
                 return false;
