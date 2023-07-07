@@ -49,5 +49,7 @@ namespace KarpikQuests.Interfaces.AbstractBases
             }
             return false;
         }
+
+        public abstract object Clone();
     }
 }

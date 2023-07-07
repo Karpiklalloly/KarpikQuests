@@ -79,5 +79,19 @@ namespace KarpikQuests.QuestSample
         {
             CanBeCompleted = true;
         }
+
+        public override object Clone()
+        {
+            QuestTask task = new QuestTask
+            {
+                Key = Key,
+                Name = Name,
+                Status = Status,
+                CanBeCompleted = CanBeCompleted,
+                Completed = (Action<IQuestTask>)Completed?.Clone()
+            };
+
+            return task;
+        }
     }
 }

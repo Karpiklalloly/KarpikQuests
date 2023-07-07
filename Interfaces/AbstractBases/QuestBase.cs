@@ -100,5 +100,7 @@ namespace KarpikQuests.Interfaces.AbstractBases
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        public abstract object Clone();
     }
 }

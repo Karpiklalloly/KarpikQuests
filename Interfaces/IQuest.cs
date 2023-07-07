@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuest : IEquatable<IQuest>, IDisposable
+    public interface IQuest : IEquatable<IQuest>, IDisposable, ICloneable
     {
         public string Key { get; }
 

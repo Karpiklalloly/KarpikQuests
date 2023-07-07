@@ -299,22 +299,7 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        private void OnQuestCompleted(IQuest quest)
-        {
-            quest.Completed -= OnQuestCompleted;
-            var dependents = GetDependents(quest);
-            foreach (var dependent in dependents)
-            {
-                Start(dependent);
-            }
-        }
-
-        private IQuest GetQuest(string key)
-        {
-            return _quests.First(x =>  x.Key == key);
-        }
-
-        private bool Contains(IQuest quest)
+        public override bool Contains(IQuest quest)
         {
             if (quest == null)
             {
@@ -328,6 +313,21 @@ namespace KarpikQuests.QuestSample
                 }
             }
             return false;
+        }
+
+        public override IQuest GetQuest(string questKey)
+        {
+            return _quests.First(x => x.Key == questKey);
+        }
+
+        private void OnQuestCompleted(IQuest quest)
+        {
+            quest.Completed -= OnQuestCompleted;
+            var dependents = GetDependents(quest);
+            foreach (var dependent in dependents)
+            {
+                Start(dependent);
+            }
         }
 
         public override bool Equals(object obj)

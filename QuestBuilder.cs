@@ -23,6 +23,21 @@ namespace KarpikQuests
 
         public QuestBuilder Start<T>(string key, string name, string description) where T : IQuest, new()
         {
+            if (!IsValid(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (!IsValid(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (!IsValid(description))
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
+
             _quest = new T();
             _quest.Init(key, name, description);
             _addToAggregator = true;
@@ -63,6 +78,11 @@ namespace KarpikQuests
 
         public QuestBuilder SetCustomKey(string key)
         {
+            if (!IsValid(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             _quest.SetKey(key);
             return this;
         }
@@ -88,6 +108,16 @@ namespace KarpikQuests
             IQuest quest = _quest;
             _quest = null;
             return quest;
+        }
+
+        private bool IsValid(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

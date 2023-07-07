@@ -50,7 +50,7 @@ namespace KarpikQuests.QuestSample
 #if JSON
         [JsonProperty("Tasks", Order = 5)]
 #endif
-        private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
+        private IQuestTaskCollection _tasks = new QuestTaskCollection();
 
         public override event Action<IQuest> Started;
         public override event Action<IQuest, IQuestTask> Updated;
@@ -159,6 +159,24 @@ namespace KarpikQuests.QuestSample
         protected override void FreeResources()
         {
             
+        }
+
+        public override object Clone()
+        {
+            Quest quest = new Quest
+            {
+                Key = Key,
+                Name = Name,
+                Description = Description,
+                _tasks = (IQuestTaskCollection)_tasks.Clone(),
+                Status = Status,
+            };
+
+            quest.Started = (Action<IQuest>)Started?.Clone();
+            quest.Updated = (Action<IQuest, IQuestTask>)Updated?.Clone();
+            quest.Completed = (Action<IQuest>)Completed?.Clone();
+
+            return quest;
         }
     }
 }

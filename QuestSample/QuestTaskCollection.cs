@@ -37,6 +37,17 @@ namespace KarpikQuests.QuestSample
             _tasks.Clear();
         }
 
+        public object Clone()
+        {
+            QuestTaskCollection clone = new QuestTaskCollection();
+            foreach (IQuestTask item in _tasks)
+            {
+                clone.Add((IQuestTask)item.Clone());
+            }
+
+            return clone;
+        }
+
         public bool Contains(IQuestTask item)
         {
             if (item == null) return false;

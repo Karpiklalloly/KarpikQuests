@@ -15,6 +15,8 @@ namespace KarpikQuests.Interfaces
         public bool TryRemoveDependents(IQuest quest);
         public IQuestCollection GetDependencies(IQuest quest);
         public IQuestCollection GetDependents(IQuest quest);
+        public bool Contains(IQuest quest);
+        public IQuest GetQuest(string questKey);
 
         /// <summary>
         /// Call after quests added

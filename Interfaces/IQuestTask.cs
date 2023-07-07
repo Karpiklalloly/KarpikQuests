@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("KarpikQuestsTest")]
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTask : IEquatable<IQuestTask>
+    public interface IQuestTask : IEquatable<IQuestTask>, ICloneable
     {
         public string Key { get; }
         public string Name { get; }
