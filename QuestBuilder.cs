@@ -45,13 +45,13 @@ namespace KarpikQuests
         }
 
         /// <summary>
-        /// Uses to modify quest (not to copy)
+        /// Copy quest
         /// </summary>
         /// <param name="quest"></param>
         /// <returns></returns>
         public QuestBuilder Start(IQuest quest)
         {
-            _quest = quest;
+            _quest = (IQuest)quest.Clone();
             return this;
         }
 
@@ -83,7 +83,12 @@ namespace KarpikQuests
                 throw new ArgumentNullException(nameof(key));
             }
 
-            _quest.SetKey(key);
+            IQuest quest = (IQuest)_quest.Clone();
+            quest.SetKey(key);
+
+            _questAggregator.TryToReplace(_quest, quest, true);
+            _quest.Dispose();
+            _quest = quest;
             return this;
         }
 
@@ -101,6 +106,11 @@ namespace KarpikQuests
 
         public IQuest Create()
         {
+            if (_quest == null)
+            {
+                throw new InvalidOperationException("Quest is not setted");
+            }
+
             if (_addToAggregator)
             {
                 _questAggregator.TryAddQuest(_quest);
