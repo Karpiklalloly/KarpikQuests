@@ -61,15 +61,16 @@ namespace KarpikQuests.QuestSample
             CanBeCompleted = canBeCompleted;
             Status = IQuestTask.TaskStatus.UnCompleted;
         }
+
         protected override bool TryToComplete()
         {
-            if (!(this as IQuestTask).CanBeCompleted)
+            if (!CanBeCompleted)
             {
                 return false;
             }
 
             Status = IQuestTask.TaskStatus.Completed;
-            (this as IQuestTask).CanBeCompleted = false;
+            CanBeCompleted = false;
             Completed?.Invoke(this);
 
             return true;
@@ -77,7 +78,7 @@ namespace KarpikQuests.QuestSample
 
         public override string ToString()
         {
-            return $"{Key} {Name}";
+            return $"{Key} {Name} ({Status})";
         }
 
         protected override void ForceBeCompleted()

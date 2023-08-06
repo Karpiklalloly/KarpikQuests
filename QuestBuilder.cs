@@ -1,4 +1,5 @@
-﻿using KarpikQuests.Interfaces;
+﻿using JetBrains.Annotations;
+using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
 using System;
 using System.Linq;
@@ -89,6 +90,18 @@ namespace KarpikQuests
             _questAggregator.TryToReplace(_quest, quest, true);
             _quest.Dispose();
             _quest = quest;
+            return this;
+        }
+
+        public QuestBuilder SetComplitionType([NotNull] IQuestCompletionType completionType)
+        {
+            _quest.SetCompletionType(completionType);
+            return this;
+        }
+
+        public QuestBuilder SetTaskProcessorType([NotNull] IQuestTaskProcessorType processorType)
+        {
+            _quest.SetTaskProcessorType(processorType);
             return this;
         }
 

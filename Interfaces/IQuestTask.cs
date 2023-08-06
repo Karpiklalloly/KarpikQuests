@@ -12,6 +12,7 @@ namespace KarpikQuests.Interfaces
         public bool CanBeCompleted { get; internal set; }
 
         public void Init(string key, string name);
+        public void Reset(bool canBeCompleted = false);
 
         public event Action<IQuestTask> Completed;
 

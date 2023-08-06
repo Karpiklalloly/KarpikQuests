@@ -22,6 +22,8 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public abstract void Init(string key, string name);
 
+        public abstract void Reset(bool canBeCompleted = false);
+
         bool IQuestTask.TryToComplete()
         {
             return TryToComplete();

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using KarpikQuests.QuestCompletionTypes;
+using KarpikQuests.QuestTaskProcessorTypes;
 
 #if JSON
 using Newtonsoft.Json;
@@ -69,6 +71,9 @@ namespace KarpikQuests.QuestSample
 #endif
         public override IQuestStatus Status { get; protected set; } = new UnStartedQuest();
 
+        public override IQuestCompletionType CompletionType { get; protected set; } = new QuestCompletionAND();
+        public override IQuestTaskProcessorType QuestTaskProcessor { get; protected set; } = new QuestTaskProcessorDisorderly();
+
         protected override void Init(string key, string name, string description)
         {
             Key = key;
@@ -118,9 +123,9 @@ namespace KarpikQuests.QuestSample
             }
 
             Updated?.Invoke(this, task);
+            QuestTaskProcessor.OnTaskCompleted(Tasks, task);
 
-            bool allTasksCompleted = Tasks.Select(x => x.Status == IQuestTask.TaskStatus.Completed).Contains(true);
-            if (allTasksCompleted)
+            if (CompletionType.CheckCompletion(Tasks))
             {
                 Status = new CompletedQuest();
                 Completed?.Invoke(this);
@@ -133,10 +138,7 @@ namespace KarpikQuests.QuestSample
         protected override void Start()
         {
             Status = new StartedQuest();
-            foreach (var task in _tasks)
-            {
-                task.ForceCanBeCompleted();
-            }
+            QuestTaskProcessor.Setup(Tasks);
             Started?.Invoke(this);
             Started = null;
         }
@@ -163,11 +165,15 @@ namespace KarpikQuests.QuestSample
         protected override void Disposing()
         {
             _tasks.Clear();
+
+            Started = null;
+            Updated = null;
+            Completed = null;
         }
 
         protected override void FreeResources()
         {
-            
+
         }
 
         public override object Clone()
@@ -186,6 +192,16 @@ namespace KarpikQuests.QuestSample
             quest.Completed = (Action<IQuest>)Completed?.Clone();
 
             return quest;
+        }
+
+        protected override void SetCompletionType(IQuestCompletionType completionType)
+        {
+           CompletionType = completionType;
+        }
+
+        protected override void SetTaskProcessorType(IQuestTaskProcessorType processor)
+        {
+            QuestTaskProcessor = processor;
         }
     }
 }
