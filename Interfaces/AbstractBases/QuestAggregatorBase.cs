@@ -32,6 +32,8 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public abstract IQuest GetQuest(string questKey);
 
+        public abstract void ResetAll();
+
         void IQuestAggregator.Start(IQuest quest)
         {
             quest.Start();

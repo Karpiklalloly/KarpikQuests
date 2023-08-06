@@ -141,6 +141,15 @@ namespace KarpikQuests.QuestSample
             Started = null;
         }
 
+        public override void Reset()
+        {
+            Status = new UnStartedQuest();
+            foreach (var task in Tasks)
+            {
+                task.Reset();
+            }
+        }
+
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {

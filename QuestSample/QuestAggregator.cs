@@ -320,6 +320,15 @@ namespace KarpikQuests.QuestSample
             return _quests.First(x => x.Key == questKey);
         }
 
+        public override void ResetAll()
+        {
+            foreach (var quest in _quests)
+            {
+                quest.Reset();
+            }
+            Start();
+        }
+
         private void OnQuestCompleted(IQuest quest)
         {
             quest.Completed -= OnQuestCompleted;

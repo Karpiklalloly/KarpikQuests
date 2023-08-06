@@ -56,6 +56,11 @@ namespace KarpikQuests.QuestSample
             Name = name;
         }
 
+        public override void Reset(bool canBeCompleted = false)
+        {
+            CanBeCompleted = canBeCompleted;
+            Status = IQuestTask.TaskStatus.UnCompleted;
+        }
         protected override bool TryToComplete()
         {
             if (!(this as IQuestTask).CanBeCompleted)
