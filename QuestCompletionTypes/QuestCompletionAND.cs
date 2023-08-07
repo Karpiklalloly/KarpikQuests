@@ -1,9 +1,11 @@
 ﻿using KarpikQuests.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace KarpikQuests.QuestCompletionTypes
 {
+    [Serializable]
     public class QuestCompletionAND : IQuestCompletionType
     {
         public bool CheckCompletion(IEnumerable<IQuestTask> tasks)

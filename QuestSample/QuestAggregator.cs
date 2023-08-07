@@ -6,8 +6,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System;
 using System.Collections;
+using KarpikQuests.Saving;
 
-#if JSON
+#if JSON_NEWTONSOFT
 using Newtonsoft.Json;
 #endif
 
@@ -23,21 +24,24 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonProperty("Quests")]
 #endif
+        [SerializeThis("Quests")]
         private readonly IQuestCollection _quests = new QuestCollection();
 #if UNITY
 [SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonProperty("Links")]
 #endif
+        [SerializeThis("Links")]
         private readonly IQuestLinker _linker = new QuestLinker();
 
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonIgnore]
 #endif
+        [DoNotSerializeThis]
         public override IReadOnlyCollection<IQuest> Quests => _quests;
 
         public QuestAggregator()

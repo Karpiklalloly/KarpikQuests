@@ -1,8 +1,9 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Interfaces.AbstractBases;
+using KarpikQuests.Saving;
 using System;
 
-#if JSON
+#if JSON_NEWTONSOFT
 using Newtonsoft.Json;
 #endif
 
@@ -18,42 +19,55 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [field: SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonProperty("Key")]
-
 #endif
+        [SerializeThis("Key")]
         public override string Key { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonProperty("Name")]
 #endif
+        [SerializeThis("Name")]
         public override string Name { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
+        [JsonProperty("Description")]
+#endif
+        [SerializeThis("Description")]
+        public override string Description { get; protected set; }
+
+#if UNITY
+[field: SerializeField]
+#endif
+#if JSON_NEWTONSOFT
         [JsonProperty("Status")]
 #endif
+        [SerializeThis("Status")]
         public override IQuestTask.TaskStatus Status { get; protected set; } = IQuestTask.TaskStatus.UnCompleted;
 
 #if UNITY
 [field: SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonProperty("CanBeCompleted")]
 #endif
+        [SerializeThis("CanBeCompleted")]
         public override bool CanBeCompleted { get; protected set; }
 
         public override event Action<IQuestTask> Completed;
 
-        public override void Init(string key, string name)
+        public override void Init(string key, string name, string description = "")
         {
             Key = key;
             Name = name;
+            Description = description;
         }
 
         public override void Reset(bool canBeCompleted = false)

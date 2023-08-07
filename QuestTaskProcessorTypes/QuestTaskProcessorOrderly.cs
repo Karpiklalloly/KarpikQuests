@@ -1,10 +1,12 @@
 ﻿using KarpikQuests.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace KarpikQuests.QuestTaskProcessorTypes
 {
-    internal class QuestTaskProcessorOrderly : IQuestTaskProcessorType
+    [Serializable]
+    public class QuestTaskProcessorOrderly : IQuestTaskProcessorType
     {
         public void OnTaskCompleted(IEnumerable<IQuestTask> tasks, IQuestTask task)
         {
