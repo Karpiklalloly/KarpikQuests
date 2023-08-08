@@ -28,6 +28,12 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public abstract bool TryRemoveDependents(IQuest quest);
 
+        public abstract bool Contains(IQuest quest);
+
+        public abstract IQuest GetQuest(string questKey);
+
+        public abstract void ResetAll();
+
         void IQuestAggregator.Start(IQuest quest)
         {
             quest.Start();
@@ -36,6 +42,5 @@ namespace KarpikQuests.Interfaces.AbstractBases
         {
             (this as IQuestAggregator).Start(quest);
         }
-
     }
 }

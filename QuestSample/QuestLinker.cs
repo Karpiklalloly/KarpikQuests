@@ -1,8 +1,9 @@
 ﻿using KarpikQuests.Interfaces;
+using KarpikQuests.Saving;
 using System.Collections.Generic;
 using System.Linq;
 
-#if JSON
+#if JSON_NEWTONSOFT
 using Newtonsoft.Json;
 #endif
 
@@ -18,9 +19,10 @@ namespace KarpikQuests.QuestSample
 #if UNITY
 [SerializeField]
 #endif
-#if JSON
+#if JSON_NEWTONSOFT
         [JsonProperty("Quest_dependencies")]
 #endif
+        [SerializeThis("Quest_dependencies")]
         private readonly Dictionary<string, List<string>> _dependencies = new Dictionary<string, List<string>>();
 
         public IReadOnlyCollection<string> GetQuestKeyDependencies(string key)

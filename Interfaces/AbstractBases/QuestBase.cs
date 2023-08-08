@@ -16,10 +16,14 @@ namespace KarpikQuests.Interfaces.AbstractBases
         public abstract IEnumerable<IQuestTask> Tasks { get; }
 
         public abstract IQuestStatus Status { get; protected set; }
+        public abstract IQuestCompletionType CompletionType { get; protected set; }
+        public abstract IQuestTaskProcessorType QuestTaskProcessor { get; protected set; }
 
         public abstract event Action<IQuest> Started;
         public abstract event Action<IQuest, IQuestTask> Updated;
         public abstract event Action<IQuest> Completed;
+
+        public abstract void Reset();
 
         public virtual bool Equals(IQuest other)
         {
@@ -71,6 +75,18 @@ namespace KarpikQuests.Interfaces.AbstractBases
         }
         protected abstract void Start();
 
+        void IQuest.SetCompletionType(IQuestCompletionType completionType)
+        {
+            SetCompletionType(completionType);
+        }
+        protected abstract void SetCompletionType(IQuestCompletionType completionType);
+
+        void IQuest.SetTaskProcessorType(IQuestTaskProcessorType processor)
+        {
+            SetTaskProcessorType(processor);
+        }
+        protected abstract void SetTaskProcessorType(IQuestTaskProcessorType processor);
+
         protected abstract void Disposing();
 
         protected abstract void FreeResources();
@@ -100,5 +116,9 @@ namespace KarpikQuests.Interfaces.AbstractBases
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        public abstract object Clone();
+
+
     }
 }

@@ -8,6 +8,8 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public abstract string Name { get; protected set; }
 
+        public abstract string Description { get; protected set; }
+
         public abstract IQuestTask.TaskStatus Status { get; protected set; }
 
         bool IQuestTask.CanBeCompleted
@@ -20,7 +22,9 @@ namespace KarpikQuests.Interfaces.AbstractBases
 
         public abstract event Action<IQuestTask> Completed;
 
-        public abstract void Init(string key, string name);
+        public abstract void Init(string key, string name, string description = "");
+
+        public abstract void Reset(bool canBeCompleted = false);
 
         bool IQuestTask.TryToComplete()
         {
@@ -49,5 +53,7 @@ namespace KarpikQuests.Interfaces.AbstractBases
             }
             return false;
         }
+
+        public abstract object Clone();
     }
 }

@@ -4,14 +4,16 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("KarpikQuestsTest")]
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTask : IEquatable<IQuestTask>
+    public interface IQuestTask : IEquatable<IQuestTask>, ICloneable
     {
         public string Key { get; }
         public string Name { get; }
+        public string Description { get; }
         public TaskStatus Status { get; }
         public bool CanBeCompleted { get; internal set; }
 
-        public void Init(string key, string name);
+        public void Init(string key, string name, string description = "");
+        public void Reset(bool canBeCompleted = false);
 
         public event Action<IQuestTask> Completed;
 

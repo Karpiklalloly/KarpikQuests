@@ -1,4 +1,5 @@
-﻿using KarpikQuests.Interfaces;
+﻿using JetBrains.Annotations;
+using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
 using System;
 using System.Linq;
@@ -23,6 +24,21 @@ namespace KarpikQuests
 
         public QuestBuilder Start<T>(string key, string name, string description) where T : IQuest, new()
         {
+            if (!IsValid(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (!IsValid(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (!IsValid(description))
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
+
             _quest = new T();
             _quest.Init(key, name, description);
             _addToAggregator = true;
@@ -30,13 +46,13 @@ namespace KarpikQuests
         }
 
         /// <summary>
-        /// Uses to modify quest (not to copy)
+        /// Copy quest
         /// </summary>
         /// <param name="quest"></param>
         /// <returns></returns>
         public QuestBuilder Start(IQuest quest)
         {
-            _quest = quest;
+            _quest = (IQuest)quest.Clone();
             return this;
         }
 
@@ -63,11 +79,33 @@ namespace KarpikQuests
 
         public QuestBuilder SetCustomKey(string key)
         {
-            _quest.SetKey(key);
+            if (!IsValid(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            IQuest quest = (IQuest)_quest.Clone();
+            quest.SetKey(key);
+
+            _questAggregator.TryToReplace(_quest, quest, true);
+            _quest.Dispose();
+            _quest = quest;
             return this;
         }
 
-        public QuestBuilder DoNotAddToAggregatorOnCreate()
+        public QuestBuilder SetComplitionType([NotNull] IQuestCompletionType completionType)
+        {
+            _quest.SetCompletionType(completionType);
+            return this;
+        }
+
+        public QuestBuilder SetTaskProcessorType([NotNull] IQuestTaskProcessorType processorType)
+        {
+            _quest.SetTaskProcessorType(processorType);
+            return this;
+        }
+
+        public QuestBuilder DoNotAddAggregatorOnCreate()
         {
             _addToAggregator = false;
             return this;
@@ -81,6 +119,11 @@ namespace KarpikQuests
 
         public IQuest Create()
         {
+            if (_quest == null)
+            {
+                throw new InvalidOperationException("Quest is not setted");
+            }
+
             if (_addToAggregator)
             {
                 _questAggregator.TryAddQuest(_quest);
@@ -88,6 +131,16 @@ namespace KarpikQuests
             IQuest quest = _quest;
             _quest = null;
             return quest;
+        }
+
+        private bool IsValid(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
