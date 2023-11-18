@@ -8,24 +8,40 @@ namespace KarpikQuests.QuestTaskProcessorTypes
     [Serializable]
     public class QuestTaskProcessorOrderly : IQuestTaskProcessorType
     {
-        public void OnTaskCompleted(IEnumerable<IQuestTask> tasks, IQuestTask task)
+        public void Setup(IEnumerable<ITaskBundle> bundles)
         {
-            var list = tasks.ToList();
-            var index = list.IndexOf(task);
-            if (tasks.Count() == index + 1)
+            foreach (var bundle in bundles)
             {
-                return;
+                bundle.ResetAll(false);
             }
-            tasks.ElementAt(index + 1).Reset(true);
+
+            if (bundles.Any())
+            {
+                var bundle = bundles.ElementAt(0);
+                bundle?.ResetFirst();
+            }
         }
 
-        public void Setup(IEnumerable<IQuestTask> tasks)
+        public void OnTaskCompleted(IEnumerable<ITaskBundle> bundles, IQuestTask task)
         {
-            foreach (var task in tasks)
+            foreach (var item in bundles)
             {
-                task.Reset(false);
+                var index = item.QuestTasks.ToList().IndexOf(task);
+                if (index != -1)
+                {
+                    if (item.QuestTasks.Count == index + 1)
+                    {
+                        return;
+                    }
+                    item.QuestTasks.ElementAt(index + 1).Reset(true);
+                    break;
+                }
             }
-            tasks?.First()?.Reset(true);
+        }
+
+        public void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
+        {
+            
         }
     }
 }

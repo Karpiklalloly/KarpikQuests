@@ -37,7 +37,12 @@ namespace KarpikQuests.Saving
                 settings.Formatting = Formatting.Indented;
             }
 
-            var json = JsonConvert.SerializeObject(aggregator, settings);
+            SaveData data = new SaveData()
+            {
+                Version = Environment.Version,
+                Aggregator = aggregator
+            };
+            var json = JsonConvert.SerializeObject(data, settings);
 
             File.WriteAllText(path, json);
         }
@@ -45,14 +50,13 @@ namespace KarpikQuests.Saving
         private static IQuestAggregator LoadJsonNewtonsoft(string path)
         {
             var json = File.ReadAllText(path);
-            var aggregator = JsonConvert.DeserializeObject<KarpikQuests.QuestSample.QuestAggregator>(json, new JsonSerializerSettings
+            var data = JsonConvert.DeserializeObject<SaveData>(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
-            return aggregator;
+            return data.Aggregator;
         }
 #endif
-        //TODO: Implement
         private class SaveData
         {
             public Version Version { get; set; }

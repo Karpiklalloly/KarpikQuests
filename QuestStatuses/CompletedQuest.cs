@@ -1,9 +1,10 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Interfaces.AbstractBases;
+using System;
 
 namespace KarpikQuests.QuestStatuses
 {
-    [System.Serializable]
+    [Serializable]
     public class CompletedQuest : QuestStatusBase
     {
         public override bool Equals(IQuestStatus other)

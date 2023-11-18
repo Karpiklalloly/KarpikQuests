@@ -8,18 +8,21 @@ namespace KarpikQuests.QuestCompletionTypes
     [Serializable]
     public class QuestCompletionAND : IQuestCompletionType
     {
-        public bool CheckCompletion(IEnumerable<IQuestTask> tasks)
+        public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
-            if (tasks.Count() == 0)
+            if (bundles.Count() == 0)
             {
                 return true;
             }
 
-            foreach (var task in tasks)
+            foreach (var bundle in bundles)
             {
-                if (task.Status == IQuestTask.TaskStatus.UnCompleted)
+                foreach (var task in bundle)
                 {
-                    return false;
+                    if (task.Status == IQuestTask.TaskStatus.UnCompleted)
+                    {
+                        return false;
+                    }
                 }
             }
 

@@ -1,5 +1,4 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.Interfaces.AbstractBases;
 using KarpikQuests.Saving;
 using System;
 
@@ -13,8 +12,8 @@ using UnityEngine;
 
 namespace KarpikQuests.QuestSample
 {
-    [System.Serializable]
-    public class QuestTask : QuestTaskBase
+    [Serializable]
+    public class QuestTask : IQuestTask
     {
 #if UNITY
 [field: SerializeField]
@@ -23,7 +22,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Key")]
 #endif
         [SerializeThis("Key")]
-        public override string Key { get; protected set; }
+        public string Key { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
@@ -32,7 +31,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Name")]
 #endif
         [SerializeThis("Name")]
-        public override string Name { get; protected set; }
+        public string Name { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
@@ -41,7 +40,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Description")]
 #endif
         [SerializeThis("Description")]
-        public override string Description { get; protected set; }
+        public string Description { get; protected set; }
 
 #if UNITY
 [field: SerializeField]
@@ -50,7 +49,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Status")]
 #endif
         [SerializeThis("Status")]
-        public override IQuestTask.TaskStatus Status { get; protected set; } = IQuestTask.TaskStatus.UnCompleted;
+        public IQuestTask.TaskStatus Status { get; protected set; } = IQuestTask.TaskStatus.UnCompleted;
 
 #if UNITY
 [field: SerializeField]
@@ -59,24 +58,24 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("CanBeCompleted")]
 #endif
         [SerializeThis("CanBeCompleted")]
-        public override bool CanBeCompleted { get; protected set; }
+        public bool CanBeCompleted { get; protected set; }
 
-        public override event Action<IQuestTask> Completed;
+        public event Action<IQuestTask>? Completed;
 
-        public override void Init(string key, string name, string description = "")
+        public void Init(string key, string name, string description = "")
         {
             Key = key;
             Name = name;
             Description = description;
         }
 
-        public override void Reset(bool canBeCompleted = false)
+        public void Reset(bool canBeCompleted = false)
         {
             CanBeCompleted = canBeCompleted;
             Status = IQuestTask.TaskStatus.UnCompleted;
         }
 
-        protected override bool TryToComplete()
+        protected bool TryToComplete()
         {
             if (!CanBeCompleted)
             {
@@ -95,12 +94,12 @@ namespace KarpikQuests.QuestSample
             return $"{Key} {Name} ({Status})";
         }
 
-        protected override void ForceBeCompleted()
+        protected void ForceBeCompleted()
         {
             CanBeCompleted = true;
         }
 
-        public override object Clone()
+        public object Clone()
         {
             QuestTask task = new QuestTask
             {
@@ -112,6 +111,23 @@ namespace KarpikQuests.QuestSample
             };
 
             return task;
+        }
+
+        public bool Equals(IQuestTask other)
+        {
+            if (other == null) return false;
+            if (Key == null) return false;
+            return Key.Equals(other.Key);
+        }
+
+        void IQuestTask.ForceCanBeCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IQuestTask.TryToComplete()
+        {
+            throw new NotImplementedException();
         }
     }
 }

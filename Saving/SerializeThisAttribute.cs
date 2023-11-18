@@ -2,20 +2,16 @@
 
 namespace KarpikQuests.Saving
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class SerializeThisAttribute : Attribute
     {
-        public string Name { get; private set; }
-        public int Order { get; private set; }
+        public string Name { get; set; }
+        public int Order { get; set; }
+        public Version Version { get; set; }
 
         public SerializeThisAttribute(string name)
         {
             Name = name;
-        }
-
-        public SerializeThisAttribute(string name, int order) : this(name)
-        {
-            Order = order;
         }
     }
 }

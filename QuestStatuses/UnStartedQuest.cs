@@ -4,7 +4,7 @@ using System;
 
 namespace KarpikQuests.QuestStatuses
 {
-    [System.Serializable]
+    [Serializable]
     public class UnStartedQuest : QuestStatusBase
     {
         public override bool Equals(IQuestStatus other)

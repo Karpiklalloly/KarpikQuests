@@ -29,7 +29,5 @@ namespace KarpikQuests.Interfaces
         /// </summary>
         /// <returns>True if no collisions</returns>
         public bool CheckKeyCollisions();
-
-        internal void Start(IQuest quest);
     }
 }

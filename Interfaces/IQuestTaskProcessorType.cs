@@ -4,8 +4,10 @@ namespace KarpikQuests.Interfaces
 {
     public interface IQuestTaskProcessorType
     {
-        public void Setup(IEnumerable<IQuestTask> tasks);
+        public void Setup(IEnumerable<ITaskBundle> bundles);
         
-        public void OnTaskCompleted(IEnumerable<IQuestTask> tasks, IQuestTask task);
+        public void OnTaskCompleted(IEnumerable<ITaskBundle> bundles, IQuestTask task);
+
+        public void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle);
     }
 }

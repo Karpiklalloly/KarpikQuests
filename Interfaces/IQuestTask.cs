@@ -10,15 +10,15 @@ namespace KarpikQuests.Interfaces
         public string Name { get; }
         public string Description { get; }
         public TaskStatus Status { get; }
-        public bool CanBeCompleted { get; internal set; }
+        public bool CanBeCompleted { get; }
 
         public void Init(string key, string name, string description = "");
         public void Reset(bool canBeCompleted = false);
 
         public event Action<IQuestTask> Completed;
 
-        internal void ForceCanBeCompleted();
-        internal bool TryToComplete();
+        protected internal void ForceCanBeCompleted();
+        protected internal bool TryToComplete();
 
         public enum TaskStatus
         {

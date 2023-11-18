@@ -72,7 +72,7 @@ namespace KarpikQuests
 
             foreach (var quest in quests)
             {
-                if (quest.Tasks.Any( x=> x.Key.Equals(taskKey)))
+                if (quest.TaskBundles.Select(x => x.ContainsTask(taskKey)).Contains(true))
                 {
                     return quest;
                 }
@@ -102,17 +102,20 @@ namespace KarpikQuests
 
         public static IQuestTaskCollection GetTasks()
         {
-            var tasksList = GetQuests().Select(x => x.Tasks);
+            var listOfBundles = GetQuests().Select(x => x.TaskBundles);
             QuestTaskCollection collection = new QuestTaskCollection();
-            foreach (var taskList in tasksList)
+            foreach (var list in listOfBundles)
             {
-                foreach (var task in taskList)
+                foreach (var bundle in list)
                 {
-                    if (collection.Contains(task))
+                    foreach (var task in bundle)
                     {
-                        continue;
+                        if (collection.Contains(task))
+                        {
+                            continue;
+                        }
+                        collection.Add(task);
                     }
-                    collection.Add(task);
                 }
             }
             return collection;
@@ -121,7 +124,8 @@ namespace KarpikQuests
         public static IQuestTask? GetTask(string taskKey)
         {
             var quest = GetQuestByTask(taskKey);
-            return quest?.Tasks.First(x => x.Key.Equals(taskKey));
+            return quest?.TaskBundles.First(x => x.ContainsTask(taskKey))
+                .QuestTasks.First(x => x.Key == taskKey);
         }
 
         public static bool Contains(IQuestAggregator aggregator)
