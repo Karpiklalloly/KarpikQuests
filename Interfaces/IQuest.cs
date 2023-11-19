@@ -15,11 +15,12 @@ namespace KarpikQuests.Interfaces
         public IQuestStatus Status { get; }
 
         public event Action<IQuest> Started;
-        public event Action<IQuest, IQuestTask> Updated;
+        public event Action<IQuest, ITaskBundle> Updated;
         public event Action<IQuest> Completed;
 
         public void Reset();
         public void Start();
+        public void Clear();
 
         protected internal void Init(string key, string name, string description);
         protected internal void SetKey(string key);
@@ -27,7 +28,7 @@ namespace KarpikQuests.Interfaces
         protected internal void RemoveTask(IQuestTask task);
         protected internal void AddBundle(ITaskBundle bundle);
         protected internal void RemoveBundle(ITaskBundle bundle);
-        protected internal void OnTaskComplete(IQuestTask task);
+        protected internal void OnBundleComplete(ITaskBundle bundle);
         protected internal void SetCompletionType(IQuestCompletionType completionType);
         protected internal void SetTaskProcessorType(IQuestTaskProcessorType processor);
     }

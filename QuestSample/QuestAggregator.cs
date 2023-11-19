@@ -417,5 +417,16 @@ namespace KarpikQuests.QuestSample
 
             return true;
         }
+
+        public void Clear()
+        {
+            foreach (var quest in _quests)
+            {
+                quest.Clear();
+            }
+
+            _linker.Clear();
+            _quests.Clear();
+        }
     }
 }

@@ -15,7 +15,15 @@ namespace KarpikQuests.QuestTaskProcessorTypes
             }
         }
 
-        public void OnTaskCompleted(IEnumerable<ITaskBundle> bundles, IQuestTask task)
+        public void Setup(ITaskBundle bundle)
+        {
+            foreach (var task in bundle)
+            {
+                task.Reset(true);
+            }
+        }
+
+        public void OnTaskCompleted(ITaskBundle bundle, IQuestTask task)
         {
             
         }

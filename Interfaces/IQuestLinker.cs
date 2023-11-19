@@ -11,5 +11,7 @@ namespace KarpikQuests.Interfaces
         public bool TryAddDependence(string key, string dependenceKey);
 
         public bool TryRemoveDependence(string key, string dependenceKey);
+
+        public void Clear();
     }
 }

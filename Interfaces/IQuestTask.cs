@@ -14,11 +14,13 @@ namespace KarpikQuests.Interfaces
 
         public void Init(string key, string name, string description = "");
         public void Reset(bool canBeCompleted = false);
+        public void Clear();
+        public bool TryToComplete();
 
         public event Action<IQuestTask> Completed;
 
         protected internal void ForceCanBeCompleted();
-        protected internal bool TryToComplete();
+        
 
         public enum TaskStatus
         {

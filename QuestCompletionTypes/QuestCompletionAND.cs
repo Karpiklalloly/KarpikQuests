@@ -10,19 +10,34 @@ namespace KarpikQuests.QuestCompletionTypes
     {
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
-            if (bundles.Count() == 0)
+            if (!bundles.Any())
             {
                 return true;
             }
 
             foreach (var bundle in bundles)
             {
-                foreach (var task in bundle)
+                if (!bundle.CompletionType.CheckCompletion(bundle))
                 {
-                    if (task.Status == IQuestTask.TaskStatus.UnCompleted)
-                    {
-                        return false;
-                    }
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool CheckCompletion(ITaskBundle bundle)
+        {
+            if (!bundle.Any())
+            {
+                return true;
+            }
+
+            foreach (var task in bundle)
+            {
+                if (task.Status == IQuestTask.TaskStatus.UnCompleted)
+                {
+                    return false;
                 }
             }
 

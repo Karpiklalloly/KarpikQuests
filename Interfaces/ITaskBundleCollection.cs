@@ -6,8 +6,6 @@ namespace KarpikQuests.Interfaces
 {
     public interface ITaskBundleCollection : ICollection<ITaskBundle>, ICloneable
     {
-        public ICollection<ITaskBundle> Bundles { get; }
-
         public bool ContainsTask(IQuestTask task);
     }
 }

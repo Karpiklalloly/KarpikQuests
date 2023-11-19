@@ -25,6 +25,11 @@ namespace KarpikQuests.QuestSample
         [SerializeThis("Quest_dependencies")]
         private readonly Dictionary<string, List<string>> _dependencies = new Dictionary<string, List<string>>();
 
+        public void Clear()
+        {
+            _dependencies.Clear();
+        }
+
         public IReadOnlyCollection<string> GetQuestKeyDependencies(string key)
         {
             if (!_dependencies.ContainsKey(key))

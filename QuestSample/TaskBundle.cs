@@ -1,9 +1,11 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.QuestCompletionTypes;
+using KarpikQuests.QuestStatuses;
 using KarpikQuests.QuestTaskProcessorTypes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace KarpikQuests.QuestSample
@@ -20,9 +22,13 @@ namespace KarpikQuests.QuestSample
 
         public bool IsReadOnly => false;
 
+        public event Action<ITaskBundle> Updated;
+        public event Action<ITaskBundle> Completed;
+
         public void Add(IQuestTask item)
         {
             QuestTasks.Add(item);
+            item.Completed += OnTaskCompleted;
         }
 
         public void Clear()
@@ -103,6 +109,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Remove(IQuestTask item)
         {
+            item.Completed -= OnTaskCompleted;
             return QuestTasks.Remove(item);
         }
 
@@ -113,10 +120,7 @@ namespace KarpikQuests.QuestSample
 
         public void ResetAll(bool canBeCompleted = false)
         {
-            foreach (IQuestTask item in QuestTasks)
-            {
-                item.Reset(canBeCompleted);
-            }
+            QuestTaskProcessor.Setup(this);
         }
 
         public void ResetFirst(bool canBeCompleted = false)
@@ -132,6 +136,35 @@ namespace KarpikQuests.QuestSample
         public bool ContainsTask(string taskKey)
         {
             return QuestTasks.Select(x => x.Key).Contains(taskKey);
+        }
+
+        public void ClearTasks()
+        {
+            foreach (IQuestTask task in QuestTasks)
+            {
+                task.Clear();
+            }
+            Updated = null;
+            Completed = null;
+        }
+
+        void ITaskBundle.OnTaskCompleted(IQuestTask task)
+        {
+            OnTaskCompleted(task);
+        }
+
+        private void OnTaskCompleted(IQuestTask task)
+        {
+            Updated?.Invoke(this);
+            QuestTaskProcessor.OnTaskCompleted(this, task);
+
+            if (CompletionType.CheckCompletion(this))
+            {
+                Completed?.Invoke(this);
+
+                Updated = null;
+                Completed = null;
+            }
         }
     }
 }

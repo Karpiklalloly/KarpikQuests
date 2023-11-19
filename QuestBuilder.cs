@@ -3,6 +3,7 @@ using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace KarpikQuests
 {
@@ -53,14 +54,15 @@ namespace KarpikQuests
         public QuestBuilder Start(IQuest quest)
         {
             _quest = (IQuest)quest.Clone();
+            _addToAggregator = false;
             return this;
         }
 
         public QuestBuilder AddTask(IQuestTask task)
         {
-            if (_quest.TaskBundles.Select(x => x.ContainsTask(task)).Contains(true))
+            if (_quest.TaskBundles.ContainsTask(task))
             {
-                throw new InvalidOperationException("Quest can't contain equel tasks' keys");
+                throw new InvalidOperationException("Quest can't contain equel tasks");
             }
             _quest.AddTask(task);
             return this;
@@ -68,11 +70,31 @@ namespace KarpikQuests
 
         public QuestBuilder RemoveTask(IQuestTask task)
         {
-            if (!_quest.TaskBundles.Select(x => x.ContainsTask(task)).Contains(true))
+            if (!_quest.TaskBundles.ContainsTask(task))
             {
-                throw new InvalidOperationException("Quest does not contain equel tasks' keys");
+                throw new InvalidOperationException("Quest does not contain task");
             }
             _quest.RemoveTask(task);
+            return this;
+        }
+
+        public QuestBuilder AddBundle(ITaskBundle bundle)
+        {
+            if (_quest.TaskBundles.Contains(bundle))
+            {
+                throw new InvalidOperationException("Quest can't contain equel bundles");
+            }
+            _quest.AddBundle(bundle);
+            return this;
+        }
+
+        public QuestBuilder RemoveBundle(ITaskBundle bundle)
+        {
+            if (!_quest.TaskBundles.Contains(bundle))
+            {
+                throw new InvalidOperationException("Quest can't contain equel bundles");
+            }
+            _quest.RemoveBundle(bundle);
             return this;
         }
 

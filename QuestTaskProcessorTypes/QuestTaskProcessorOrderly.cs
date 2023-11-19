@@ -22,26 +22,41 @@ namespace KarpikQuests.QuestTaskProcessorTypes
             }
         }
 
-        public void OnTaskCompleted(IEnumerable<ITaskBundle> bundles, IQuestTask task)
+        public void Setup(ITaskBundle bundle)
         {
-            foreach (var item in bundles)
+            foreach (var task in bundle)
             {
-                var index = item.QuestTasks.ToList().IndexOf(task);
-                if (index != -1)
+                task.Reset(false);
+            }
+            bundle.First()?.Reset(true);
+        }
+
+        public void OnTaskCompleted(ITaskBundle bundle, IQuestTask task)
+        {
+            var index = bundle.QuestTasks.ToList().IndexOf(task);
+            if (index != -1)
+            {
+                if (bundle.QuestTasks.Count == index + 1)
                 {
-                    if (item.QuestTasks.Count == index + 1)
-                    {
-                        return;
-                    }
-                    item.QuestTasks.ElementAt(index + 1).Reset(true);
-                    break;
+                    return;
                 }
+                bundle.QuestTasks.ElementAt(index + 1).Reset(true);
             }
         }
 
         public void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
         {
-            
+            var index = bundles.ToList().IndexOf(bundle);
+            if (index != -1)
+            {
+                if (bundles.Count() == index + 1)
+                {
+                    return;
+                }
+                bundles.ElementAt(index + 1).ResetFirst(true);
+            }
         }
+
+
     }
 }

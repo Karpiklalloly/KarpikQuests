@@ -1,6 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Saving;
-using System;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
@@ -22,7 +21,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Key")]
 #endif
         [SerializeThis("Key")]
-        public string Key { get; protected set; }
+        public string Key { get; private set; }
 
 #if UNITY
 [field: SerializeField]
@@ -31,7 +30,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Name")]
 #endif
         [SerializeThis("Name")]
-        public string Name { get; protected set; }
+        public string Name { get; private set; }
 
 #if UNITY
 [field: SerializeField]
@@ -40,7 +39,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Description")]
 #endif
         [SerializeThis("Description")]
-        public string Description { get; protected set; }
+        public string Description { get; private set; }
 
 #if UNITY
 [field: SerializeField]
@@ -49,7 +48,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Status")]
 #endif
         [SerializeThis("Status")]
-        public IQuestTask.TaskStatus Status { get; protected set; } = IQuestTask.TaskStatus.UnCompleted;
+        public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
 
 #if UNITY
 [field: SerializeField]
@@ -58,7 +57,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("CanBeCompleted")]
 #endif
         [SerializeThis("CanBeCompleted")]
-        public bool CanBeCompleted { get; protected set; }
+        public bool CanBeCompleted { get; private set; }
 
         public event Action<IQuestTask>? Completed;
 
@@ -75,28 +74,9 @@ namespace KarpikQuests.QuestSample
             Status = IQuestTask.TaskStatus.UnCompleted;
         }
 
-        protected bool TryToComplete()
-        {
-            if (!CanBeCompleted)
-            {
-                return false;
-            }
-
-            Status = IQuestTask.TaskStatus.Completed;
-            CanBeCompleted = false;
-            Completed?.Invoke(this);
-
-            return true;
-        }
-
         public override string ToString()
         {
             return $"{Key} {Name} ({Status})";
-        }
-
-        protected void ForceBeCompleted()
-        {
-            CanBeCompleted = true;
         }
 
         public object Clone()
@@ -122,12 +102,27 @@ namespace KarpikQuests.QuestSample
 
         void IQuestTask.ForceCanBeCompleted()
         {
-            throw new NotImplementedException();
+            CanBeCompleted = true;
         }
 
-        bool IQuestTask.TryToComplete()
+        public bool TryToComplete()
         {
-            throw new NotImplementedException();
+            if (!CanBeCompleted)
+            {
+                return false;
+            }
+
+            Status = IQuestTask.TaskStatus.Completed;
+            CanBeCompleted = false;
+            Completed?.Invoke(this);
+
+            return true;
+        }
+
+        public void Clear()
+        {
+            Reset(false);
+            Completed = null;
         }
     }
 }

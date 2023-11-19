@@ -10,7 +10,7 @@ namespace KarpikQuests.QuestSample
     {
         public ICollection<ITaskBundle> Bundles { get; private set; } = new List<ITaskBundle>();
 
-        public int Count => Bundles.Count();
+        public int Count => Bundles.Count;
 
         public bool IsReadOnly => false;
 
