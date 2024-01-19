@@ -8,11 +8,11 @@ namespace KarpikQuests.Interfaces
         public string Name { get; }
         public string Description { get; }
 
-        public ITaskBundleCollection TaskBundles { get; }
-        public IQuestCompletionType CompletionType { get; }
-        public IQuestTaskProcessorType QuestTaskProcessor { get; }
+        public IReadOnlyTaskBundleCollection TaskBundles { get; }
+        public ICompletionType CompletionType { get; }
+        public ITaskProcessorType TaskProcessor { get; }
 
-        public IQuestStatus Status { get; }
+        public IStatus Status { get; }
 
         public event Action<IQuest> Started;
         public event Action<IQuest, ITaskBundle> Updated;
@@ -29,7 +29,7 @@ namespace KarpikQuests.Interfaces
         protected internal void AddBundle(ITaskBundle bundle);
         protected internal void RemoveBundle(ITaskBundle bundle);
         protected internal void OnBundleComplete(ITaskBundle bundle);
-        protected internal void SetCompletionType(IQuestCompletionType completionType);
-        protected internal void SetTaskProcessorType(IQuestTaskProcessorType processor);
+        protected internal void SetCompletionType(ICompletionType completionType);
+        protected internal void SetTaskProcessorType(ITaskProcessorType processor);
     }
 }

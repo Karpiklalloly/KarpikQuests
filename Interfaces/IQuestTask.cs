@@ -20,7 +20,6 @@ namespace KarpikQuests.Interfaces
         public event Action<IQuestTask> Completed;
 
         protected internal void ForceCanBeCompleted();
-        
 
         public enum TaskStatus
         {

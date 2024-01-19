@@ -2,7 +2,7 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestCompletionType
+    public interface ICompletionType
     {
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles);
 

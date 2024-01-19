@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace KarpikQuests.QuestTaskProcessorTypes
+namespace KarpikQuests.TaskProcessorTypes
 {
     [Serializable]
-    public class QuestTaskProcessorDisorderly : IQuestTaskProcessorType
+    public class TaskProcessorDisorderly : ITaskProcessorType
     {
         public void Setup(IEnumerable<ITaskBundle> bundles)
         {

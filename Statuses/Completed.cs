@@ -2,14 +2,14 @@
 using KarpikQuests.Interfaces.AbstractBases;
 using System;
 
-namespace KarpikQuests.QuestStatuses
+namespace KarpikQuests.Statuses
 {
     [Serializable]
-    public class StartedQuest : QuestStatusBase
+    public class Completed : StatusBase
     {
-        public override bool Equals(IQuestStatus other)
+        public override bool Equals(IStatus other)
         {
-            if (other is StartedQuest)
+            if (other is Completed)
             {
                 return true;
             }

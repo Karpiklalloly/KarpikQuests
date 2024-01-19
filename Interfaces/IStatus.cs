@@ -2,7 +2,7 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestStatus : IEquatable<IQuestStatus>
+    public interface IStatus : IEquatable<IStatus>
     {
         public string GetStatus();
     }

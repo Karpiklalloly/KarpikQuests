@@ -6,7 +6,7 @@ using System.Linq;
 namespace KarpikQuests.QuestCompletionTypes
 {
     [Serializable]
-    public class QuestCompletionOR : IQuestCompletionType
+    public class CompletionAND : ICompletionType
     {
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
@@ -17,16 +17,13 @@ namespace KarpikQuests.QuestCompletionTypes
 
             foreach (var bundle in bundles)
             {
-                foreach (var task in bundle)
+                if (!bundle.CompletionType.CheckCompletion(bundle))
                 {
-                    if (task.Status == IQuestTask.TaskStatus.Completed)
-                    {
-                        return true;
-                    }
+                    return false;
                 }
             }
 
-            return false;
+            return true;
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
@@ -38,13 +35,13 @@ namespace KarpikQuests.QuestCompletionTypes
 
             foreach (var task in bundle)
             {
-                if (task.Status == IQuestTask.TaskStatus.Completed)
+                if (task.Status == IQuestTask.TaskStatus.UnCompleted)
                 {
-                    return true;
+                    return false;
                 }
             }
 
-            return false;
+            return true;
         }
     }
 }

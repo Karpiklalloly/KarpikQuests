@@ -1,29 +1,70 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.QuestCompletionTypes;
-using KarpikQuests.QuestStatuses;
-using KarpikQuests.QuestTaskProcessorTypes;
+using KarpikQuests.Saving;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
+using KarpikQuests.TaskProcessorTypes;
+
+#if JSON_NEWTONSOFT
+using Newtonsoft.Json;
+#endif
+
+#if UNITY
+using UnityEngine;
+#endif
 
 namespace KarpikQuests.QuestSample
 {
     public class TaskBundle : ITaskBundle
     {
-        public IQuestTaskCollection QuestTasks {get; private set; } = new QuestTaskCollection();
+#if UNITY
+        [field: SerializeField]
+#endif
+#if JSON_NEWTONSOFT
+        [JsonProperty("Tasks")]
+#endif
+        [SerializeThis("Tasks")]
+        public IQuestTaskCollection QuestTasks { get; private set; } = new QuestTaskCollection();
 
-        public IQuestCompletionType CompletionType { get; private set; } = new QuestCompletionAND();
+#if UNITY
+        [field: SerializeField]
+#endif
+#if JSON_NEWTONSOFT
+        [JsonProperty("CompletionType")]
+#endif
+        [SerializeThis("CompletionType")]
+        public ICompletionType CompletionType { get; private set; }
 
-        public IQuestTaskProcessorType QuestTaskProcessor { get; private set; } = new QuestTaskProcessorOrderly();
+#if UNITY
+        [field: SerializeField]
+#endif
+#if JSON_NEWTONSOFT
+        [JsonProperty("TaskProcessor")]
+#endif
+        [SerializeThis("TaskProcessor")]
+        public ITaskProcessorType TaskProcessor { get; private set; }
 
         public int Count => QuestTasks.Count;
 
         public bool IsReadOnly => false;
 
+        public bool IsCompleted { get; private set; } = false;
+
         public event Action<ITaskBundle> Updated;
         public event Action<ITaskBundle> Completed;
+
+        public TaskBundle() : this(new CompletionAND(), new TaskProcessorOrderly())
+        {
+
+        }
+
+        public TaskBundle(ICompletionType completionType, ITaskProcessorType questTaskProcessor)
+        {
+            CompletionType = completionType ?? new CompletionAND();
+            TaskProcessor = questTaskProcessor ?? new TaskProcessorOrderly();
+        }
 
         public void Add(IQuestTask item)
         {
@@ -42,7 +83,7 @@ namespace KarpikQuests.QuestSample
             {
                 QuestTasks = (IQuestTaskCollection)QuestTasks.Clone(),
                 CompletionType = CompletionType,
-                QuestTaskProcessor = QuestTaskProcessor
+                TaskProcessor = TaskProcessor
             };
 
             return clone;
@@ -68,7 +109,7 @@ namespace KarpikQuests.QuestSample
             {
                 return false;
             }
-            if (QuestTaskProcessor.GetType() != other.QuestTaskProcessor.GetType())
+            if (TaskProcessor.GetType() != other.TaskProcessor.GetType())
             {
                 return false;
             }
@@ -120,7 +161,7 @@ namespace KarpikQuests.QuestSample
 
         public void ResetAll(bool canBeCompleted = false)
         {
-            QuestTaskProcessor.Setup(this);
+            TaskProcessor.Setup(this);
         }
 
         public void ResetFirst(bool canBeCompleted = false)
@@ -156,11 +197,12 @@ namespace KarpikQuests.QuestSample
         private void OnTaskCompleted(IQuestTask task)
         {
             Updated?.Invoke(this);
-            QuestTaskProcessor.OnTaskCompleted(this, task);
+            TaskProcessor.OnTaskCompleted(this, task);
 
             if (CompletionType.CheckCompletion(this))
             {
                 Completed?.Invoke(this);
+                IsCompleted = true;
 
                 Updated = null;
                 Completed = null;

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KarpikQuests.Interfaces
+﻿namespace KarpikQuests.Interfaces
 {
-    public interface ITaskBundleCollection : ICollection<ITaskBundle>, ICloneable
+    public interface ITaskBundleCollection : IReadOnlyTaskBundleCollection
     {
-        public bool ContainsTask(IQuestTask task);
+        
     }
 }

@@ -2,7 +2,7 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTaskProcessorType
+    public interface ITaskProcessorType
     {
         public void Setup(IEnumerable<ITaskBundle> bundles);
 

@@ -3,6 +3,7 @@ using KarpikQuests.Saving;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
+using System;
 #endif
 
 #if UNITY

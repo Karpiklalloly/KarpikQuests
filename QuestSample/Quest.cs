@@ -1,13 +1,13 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.QuestStatuses;
+using KarpikQuests.Statuses;
 using System.Runtime.Serialization;
 using System.Text;
 using KarpikQuests.QuestCompletionTypes;
-using KarpikQuests.QuestTaskProcessorTypes;
+using KarpikQuests.TaskProcessorTypes;
 using KarpikQuests.Saving;
 using KarpikQuests.Extensions;
 using System;
-using System.Threading.Tasks;
+using System.Linq;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
@@ -17,7 +17,6 @@ using Newtonsoft.Json;
 using UnityEngine;
 #endif
 
-//TODO: Перенести OnTaskCompleted в бандлы, чтобы квест не взаимодействовал напрямую с тасками
 namespace KarpikQuests.QuestSample
 {
     [Serializable]
@@ -56,8 +55,8 @@ namespace KarpikQuests.QuestSample
 #if JSON_NEWTONSOFT
         [JsonProperty("Tasks", Order = 5)]
 #endif
-        [SerializeThis("Tasks", Order = 3)]
-        private ITaskBundleCollection _tasks = new TaskBundleCollection();
+        [SerializeThis("Tasks", Order = 5)]
+        private ITaskBundleCollection _bundles = new TaskBundleCollection();
         private bool disposedValue;
 
         public event Action<IQuest>? Started;
@@ -68,7 +67,7 @@ namespace KarpikQuests.QuestSample
         [JsonIgnore]
 #endif
         [DoNotSerializeThis]
-        public ITaskBundleCollection TaskBundles => _tasks;
+        public IReadOnlyTaskBundleCollection TaskBundles => _bundles;
 
 #if UNITY
         [field: SerializeField]
@@ -77,10 +76,35 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Status", Order = 4)]
 #endif
         [SerializeThis("Status", Order = 4)]
-        public IQuestStatus Status { get; private set; } = new UnStartedQuest();
+        public IStatus Status { get; private set; } = new UnStarted();
 
-        public IQuestCompletionType CompletionType { get; private set; } = new QuestCompletionAND();
-        public IQuestTaskProcessorType QuestTaskProcessor { get; private set; } = new QuestTaskProcessorDisorderly();
+#if UNITY
+        [field: SerializeField]
+#endif
+#if JSON_NEWTONSOFT
+        [JsonProperty("CompletionType", Order = 6)]
+#endif
+        [SerializeThis("CompletionType", Order = 6)]
+        public ICompletionType CompletionType { get; private set; }
+#if UNITY
+        [field: SerializeField]
+#endif
+#if JSON_NEWTONSOFT
+        [JsonProperty("TaskProcessor", Order = 6)]
+#endif
+        [SerializeThis("TaskProcessor", Order = 6)]
+        public ITaskProcessorType TaskProcessor { get; private set; }
+
+        public Quest() : this(new CompletionAND(), new TaskProcessorDisorderly())
+        {
+
+        }
+
+        public Quest(ICompletionType completionType, ITaskProcessorType questTaskProcessor)
+        {
+            CompletionType = completionType ?? new CompletionAND();
+            TaskProcessor = questTaskProcessor ?? new TaskProcessorDisorderly();
+        }
 
         void IQuest.Init(string key, string name, string description)
         {
@@ -101,15 +125,15 @@ namespace KarpikQuests.QuestSample
             {
                 task
             };
-            _tasks.Add(bundle);
+            _bundles.Add(bundle);
             bundle.Completed += OnBundleComplete;
         }
 
         void IQuest.RemoveTask(IQuestTask task)
         {
             if (!ContainsTask(task)) return;
-            ITaskBundle b = _tasks.First();
-            foreach (var bundle in _tasks)
+            ITaskBundle b = _bundles.First();
+            foreach (var bundle in _bundles)
             {
                 if (bundle.Contains(task))
                 {
@@ -121,7 +145,7 @@ namespace KarpikQuests.QuestSample
 
             if (b?.QuestTasks.Count == 0)
             {
-                _tasks.Remove(b);
+                _bundles.Remove(b);
             }
         }
 
@@ -147,7 +171,7 @@ namespace KarpikQuests.QuestSample
 
         void IQuest.Reset()
         {
-            Status = new UnStartedQuest();
+            Status = new UnStarted();
             foreach (var bundle in TaskBundles)
             {
                 bundle.ResetAll();
@@ -165,7 +189,7 @@ namespace KarpikQuests.QuestSample
 
         private void Disposing()
         {
-            _tasks.Clear();
+            _bundles.Clear();
 
             Started = null;
             Updated = null;
@@ -184,7 +208,7 @@ namespace KarpikQuests.QuestSample
                 Key = Key,
                 Name = Name,
                 Description = Description,
-                _tasks = (ITaskBundleCollection)_tasks.Clone(),
+                _bundles = (ITaskBundleCollection)_bundles.Clone(),
                 Status = Status,
                 Started = (Action<IQuest>)Started?.Clone(),
                 Updated = (Action<IQuest, ITaskBundle>)Updated?.Clone(),
@@ -194,14 +218,14 @@ namespace KarpikQuests.QuestSample
             return quest;
         }
 
-        void IQuest.SetCompletionType(IQuestCompletionType completionType)
+        void IQuest.SetCompletionType(ICompletionType completionType)
         {
            CompletionType = completionType;
         }
 
-        void IQuest.SetTaskProcessorType(IQuestTaskProcessorType processor)
+        void IQuest.SetTaskProcessorType(ITaskProcessorType processor)
         {
-            QuestTaskProcessor = processor;
+            TaskProcessor = processor;
         }
 
         public bool Equals(IQuest other)
@@ -231,21 +255,21 @@ namespace KarpikQuests.QuestSample
 
         void IQuest.AddBundle(ITaskBundle bundle)
         {
-            if (_tasks.Contains(bundle)) return;
-            _tasks.Add(bundle);
+            if (_bundles.Contains(bundle)) return;
+            _bundles.Add(bundle);
             bundle.Completed += OnBundleComplete;
         }
 
         void IQuest.RemoveBundle(ITaskBundle bundle)
         {
-            if (_tasks.Contains(bundle)) return;
-            _tasks.Remove(bundle);
+            if (_bundles.Contains(bundle)) return;
+            _bundles.Remove(bundle);
             bundle.Completed -= OnBundleComplete;
         }
 
         private bool ContainsTask(IQuestTask task)
         {
-            foreach (var bundle in _tasks)
+            foreach (var bundle in _bundles)
             {
                 foreach (var curTask in bundle)
                 {
@@ -261,8 +285,8 @@ namespace KarpikQuests.QuestSample
 
         public void Start()
         {
-            Status = new StartedQuest();
-            QuestTaskProcessor.Setup(TaskBundles);
+            Status = new Started();
+            TaskProcessor.Setup(TaskBundles);
             Started?.Invoke(this);
             Started = null;
         }
@@ -275,11 +299,11 @@ namespace KarpikQuests.QuestSample
             }
 
             Updated?.Invoke(this, bundle);
-            QuestTaskProcessor.OnBundleCompleted(TaskBundles, bundle);
+            TaskProcessor.OnBundleCompleted(TaskBundles, bundle);
 
             if (CompletionType.CheckCompletion(TaskBundles))
             {
-                Status = new CompletedQuest();
+                Status = new Completed();
                 Completed?.Invoke(this);
 
                 Updated = null;
@@ -289,12 +313,12 @@ namespace KarpikQuests.QuestSample
 
         public void Clear()
         {
-            foreach (var bundle in _tasks)
+            foreach (var bundle in _bundles)
             {
                 bundle.ClearTasks();
                 bundle.Clear();
             }
-            _tasks.Clear();
+            _bundles.Clear();
 
             Started = null;
             Updated = null;

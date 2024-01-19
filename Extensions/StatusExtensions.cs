@@ -1,23 +1,23 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.QuestStatuses;
+using KarpikQuests.Statuses;
 
 namespace KarpikQuests.Extensions
 {
-    public static partial class QuestExtensions
+    public static partial class StatusExtensions
     {
         public static bool IsCompleted(this IQuest quest)
         {
-            return quest.Status is CompletedQuest;
+            return quest.Status is Completed;
         }
 
         public static bool IsStarted(this IQuest quest)
         {
-            return quest.Status is StartedQuest;
+            return quest.Status is Started;
         }
 
         public static bool IsNotStarted(this IQuest quest)
         {
-            return quest.Status is UnStartedQuest;
+            return quest.Status is UnStarted;
         }
     }
 }

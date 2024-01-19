@@ -20,7 +20,7 @@ namespace KarpikQuests
 
         public QuestBuilder Start<T>(string name, string description) where T : IQuest, new()
         {
-            return Start<T>("Empty key" + QuestKeyGenerator.GenerateNextAutoKey(), name, description);
+            return Start<T>("Empty key" + KeyGenerator.GenerateKey(), name, description);
         }
 
         public QuestBuilder Start<T>(string key, string name, string description) where T : IQuest, new()
@@ -114,13 +114,13 @@ namespace KarpikQuests
             return this;
         }
 
-        public QuestBuilder SetComplitionType([NotNull] IQuestCompletionType completionType)
+        public QuestBuilder SetComplitionType([NotNull] ICompletionType completionType)
         {
             _quest.SetCompletionType(completionType);
             return this;
         }
 
-        public QuestBuilder SetTaskProcessorType([NotNull] IQuestTaskProcessorType processorType)
+        public QuestBuilder SetTaskProcessorType([NotNull] ITaskProcessorType processorType)
         {
             _quest.SetTaskProcessorType(processorType);
             return this;

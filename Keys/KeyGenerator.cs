@@ -2,11 +2,11 @@
 
 namespace KarpikQuests.Keys
 {
-    public static class QuestKeyGenerator
+    public static class KeyGenerator
     {
         private const string _defaultPrefix = "";
 
-        public static string GenerateNextAutoKey(string prefix = _defaultPrefix)
+        public static string GenerateKey(string prefix = _defaultPrefix)
         {
             string key = Guid.NewGuid().ToString();
             if (prefix == _defaultPrefix)
@@ -16,27 +16,27 @@ namespace KarpikQuests.Keys
             return prefix + key;
         }
 
-        public static Guid GenerateNextAutoKey()
+        public static Guid GenerateKey()
         {
             return Guid.NewGuid();
         }
 
-        public static string[] GenerateNextAutoKeys(int count, string prefix = _defaultPrefix)
+        public static string[] GenerateKeys(int count, string prefix = _defaultPrefix)
         {
             string[] keys = new string[count];
             for (int i = 0; i < count; i++)
             {
-                keys[i] = GenerateNextAutoKey(prefix);
+                keys[i] = GenerateKey(prefix);
             }
             return keys;
         }
 
-        public static Guid[] GenerateNextAutoKeys(int count)
+        public static Guid[] GenerateKeys(int count)
         {
             Guid[] keys = new Guid[count];
             for (int i = 0; i < count; i++)
             {
-                keys[i] = GenerateNextAutoKey();
+                keys[i] = GenerateKey();
             }
             return keys;
         }
