@@ -8,6 +8,13 @@ namespace KarpikQuests.CompletionTypes
     [Serializable]
     public class OR : ICompletionType
     {
+        public bool SuccessResult { get; }
+
+        public OR(bool successResult = true)
+        {
+            SuccessResult = successResult;
+        }
+
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
             if (!bundles.Any())

@@ -1,19 +1,18 @@
 ﻿using KarpikQuests.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KarpikQuests.CompletionTypes
 {
     public class NeededCount : ICompletionType
     {
+        public bool SuccessResult { get; }
         public readonly int Count;
 
-        public NeededCount(int count)
+        public NeededCount(int count, bool successResult = true)
         {
             Count = count;
+            SuccessResult = successResult;
         }
 
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
@@ -21,7 +20,7 @@ namespace KarpikQuests.CompletionTypes
             int curCount = 0;
             if (!bundles.Any())
             {
-                return false;
+                return !SuccessResult;
             }
 
             foreach (var bundle in bundles)
@@ -37,10 +36,10 @@ namespace KarpikQuests.CompletionTypes
 
             if (curCount >= Count)
             {
-                return true;
+                return SuccessResult;
             }
 
-            return false;
+            return !SuccessResult;
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
@@ -48,7 +47,7 @@ namespace KarpikQuests.CompletionTypes
             int curCount = 0;
             if (!bundle.Any())
             {
-                return true;
+                return SuccessResult;
             }
 
             foreach (var task in bundle)
@@ -61,10 +60,10 @@ namespace KarpikQuests.CompletionTypes
 
             if (curCount >= Count)
             {
-                return true;
+                return SuccessResult;
             }
 
-            return false;
+            return !SuccessResult;
         }
     }
 }
