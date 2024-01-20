@@ -1,5 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.QuestCompletionTypes;
+using KarpikQuests.CompletionTypes;
 using KarpikQuests.Saving;
 using System;
 using System.Collections;
@@ -44,7 +44,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("TaskProcessor")]
 #endif
         [SerializeThis("TaskProcessor")]
-        public ITaskProcessorType TaskProcessor { get; private set; }
+        public IProcessorType TaskProcessor { get; private set; }
 
         public int Count => QuestTasks.Count;
 
@@ -55,15 +55,15 @@ namespace KarpikQuests.QuestSample
         public event Action<ITaskBundle> Updated;
         public event Action<ITaskBundle> Completed;
 
-        public TaskBundle() : this(new CompletionAND(), new TaskProcessorOrderly())
+        public TaskBundle() : this(new AND(), new Orderly())
         {
 
         }
 
-        public TaskBundle(ICompletionType completionType, ITaskProcessorType questTaskProcessor)
+        public TaskBundle(ICompletionType completionType, IProcessorType questTaskProcessor)
         {
-            CompletionType = completionType ?? new CompletionAND();
-            TaskProcessor = questTaskProcessor ?? new TaskProcessorOrderly();
+            CompletionType = completionType ?? new AND();
+            TaskProcessor = questTaskProcessor ?? new Orderly();
         }
 
         public void Add(IQuestTask item)
@@ -91,7 +91,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Contains(IQuestTask item)
         {
-            return QuestTasks.Contains(item);
+            return QuestTasks.Has(item);
         }
 
         public void CopyTo(IQuestTask[] array, int arrayIndex)
@@ -99,17 +99,11 @@ namespace KarpikQuests.QuestSample
             QuestTasks.CopyTo(array, arrayIndex);
         }
 
-        public bool Equals(ITaskBundle other)
+        public bool Equals(ITaskBundle? other)
         {
+            if (other is null) return false;
+
             if (QuestTasks.GetType() != other.QuestTasks.GetType())
-            {
-                return false;
-            }
-            if (CompletionType.GetType() != other.CompletionType.GetType())
-            {
-                return false;
-            }
-            if (TaskProcessor.GetType() != other.TaskProcessor.GetType())
             {
                 return false;
             }
@@ -128,7 +122,7 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null || !(obj is TaskBundle bundle))
             {
@@ -169,14 +163,15 @@ namespace KarpikQuests.QuestSample
             QuestTasks?.First()?.Reset(canBeCompleted);
         }
 
-        public bool ContainsTask(IQuestTask task)
+        public bool Has(IQuestTask task)
         {
-            return QuestTasks.Select(x => x.Key).Contains(task.Key);
+            return QuestTasks.Has(task);
         }
 
-        public bool ContainsTask(string taskKey)
+        public bool Has(string taskKey)
         {
-            return QuestTasks.Select(x => x.Key).Contains(taskKey);
+            var task = QuestTasks.First(x => x.Key.Equals(taskKey));
+            return QuestTasks.Has(task);
         }
 
         public void ClearTasks()
@@ -187,11 +182,6 @@ namespace KarpikQuests.QuestSample
             }
             Updated = null;
             Completed = null;
-        }
-
-        void ITaskBundle.OnTaskCompleted(IQuestTask task)
-        {
-            OnTaskCompleted(task);
         }
 
         private void OnTaskCompleted(IQuestTask task)

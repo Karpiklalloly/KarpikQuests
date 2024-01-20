@@ -52,8 +52,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Contains(IQuestTask item)
         {
-            if (item == null) return false;
-            return _tasks.Contains(item);
+            return Has(item);
         }
 
         public void CopyTo(IQuestTask[] array, int arrayIndex)
@@ -64,6 +63,18 @@ namespace KarpikQuests.QuestSample
         public IEnumerator<IQuestTask> GetEnumerator()
         {
             return _tasks.GetEnumerator();
+        }
+
+        public bool Has(IQuestTask task)
+        {
+            if (task is null) return false;
+
+            foreach (var task1 in _tasks)
+            {
+                if (task1.Equals(task)) return true;
+            }
+
+            return false;
         }
 
         public bool Remove(IQuestTask item)

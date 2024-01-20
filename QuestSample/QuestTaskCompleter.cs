@@ -8,19 +8,26 @@ namespace KarpikQuests.QuestSample
 
         public bool Complete(IQuestTask task)
         {
-            if (!_tasks.Contains(task))
+            if (!_tasks.Has(task))
             {
                 return false;
             }
             return task.TryToComplete();
         }
 
-        public void CompleteAll()
+        public IQuestTaskCollection CompleteAll()
         {
+            IQuestTaskCollection tasks = new QuestTaskCollection();
+
             foreach (var task in _tasks)
             {
-                task.TryToComplete();
+                if (!task.TryToComplete())
+                {
+                    tasks.Add(task);
+                }
             }
+
+            return tasks;
         }
 
         public void Subscribe(IQuestTask task)
@@ -31,7 +38,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Unsubscribe(IQuestTask task)
         {
-            if (!_tasks.Contains(task))
+            if (!_tasks.Has(task))
             {
                 return false;
             }

@@ -11,14 +11,12 @@ namespace KarpikQuests.Interfaces
         public bool IsCompleted { get; }
         public IQuestTaskCollection QuestTasks { get; }
         public ICompletionType CompletionType { get; }
-        public ITaskProcessorType TaskProcessor { get; }
 
-        public bool ContainsTask(IQuestTask task);
-        public bool ContainsTask(string taskKey);
+        public bool Has(IQuestTask task);
+        public bool Has(string taskKey);
         public void ResetAll(bool canBeCompleted = false);
         public void ResetFirst(bool canBeCompleted = false);
         public void ClearTasks();
-
-        internal protected void OnTaskCompleted(IQuestTask task);
+        public bool CheckCompletion() => CompletionType.CheckCompletion(this);
     }
 }

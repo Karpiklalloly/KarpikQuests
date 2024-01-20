@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KarpikQuests.QuestCompletionTypes
+namespace KarpikQuests.CompletionTypes
 {
     [Serializable]
-    public class CompletionAND : ICompletionType
+    public class OR : ICompletionType
     {
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
@@ -17,13 +17,16 @@ namespace KarpikQuests.QuestCompletionTypes
 
             foreach (var bundle in bundles)
             {
-                if (!bundle.CompletionType.CheckCompletion(bundle))
+                foreach (var task in bundle)
                 {
-                    return false;
+                    if (task.Status == IQuestTask.TaskStatus.Completed)
+                    {
+                        return true;
+                    }
                 }
             }
 
-            return true;
+            return false;
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
@@ -35,13 +38,13 @@ namespace KarpikQuests.QuestCompletionTypes
 
             foreach (var task in bundle)
             {
-                if (task.Status == IQuestTask.TaskStatus.UnCompleted)
+                if (task.Status == IQuestTask.TaskStatus.Completed)
                 {
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System;
-using System.Collections;
 using KarpikQuests.Saving;
 
 #if JSON_NEWTONSOFT
@@ -199,10 +198,7 @@ namespace KarpikQuests.QuestSample
 
         public IQuestCollection GetDependencies(IQuest quest)
         {
-            if (quest == null)
-            {
-                throw new ArgumentNullException(nameof(quest));
-            }
+            if (quest == null) throw new ArgumentNullException(nameof(quest));
 
             var keys = _linker.GetQuestKeyDependencies(quest.Key);
             var collection = new QuestCollection();
@@ -215,10 +211,7 @@ namespace KarpikQuests.QuestSample
 
         public IQuestCollection GetDependents(IQuest quest)
         {
-            if (quest == null)
-            {
-                throw new ArgumentNullException(nameof(quest));
-            }
+            if (quest == null) throw new ArgumentNullException(nameof(quest));
 
             var collection = new QuestCollection();
             var keys = _linker.GetQuestKeyDependents(quest.Key);
@@ -323,7 +316,7 @@ namespace KarpikQuests.QuestSample
             return _quests.First(x => x.Key == questKey);
         }
 
-        public void ResetAll()
+        public void ResetQuests()
         {
             foreach (var quest in _quests)
             {
@@ -342,42 +335,7 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is IQuestAggregator a2)
-            {
-                var a1 = this;
-                if (a1 == null && a2 == null)
-                {
-                    return true;
-                }
-
-                if (a1 == null || a2 == null)
-                {
-                    return false;
-                }
-
-                if (a1.Quests.Count != a2.Quests.Count)
-                {
-                    return false;
-                }
-
-                var quests1 = a1.Quests.ToList();
-                var quests2 = a2.Quests.ToList();
-
-                for (int i = 0; i < quests1.Count; i++)
-                {
-                    if (!quests1[i].Equals(quests2[i]))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            return false;
-        }
+        
 
         /// <summary>
         /// Subscribe to events
@@ -386,7 +344,6 @@ namespace KarpikQuests.QuestSample
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            //OnComplete
             foreach (var quest in _quests)
             {
                 if (quest.IsCompleted())
@@ -427,6 +384,53 @@ namespace KarpikQuests.QuestSample
 
             _linker.Clear();
             _quests.Clear();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null)
+            {
+
+            }
+
+            if (obj is IQuestAggregator a2)
+            {
+                var a1 = this;
+                if (a1 == null && a2 == null)
+                {
+                    return true;
+                }
+
+                if (a1 == null || a2 == null)
+                {
+                    return false;
+                }
+
+                if (a1.Quests.Count != a2.Quests.Count)
+                {
+                    return false;
+                }
+
+                var quests1 = a1.Quests.ToList();
+                var quests2 = a2.Quests.ToList();
+
+                for (int i = 0; i < quests1.Count; i++)
+                {
+                    if (!quests1[i].Equals(quests2[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Quests.GetHashCode();
         }
     }
 }

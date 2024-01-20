@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarpikQuestsTests", "..\Kar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuestSample", "..\QuestSample\QuestSample.csproj", "{ADDC81F5-6951-4DE7-A64B-76D760B8927A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KarpikQuestsExamples", "..\KarpikQuestsExamples\KarpikQuestsExamples.csproj", "{8008A20E-AF6A-4720-9BCA-786DEAD0B991}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarpikQuestsExamples", "..\KarpikQuestsExamples\KarpikQuestsExamples.csproj", "{8008A20E-AF6A-4720-9BCA-786DEAD0B991}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EB56947C-7714-48E5-A6C9-EB4D64C1992A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

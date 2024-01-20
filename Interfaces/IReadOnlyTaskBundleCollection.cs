@@ -8,6 +8,7 @@ namespace KarpikQuests.Interfaces
 {
     public interface IReadOnlyTaskBundleCollection : ICollection<ITaskBundle>, ICloneable
     {
-        public bool ContainsTask(IQuestTask task);
+        public bool Has(IQuestTask task);
+        public bool Has(ITaskBundle bundle);
     }
 }

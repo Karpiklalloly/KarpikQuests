@@ -1,14 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
-    <TargetFramework>net6</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 	<LangVersion>8.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <VersionPrefix>0.5.0</VersionPrefix>
-  <DefineConstants>JSON_NEWTONSOFT</DefineConstants>
+  <DefineConstants>JSON_NEWTONSOFT;UNITY</DefineConstants>
   </PropertyGroup>
+
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <WarningLevel>7</WarningLevel>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <WarningLevel>7</WarningLevel>
+</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="8.0.0" />

@@ -36,21 +36,14 @@ namespace KarpikQuests.QuestSample
 
         public bool Contains(ITaskBundle item)
         {
-            foreach (var bundle in Bundles)
-            {
-                if (bundle.Equals(item))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return Has(item);
         }
 
-        public bool ContainsTask(IQuestTask task)
+        public bool Has(IQuestTask task)
         {
             foreach (var bundle in Bundles)
             {
-                if (bundle.ContainsTask(task))
+                if (bundle.Has(task))
                 {
                     return true;
                 }
@@ -76,6 +69,18 @@ namespace KarpikQuests.QuestSample
         IEnumerator IEnumerable.GetEnumerator()
         {
             return Bundles.GetEnumerator();
+        }
+
+        public bool Has(ITaskBundle item)
+        {
+            foreach (var bundle in Bundles)
+            {
+                if (bundle.Equals(item))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

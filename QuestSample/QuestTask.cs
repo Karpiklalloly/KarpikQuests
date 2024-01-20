@@ -88,20 +88,20 @@ namespace KarpikQuests.QuestSample
                 Name = Name,
                 Status = Status,
                 CanBeCompleted = CanBeCompleted,
-                Completed = (Action<IQuestTask>)Completed?.Clone()
+                Completed = (Action<IQuestTask>?)Completed?.Clone()
             };
 
             return task;
         }
 
-        public bool Equals(IQuestTask other)
+        public bool Equals(IQuestTask? other)
         {
             if (other == null) return false;
             if (Key == null) return false;
             return Key.Equals(other.Key);
         }
 
-        void IQuestTask.ForceCanBeCompleted()
+        public void ForceCanBeCompleted()
         {
             CanBeCompleted = true;
         }

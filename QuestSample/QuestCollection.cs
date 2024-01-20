@@ -48,7 +48,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Contains(IQuest item)
         {
-            return _data.Contains(item);
+            return Has(item);
         }
 
         public void CopyTo(IQuest[] array, int arrayIndex)
@@ -95,6 +95,18 @@ namespace KarpikQuests.QuestSample
         public void RemoveAt(int index)
         {
             _data.RemoveAt(index);
+        }
+
+        public bool Has(IQuest item)
+        {
+            if (item is null) return false;
+
+            foreach (var quest in _data)
+            {
+                if (quest.Equals(item)) return true;
+            }
+
+            return false;
         }
     }
 }

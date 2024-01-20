@@ -6,7 +6,7 @@ using System.Linq;
 namespace KarpikQuests.TaskProcessorTypes
 {
     [Serializable]
-    public class TaskProcessorOrderly : ITaskProcessorType
+    public class Orderly : IProcessorType
     {
         public void Setup(IEnumerable<ITaskBundle> bundles)
         {

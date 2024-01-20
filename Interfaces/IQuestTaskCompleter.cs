@@ -6,5 +6,10 @@
         public bool Unsubscribe(IQuestTask task);
 
         public bool Complete(IQuestTask task);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Uncompleted tasks</returns>
+        public IQuestTaskCollection CompleteAll();
     }
 }

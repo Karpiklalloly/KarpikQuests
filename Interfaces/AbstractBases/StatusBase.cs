@@ -2,11 +2,8 @@
 {
     public abstract class StatusBase : IStatus
     {
-        public abstract bool Equals(IStatus other);
+        public virtual string Status => GetType().Name;
 
-        public virtual string GetStatus()
-        {
-            return GetType().Name;
-        }
+        public abstract bool Equals(IStatus? other);
     }
 }

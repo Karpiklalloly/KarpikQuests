@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace KarpikQuests.TaskProcessorTypes
 {
     [Serializable]
-    public class TaskProcessorDisorderly : ITaskProcessorType
+    public class Disorderly : IProcessorType
     {
         public void Setup(IEnumerable<ITaskBundle> bundles)
         {

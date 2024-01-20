@@ -72,7 +72,7 @@ namespace KarpikQuests
 
             foreach (var quest in quests)
             {
-                if (quest.TaskBundles.Select(x => x.ContainsTask(taskKey)).Contains(true))
+                if (quest.TaskBundles.Select(x => x.Has(taskKey)).Contains(true))
                 {
                     return quest;
                 }
@@ -89,7 +89,7 @@ namespace KarpikQuests
             {
                 foreach (var quest in collection)
                 {
-                    if (list.Contains(quest))
+                    if (list.Has(quest))
                     {
                         continue;
                     }
@@ -124,7 +124,7 @@ namespace KarpikQuests
         public static IQuestTask? GetTask(string taskKey)
         {
             var quest = GetQuestByTask(taskKey);
-            return quest?.TaskBundles.First(x => x.ContainsTask(taskKey))
+            return quest?.TaskBundles.First(x => x.Has(taskKey))
                 .QuestTasks.First(x => x.Key == taskKey);
         }
 
@@ -138,11 +138,6 @@ namespace KarpikQuests
                 }
             }
             return false;
-        }
-
-        public static bool Contains(string questKey)
-        {
-            return GetQuest(questKey) != null;
         }
     }
 }

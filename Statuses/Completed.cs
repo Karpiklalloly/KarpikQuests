@@ -7,8 +7,10 @@ namespace KarpikQuests.Statuses
     [Serializable]
     public class Completed : StatusBase
     {
-        public override bool Equals(IStatus other)
+        public override bool Equals(IStatus? other)
         {
+            if (other is null) return false;
+
             if (other is Completed)
             {
                 return true;

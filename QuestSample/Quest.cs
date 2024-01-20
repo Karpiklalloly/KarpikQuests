@@ -2,15 +2,18 @@
 using KarpikQuests.Statuses;
 using System.Runtime.Serialization;
 using System.Text;
-using KarpikQuests.QuestCompletionTypes;
+using KarpikQuests.CompletionTypes;
 using KarpikQuests.TaskProcessorTypes;
 using KarpikQuests.Saving;
 using KarpikQuests.Extensions;
 using System;
 using System.Linq;
+using KarpikQuests.Misc;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
+
 #endif
 
 #if UNITY
@@ -93,34 +96,41 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("TaskProcessor", Order = 6)]
 #endif
         [SerializeThis("TaskProcessor", Order = 6)]
-        public ITaskProcessorType TaskProcessor { get; private set; }
+        public IProcessorType TaskProcessor { get; private set; }
 
-        public Quest() : this(new CompletionAND(), new TaskProcessorDisorderly())
+        public Quest() : this(new AND(), new Disorderly())
         {
 
         }
 
-        public Quest(ICompletionType completionType, ITaskProcessorType questTaskProcessor)
+        public Quest(ICompletionType completionType, IProcessorType questTaskProcessor)
         {
-            CompletionType = completionType ?? new CompletionAND();
-            TaskProcessor = questTaskProcessor ?? new TaskProcessorDisorderly();
+            CompletionType = completionType ?? new AND();
+            TaskProcessor = questTaskProcessor ?? new Disorderly();
         }
 
-        void IQuest.Init(string key, string name, string description)
+        public void Init(string key, string name, string description)
         {
+            if (!key.IsValid()) throw new ArgumentNullException(nameof(key));
+
+            if (!name.IsValid()) throw new ArgumentNullException(nameof(name));
+
+            if (!description.IsValid()) throw new ArgumentNullException(nameof(description));
+
             Key = key;
             Name = name;
             Description = description;
         }
 
-        void IQuest.SetKey(string key)
+        public void SetKey(string key)
         {
+            if (!key.IsValid()) throw new ArgumentNullException(nameof(key));
             Key = key;
         }
 
-        void IQuest.AddTask(IQuestTask task)
+        public void AddTask(IQuestTask task)
         {
-            if (ContainsTask(task)) return;
+            if (_bundles.Has(task)) return;
             var bundle = new TaskBundle
             {
                 task
@@ -129,13 +139,13 @@ namespace KarpikQuests.QuestSample
             bundle.Completed += OnBundleComplete;
         }
 
-        void IQuest.RemoveTask(IQuestTask task)
+        public void RemoveTask(IQuestTask task)
         {
-            if (!ContainsTask(task)) return;
+            if (!_bundles.Has(task)) return;
             ITaskBundle b = _bundles.First();
             foreach (var bundle in _bundles)
             {
-                if (bundle.Contains(task))
+                if (bundle.Has(task))
                 {
                     bundle.Remove(task);
                     b = bundle;
@@ -164,12 +174,7 @@ namespace KarpikQuests.QuestSample
             return str.ToString();
         }
 
-        void IQuest.OnBundleComplete(ITaskBundle bundle)
-        {
-            OnBundleComplete(bundle);
-        }
-
-        void IQuest.Reset()
+        public void Reset()
         {
             Status = new UnStarted();
             foreach (var bundle in TaskBundles)
@@ -210,26 +215,31 @@ namespace KarpikQuests.QuestSample
                 Description = Description,
                 _bundles = (ITaskBundleCollection)_bundles.Clone(),
                 Status = Status,
-                Started = (Action<IQuest>)Started?.Clone(),
-                Updated = (Action<IQuest, ITaskBundle>)Updated?.Clone(),
-                Completed = (Action<IQuest>)Completed?.Clone()
+                Started = (Action<IQuest>?)Started?.Clone(),
+                Updated = (Action<IQuest, ITaskBundle>?)Updated?.Clone(),
+                Completed = (Action<IQuest>?)Completed?.Clone()
             };
 
             return quest;
         }
 
-        void IQuest.SetCompletionType(ICompletionType completionType)
+        public void SetCompletionType(ICompletionType completionType)
         {
            CompletionType = completionType;
         }
 
-        void IQuest.SetTaskProcessorType(ITaskProcessorType processor)
+        public void SetTaskProcessorType(IProcessorType processor)
         {
             TaskProcessor = processor;
         }
 
-        public bool Equals(IQuest other)
+        public bool Equals(IQuest? other)
         {
+            if (other is null)
+            {
+                return false;
+            }
+
             return Key.Equals(other.Key);
         }
 
@@ -253,34 +263,18 @@ namespace KarpikQuests.QuestSample
             GC.SuppressFinalize(this);
         }
 
-        void IQuest.AddBundle(ITaskBundle bundle)
+        public void AddBundle(ITaskBundle bundle)
         {
-            if (_bundles.Contains(bundle)) return;
+            if (_bundles.Has(bundle)) return;
             _bundles.Add(bundle);
             bundle.Completed += OnBundleComplete;
         }
 
-        void IQuest.RemoveBundle(ITaskBundle bundle)
+        public void RemoveBundle(ITaskBundle bundle)
         {
-            if (_bundles.Contains(bundle)) return;
+            if (_bundles.Has(bundle)) return;
             _bundles.Remove(bundle);
             bundle.Completed -= OnBundleComplete;
-        }
-
-        private bool ContainsTask(IQuestTask task)
-        {
-            foreach (var bundle in _bundles)
-            {
-                foreach (var curTask in bundle)
-                {
-                    if (curTask.Equals(task))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         public void Start()
@@ -289,6 +283,20 @@ namespace KarpikQuests.QuestSample
             TaskProcessor.Setup(TaskBundles);
             Started?.Invoke(this);
             Started = null;
+        }
+
+        public void Clear()
+        {
+            foreach (var bundle in _bundles)
+            {
+                bundle.ClearTasks();
+                bundle.Clear();
+            }
+            _bundles.Clear();
+
+            Started = null;
+            Updated = null;
+            Completed = null;
         }
 
         private void OnBundleComplete(ITaskBundle bundle)
@@ -309,20 +317,6 @@ namespace KarpikQuests.QuestSample
                 Updated = null;
                 Completed = null;
             }
-        }
-
-        public void Clear()
-        {
-            foreach (var bundle in _bundles)
-            {
-                bundle.ClearTasks();
-                bundle.Clear();
-            }
-            _bundles.Clear();
-
-            Started = null;
-            Updated = null;
-            Completed = null;
         }
     }
 }
