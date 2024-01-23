@@ -28,7 +28,7 @@ namespace KarpikQuests.QuestSample
 #endif
         [SerializeThis("Tasks")]
         #endregion
-        public IQuestTaskCollection QuestTasks { get; private set; } = new QuestTaskCollection();
+        public IReadOnlyQuestTaskCollection QuestTasks { get; private set; } = new QuestTaskCollection();
 
         #region serialize
 #if UNITY
@@ -87,7 +87,7 @@ namespace KarpikQuests.QuestSample
         {
             TaskBundle clone = new TaskBundle
             {
-                QuestTasks = (IQuestTaskCollection)QuestTasks.Clone(),
+                QuestTasks = (IReadOnlyQuestTaskCollection)QuestTasks.Clone(),
                 CompletionType = CompletionType,
                 TaskProcessor = TaskProcessor
             };

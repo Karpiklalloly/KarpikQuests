@@ -152,7 +152,7 @@ namespace KarpikQuests.QuestSample
             return _linker.TryRemoveDependence(quest.Key, dependence.Key);
         }
 
-        public bool TryReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
+        public bool TryReplaceQuest(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
         {
             if (!quest1.IsValid())
             {
@@ -205,7 +205,7 @@ namespace KarpikQuests.QuestSample
 
         public IQuestCollection GetDependencies(IQuest quest)
         {
-            if (quest == null) throw new ArgumentNullException(nameof(quest));
+            if (quest is null) throw new ArgumentNullException(nameof(quest));
 
             var keys = _linker.GetQuestKeyDependencies(quest.Key);
             var collection = new QuestCollection();
@@ -218,7 +218,7 @@ namespace KarpikQuests.QuestSample
 
         public IQuestCollection GetDependents(IQuest quest)
         {
-            if (quest == null) throw new ArgumentNullException(nameof(quest));
+            if (quest is null) throw new ArgumentNullException(nameof(quest));
 
             var collection = new QuestCollection();
             var keys = _linker.GetQuestKeyDependents(quest.Key);
@@ -255,7 +255,7 @@ namespace KarpikQuests.QuestSample
 
         public bool TryRemoveDependencies(IQuest quest)
         {
-            if (quest == null)
+            if (quest is null)
             {
                 throw new ArgumentNullException(nameof(quest));
             }
@@ -280,7 +280,7 @@ namespace KarpikQuests.QuestSample
 
         public bool TryRemoveDependents(IQuest quest)
         {
-            if (quest == null)
+            if (quest is null)
             {
                 throw new ArgumentNullException(nameof(quest));
             }
@@ -356,12 +356,12 @@ namespace KarpikQuests.QuestSample
         public bool Equals(IQuestAggregator? other)
         {
             var a1 = this;
-            if (a1 == null && other == null)
+            if (a1 is null && other is null)
             {
                 return true;
             }
 
-            if (a1 == null || other == null)
+            if (a1 is null || other is null)
             {
                 return false;
             }

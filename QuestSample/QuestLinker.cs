@@ -46,7 +46,7 @@ namespace KarpikQuests.QuestSample
             List<string> collection = new List<string>();
             foreach (var pair in _dependencies)
             {
-                if (pair.Value == null || !pair.Value.Any())
+                if (pair.Value is null || !pair.Value.Any())
                 {
                     continue;
                 }

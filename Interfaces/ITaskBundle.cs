@@ -9,8 +9,7 @@ namespace KarpikQuests.Interfaces
         public event Action<ITaskBundle> Completed;
 
         public bool IsCompleted { get; }
-        public IQuestTaskCollection QuestTasks { get; }
-        public ICompletionType CompletionType { get; }
+        public IReadOnlyQuestTaskCollection QuestTasks { get; }
 
         public bool Has(IQuestTask task);
         public bool Has(string taskKey);

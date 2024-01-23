@@ -17,7 +17,7 @@ namespace KarpikQuests.Saving
 #endif
         }
 
-        public static IQuestAggregator Load(string path)
+        public static IQuestAggregator? Load(string path)
         {
 #if JSON_NEWTONSOFT
             return LoadJsonNewtonsoft(path);
@@ -47,16 +47,19 @@ namespace KarpikQuests.Saving
             File.WriteAllText(path, json);
         }
 
-        private static IQuestAggregator LoadJsonNewtonsoft(string path)
+        private static IQuestAggregator? LoadJsonNewtonsoft(string path)
         {
             var json = File.ReadAllText(path);
             var data = JsonConvert.DeserializeObject<SaveData>(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
+
+            if (data is null) return null;
             return data.Aggregator;
         }
 #endif
+        [Serializable]
         private class SaveData
         {
             public Version Version { get; set; }

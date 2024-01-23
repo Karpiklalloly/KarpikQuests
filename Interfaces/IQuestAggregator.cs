@@ -8,7 +8,7 @@ namespace KarpikQuests.Interfaces
 
         public bool TryAddQuest(IQuest quest);
         public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true);
-        public bool TryReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel);
+        public bool TryReplaceQuest(IQuest quest1, IQuest quest2, bool keysAreEquel);
 
         public bool TryAddDependence(IQuest quest, IQuest dependence);
         public bool TryRemoveDependence(IQuest quest, IQuest dependence);

@@ -34,7 +34,7 @@ namespace KarpikQuests
         {
             var aggregator = GetAggregator(questKey);
 
-            if (aggregator == null)
+            if (aggregator is null)
             {
                 return null;
             }

@@ -57,7 +57,6 @@ namespace KarpikQuests
             return this;
         }
 
-
         public QuestBuilder DoNotAddAggregatorOnCreate()
         {
             _addToAggregator = false;

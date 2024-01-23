@@ -217,7 +217,7 @@ namespace KarpikQuests.QuestSample
 
         public void RemoveBundle(ITaskBundle bundle)
         {
-            if (_bundles.Has(bundle)) return;
+            if (!_bundles.Has(bundle)) return;
             _bundles.Remove(bundle);
             bundle.Completed -= OnBundleComplete;
         }

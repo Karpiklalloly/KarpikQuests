@@ -101,8 +101,8 @@ namespace KarpikQuests.QuestSample
 
         public bool Equals(IQuestTask? other)
         {
-            if (other == null) return false;
-            if (Key == null) return false;
+            if (other is null) return false;
+            if (Key is null) return false;
             return Key.Equals(other.Key);
         }
 
