@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTaskCollection : ICollection<IQuestTask>, ICloneable
+    public interface IQuestTaskCollection : IReadOnlyQuestTaskCollection
     {
-        public bool Has(IQuestTask task);
+        
     }
 }

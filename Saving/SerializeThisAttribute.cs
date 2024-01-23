@@ -8,6 +8,7 @@ namespace KarpikQuests.Saving
         public string Name { get; set; }
         public int Order { get; set; }
         public Version Version { get; set; }
+        public bool IsReference { get; set; }
 
         public SerializeThisAttribute(string name)
         {

@@ -19,6 +19,7 @@ namespace KarpikQuests.QuestSample
 {
     public class TaskBundle : ITaskBundle
     {
+        #region serialize
 #if UNITY
         [field: SerializeField]
 #endif
@@ -26,8 +27,10 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("Tasks")]
 #endif
         [SerializeThis("Tasks")]
+        #endregion
         public IQuestTaskCollection QuestTasks { get; private set; } = new QuestTaskCollection();
 
+        #region serialize
 #if UNITY
         [field: SerializeField]
 #endif
@@ -35,8 +38,10 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("CompletionType")]
 #endif
         [SerializeThis("CompletionType")]
+        #endregion
         public ICompletionType CompletionType { get; private set; }
 
+        #region serialize
 #if UNITY
         [field: SerializeField]
 #endif
@@ -44,6 +49,7 @@ namespace KarpikQuests.QuestSample
         [JsonProperty("TaskProcessor")]
 #endif
         [SerializeThis("TaskProcessor")]
+        #endregion
         public IProcessorType TaskProcessor { get; private set; }
 
         public int Count => QuestTasks.Count;
@@ -112,14 +118,8 @@ namespace KarpikQuests.QuestSample
             {
                 return false;
             }
-            for (int i = 0; i < QuestTasks.Count; i++)
-            {
-                if (!QuestTasks.ElementAt(i).Equals(other.ElementAt(i)))
-                {
-                    return false;
-                }
-            }
-            return true;
+
+            return QuestTasks.Equals(other.QuestTasks);
         }
 
         public override bool Equals(object? obj)
@@ -184,10 +184,14 @@ namespace KarpikQuests.QuestSample
             Completed = null;
         }
 
+        public bool CheckCompletion()
+        {
+            return CompletionType.CheckCompletion(this);
+        }
+
         private void OnTaskCompleted(IQuestTask task)
         {
             Updated?.Invoke(this);
-            TaskProcessor.OnTaskCompleted(this, task);
 
             if (CompletionType.CheckCompletion(this))
             {

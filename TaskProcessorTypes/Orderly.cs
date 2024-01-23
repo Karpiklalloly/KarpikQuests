@@ -13,6 +13,7 @@ namespace KarpikQuests.TaskProcessorTypes
             foreach (var bundle in bundles)
             {
                 bundle.ResetAll(false);
+                bundle.Completed += (b) => OnBundleCompleted(bundles, b);
             }
 
             if (bundles.Any())
@@ -27,11 +28,12 @@ namespace KarpikQuests.TaskProcessorTypes
             foreach (var task in bundle)
             {
                 task.Reset(false);
+                task.Completed += (t) => OnTaskCompleted(bundle, t);
             }
             bundle.First()?.Reset(true);
         }
 
-        public void OnTaskCompleted(ITaskBundle bundle, IQuestTask task)
+        private void OnTaskCompleted(ITaskBundle bundle, IQuestTask task)
         {
             var index = bundle.QuestTasks.ToList().IndexOf(task);
             if (index != -1)
@@ -44,7 +46,7 @@ namespace KarpikQuests.TaskProcessorTypes
             }
         }
 
-        public void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
+        private void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
         {
             var index = bundles.ToList().IndexOf(bundle);
             if (index != -1)

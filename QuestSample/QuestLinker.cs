@@ -16,13 +16,15 @@ namespace KarpikQuests.QuestSample
     [System.Serializable]
     public class QuestLinker : IQuestLinker
     {
+        #region serialize
 #if UNITY
-[SerializeField]
+        [SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Quest_dependencies")]
 #endif
         [SerializeThis("Quest_dependencies")]
+        #endregion
         private readonly Dictionary<string, List<string>> _dependencies = new Dictionary<string, List<string>>();
 
         public void Clear()
@@ -110,6 +112,18 @@ namespace KarpikQuests.QuestSample
             {
                 _dependencies.Remove(key);
             }
+            return true;
+        }
+
+        public bool TryReplace(string key, string newKey)
+        {
+            if (!_dependencies.TryGetValue(key, out var value))
+            {
+                return false;
+            }
+
+            _dependencies.Remove(key);
+            _dependencies.Add(key, value);
             return true;
         }
     }

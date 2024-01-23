@@ -1,9 +1,9 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Saving;
+using System;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
-using System;
 #endif
 
 #if UNITY
@@ -15,49 +15,59 @@ namespace KarpikQuests.QuestSample
     [Serializable]
     public class QuestTask : IQuestTask
     {
+        #region serialize
 #if UNITY
-[field: SerializeField]
+        [field: SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Key")]
 #endif
         [SerializeThis("Key")]
+        #endregion
         public string Key { get; private set; }
 
+        #region serialize
 #if UNITY
-[field: SerializeField]
+        [field: SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Name")]
 #endif
         [SerializeThis("Name")]
+        #endregion
         public string Name { get; private set; }
 
+        #region serialize
 #if UNITY
-[field: SerializeField]
+        [field: SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Description")]
 #endif
         [SerializeThis("Description")]
+        #endregion
         public string Description { get; private set; }
 
+        #region serialize
 #if UNITY
-[field: SerializeField]
+        [field: SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Status")]
 #endif
         [SerializeThis("Status")]
+        #endregion
         public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
 
+        #region serialize
 #if UNITY
-[field: SerializeField]
+        [field: SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("CanBeCompleted")]
 #endif
         [SerializeThis("CanBeCompleted")]
+        #endregion
         public bool CanBeCompleted { get; private set; }
 
         public event Action<IQuestTask>? Completed;
@@ -73,11 +83,6 @@ namespace KarpikQuests.QuestSample
         {
             CanBeCompleted = canBeCompleted;
             Status = IQuestTask.TaskStatus.UnCompleted;
-        }
-
-        public override string ToString()
-        {
-            return $"{Key} {Name} ({Status})";
         }
 
         public object Clone()
@@ -101,11 +106,6 @@ namespace KarpikQuests.QuestSample
             return Key.Equals(other.Key);
         }
 
-        public void ForceCanBeCompleted()
-        {
-            CanBeCompleted = true;
-        }
-
         public bool TryToComplete()
         {
             if (!CanBeCompleted)
@@ -124,6 +124,16 @@ namespace KarpikQuests.QuestSample
         {
             Reset(false);
             Completed = null;
+        }
+
+        public override string ToString()
+        {
+            return $"{Key} {Name} ({Status})";
+        }
+
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
         }
     }
 }

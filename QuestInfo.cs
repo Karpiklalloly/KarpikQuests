@@ -39,27 +39,16 @@ namespace KarpikQuests
                 return null;
             }
 
-            foreach (var quest in aggregator.Quests)
-            {
-                if (quest.Key.Equals(questKey))
-                {
-                    return quest;
-                }
-            }
-
-            return null;
+            return aggregator.GetQuest(questKey);
         }
 
         public static IQuestAggregator? GetAggregator(string questKey)
         {
-            foreach (var item in _aggregators)
+            foreach (var aggregator in _aggregators)
             {
-                foreach (var quest in item.Quests)
+                if (aggregator.GetQuest(questKey) != null)
                 {
-                    if (quest.Key.Equals(questKey))
-                    {
-                        return item;
-                    }
+                    return aggregator;
                 }
             }
 

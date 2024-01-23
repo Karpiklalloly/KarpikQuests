@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
+using System.Linq;
 #endif
 
 #if UNITY
@@ -16,13 +17,15 @@ namespace KarpikQuests.QuestSample
     [System.Serializable]
     public class QuestTaskCollection : IQuestTaskCollection
     {
+        #region serialize
 #if UNITY
-[SerializeField]
+        [SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Tasks")]
 #endif
         [SerializeThis("Tasks")]
+        #endregion
         private readonly List<IQuestTask> _tasks = new List<IQuestTask>();
 
         public int Count => _tasks.Count;
@@ -60,6 +63,31 @@ namespace KarpikQuests.QuestSample
             _tasks.CopyTo(array, arrayIndex);
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj is null || !(obj is QuestTaskCollection collection))
+            {
+                return false;
+            }
+
+            return Equals(collection);
+        }
+
+        public bool Equals(IReadOnlyQuestTaskCollection? other)
+        {
+            if (other is null) return false;
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public IEnumerator<IQuestTask> GetEnumerator()
         {
             return _tasks.GetEnumerator();
@@ -85,6 +113,11 @@ namespace KarpikQuests.QuestSample
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _tasks.GetEnumerator();
+        }
+
+        public override int GetHashCode()
+        {
+            return _tasks.GetHashCode();
         }
     }
 }

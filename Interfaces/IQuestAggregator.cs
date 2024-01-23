@@ -1,29 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestAggregator
+    public interface IQuestAggregator : IEquatable<IQuestAggregator>
     {
-        public IReadOnlyCollection<IQuest> Quests { get; }
+        public IReadOnlyQuestCollection Quests { get; }
 
         public bool TryAddQuest(IQuest quest);
         public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true);
+        public bool TryReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel);
+
         public bool TryAddDependence(IQuest quest, IQuest dependence);
         public bool TryRemoveDependence(IQuest quest, IQuest dependence);
-        public bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel);
         public bool TryRemoveDependencies(IQuest quest);
         public bool TryRemoveDependents(IQuest quest);
         public IQuestCollection GetDependencies(IQuest quest);
         public IQuestCollection GetDependents(IQuest quest);
-        public bool Contains(IQuest quest);
+
+        public bool Has(IQuest quest);
         public IQuest GetQuest(string questKey);
-        public void ResetQuests();
-        public void Clear();
 
         /// <summary>
         /// Call after quests added
         /// </summary>
         public void Start();
+        public void ResetQuests();
+        public void Clear();
 
         /// <summary>
         /// 

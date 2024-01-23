@@ -1,6 +1,5 @@
 ﻿using KarpikQuests.Extensions;
 using KarpikQuests.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System;
@@ -19,28 +18,35 @@ namespace KarpikQuests.QuestSample
     [Serializable]
     public class QuestAggregator : IQuestAggregator
     {
+        #region serialize
 #if UNITY
-[SerializeField]
+        [SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Quests")]
 #endif
         [SerializeThis("Quests")]
+        #endregion
         private readonly IQuestCollection _quests = new QuestCollection();
+
+        #region serialize
 #if UNITY
-[SerializeField]
+        [SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Links")]
 #endif
         [SerializeThis("Links")]
+        #endregion
         private readonly IQuestLinker _linker = new QuestLinker();
 
+        #region noserialize
 #if JSON_NEWTONSOFT
         [JsonIgnore]
 #endif
         [DoNotSerializeThis]
-        public IReadOnlyCollection<IQuest> Quests => _quests;
+        #endregion
+        public IReadOnlyQuestCollection Quests => _quests;
 
         public QuestAggregator()
         {
@@ -49,18 +55,19 @@ namespace KarpikQuests.QuestSample
 
         public bool TryAddQuest(IQuest quest)
         {
-            if (!DefaultValidation(quest))
+            if (!quest.IsValid())
             {
                 return false;
             }
 
-            if (Contains(quest))
+            if (Has(quest))
             {
                 return false;
             }
 
             _quests.Add(quest);
             quest.Completed += OnQuestCompleted;
+            quest.KeyChanged += OnKeyChanged;
             return true;
         }
 
@@ -72,12 +79,12 @@ namespace KarpikQuests.QuestSample
         /// <returns></returns>
         public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true)
         {
-            if (!DefaultValidation(quest))
+            if (!quest.IsValid())
             {
                 return false;
             }
 
-            if (!Contains(quest))
+            if (!Has(quest))
             {
                 return false;
             }
@@ -116,12 +123,12 @@ namespace KarpikQuests.QuestSample
 
         public bool TryAddDependence(IQuest quest, IQuest dependence)
         {
-            if (!DefaultValidation(quest))
+            if (!quest.IsValid())
             {
                 return false;
             }
 
-            if (!DefaultValidation(dependence))
+            if (!dependence.IsValid())
             {
                 return false;
             }
@@ -132,12 +139,12 @@ namespace KarpikQuests.QuestSample
 
         public bool TryRemoveDependence(IQuest quest, IQuest dependence)
         {
-            if (!DefaultValidation(quest))
+            if (!quest.IsValid())
             {
                 return false;
             }
 
-            if (!DefaultValidation(dependence))
+            if (!dependence.IsValid())
             {
                 return false;
             }
@@ -145,14 +152,14 @@ namespace KarpikQuests.QuestSample
             return _linker.TryRemoveDependence(quest.Key, dependence.Key);
         }
 
-        public bool TryToReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
+        public bool TryReplace(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
         {
-            if (!DefaultValidation(quest1))
+            if (!quest1.IsValid())
             {
                 return false;
             }
 
-            if (!DefaultValidation(quest2))
+            if (!quest2.IsValid())
             {
                 return false;
             }
@@ -164,13 +171,13 @@ namespace KarpikQuests.QuestSample
                     return false;
                 }
 
-                if (Contains(quest2))
+                if (Has(quest2))
                 {
                     return false;
                 }
             }
 
-            if (!Contains(quest1))
+            if (!Has(quest1))
             {
                 return false;
             }
@@ -227,6 +234,7 @@ namespace KarpikQuests.QuestSample
             var keys = _quests.GroupBy(x => x.Key)
                 .Where(group => group.Count() > 1)
                 .Select(quest => quest.Key);
+
             if (keys.Count() > 1)
             {
                 return false;
@@ -252,7 +260,7 @@ namespace KarpikQuests.QuestSample
                 throw new ArgumentNullException(nameof(quest));
             }
 
-            if (!Contains(quest))
+            if (!Has(quest))
             {
                 return false;
             }
@@ -277,7 +285,7 @@ namespace KarpikQuests.QuestSample
                 throw new ArgumentNullException(nameof(quest));
             }
 
-            if (!Contains(quest))
+            if (!Has(quest))
             {
                 return false;
             }
@@ -295,20 +303,9 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public bool Contains(IQuest quest)
+        public bool Has(IQuest quest)
         {
-            if (quest == null)
-            {
-                return false;
-            }
-            foreach (var another in _quests)
-            {
-                if (another.Equals(quest))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _quests.Has(quest);
         }
 
         public IQuest GetQuest(string questKey)
@@ -325,54 +322,9 @@ namespace KarpikQuests.QuestSample
             Start();
         }
 
-        private void OnQuestCompleted(IQuest quest)
-        {
-            quest.Completed -= OnQuestCompleted;
-            var dependents = GetDependents(quest);
-            foreach (var dependent in dependents)
-            {
-                dependent.Start();
-            }
-        }
-
-        
-
-        /// <summary>
-        /// Subscribe to events
-        /// </summary>
-        /// <param name="context"></param>
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            foreach (var quest in _quests)
-            {
-                if (quest.IsCompleted())
-                {
-                    continue;
-                }
-
-                quest.Completed += OnQuestCompleted;
-            }
-        }
-
         public override string ToString()
         {
             return _quests.ToString() + '\n' + _linker.ToString();
-        }
-
-        private bool DefaultValidation(IQuest quest)
-        {
-            if (quest == null)
-            {
-                throw new ArgumentNullException(nameof(quest));
-            }
-
-            if (string.IsNullOrWhiteSpace(quest.Key))
-            {
-                throw new ArgumentException($"Expected that key is not empty", nameof(quest));
-            }
-
-            return true;
         }
 
         public void Clear()
@@ -390,47 +342,87 @@ namespace KarpikQuests.QuestSample
         {
             if (obj is null)
             {
-
+                return false;
             }
 
-            if (obj is IQuestAggregator a2)
+            if (obj is IQuestAggregator aggregator)
             {
-                var a1 = this;
-                if (a1 == null && a2 == null)
-                {
-                    return true;
-                }
-
-                if (a1 == null || a2 == null)
-                {
-                    return false;
-                }
-
-                if (a1.Quests.Count != a2.Quests.Count)
-                {
-                    return false;
-                }
-
-                var quests1 = a1.Quests.ToList();
-                var quests2 = a2.Quests.ToList();
-
-                for (int i = 0; i < quests1.Count; i++)
-                {
-                    if (!quests1[i].Equals(quests2[i]))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                Equals(aggregator);
             }
 
             return false;
+        }
+
+        public bool Equals(IQuestAggregator? other)
+        {
+            var a1 = this;
+            if (a1 == null && other == null)
+            {
+                return true;
+            }
+
+            if (a1 == null || other == null)
+            {
+                return false;
+            }
+
+            if (a1.Quests.Count() != other.Quests.Count())
+            {
+                return false;
+            }
+
+            var quests1 = a1.Quests.ToList();
+            var quests2 = other.Quests.ToList();
+
+            for (int i = 0; i < quests1.Count; i++)
+            {
+                if (!quests1[i].Equals(quests2[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public override int GetHashCode()
         {
             return Quests.GetHashCode();
         }
+
+        private void OnQuestCompleted(IQuest quest)
+        {
+            quest.Completed -= OnQuestCompleted;
+            var dependents = GetDependents(quest);
+            foreach (var dependent in dependents)
+            {
+                dependent.Start();
+            }
+        }
+
+        /// <summary>
+        /// Subscribe on events
+        /// </summary>
+        /// <param name="context"></param>
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            foreach (var quest in _quests)
+            {
+                if (quest.IsCompleted())
+                {
+                    continue;
+                }
+
+                quest.Completed += OnQuestCompleted;
+            }
+        }
+
+        private void OnKeyChanged(string oldKey, string newKey)
+        {
+            _linker.TryReplace(oldKey, newKey);
+        }
+
+
     }
 }

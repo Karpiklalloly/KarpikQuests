@@ -22,15 +22,17 @@ namespace KarpikQuests
             _addToAggregator = false;
         }
 
-        public QuestBuilder Start<T>(string name, string description) where T : IQuest, new()
+        public QuestBuilder Start<T>(string name, string description,
+            IProcessorType? processor, ICompletionType? completionType) where T : IQuest, new()
         {
-            return Start<T>("Empty key:" + KeyGenerator.GenerateKey(), name, description);
+            return Start<T>("Empty key:" + KeyGenerator.GenerateKey(), name, description, processor, completionType);
         }
 
-        public QuestBuilder Start<T>(string key, string name, string description) where T : IQuest, new()
+        public QuestBuilder Start<T>(string key, string name, string description,
+            IProcessorType? processor, ICompletionType? completionType) where T : IQuest, new()
         {
             _quest = new T();
-            _quest.Init(key, name, description);
+            _quest.Init(key, name, description, processor, completionType);
             _addToAggregator = true;
             return this;
         }
@@ -47,14 +49,6 @@ namespace KarpikQuests
             return this;
         }
 
-        public QuestBuilder AddTask(IQuestTask task)
-        {
-            if (_quest.TaskBundles.Has(task)) throw new InvalidOperationException("Quest can't contain equel tasks");
-
-            _quest.AddTask(task);
-            return this;
-        }
-
         public QuestBuilder AddBundle(ITaskBundle bundle)
         {
             if (_quest.TaskBundles.Has(bundle)) throw new InvalidOperationException("Quest can't contain equel bundle");
@@ -63,17 +57,6 @@ namespace KarpikQuests
             return this;
         }
 
-        public QuestBuilder SetComplitionType(ICompletionType completionType)
-        {
-            _quest.SetCompletionType(completionType);
-            return this;
-        }
-
-        public QuestBuilder SetTaskProcessorType(IProcessorType processorType)
-        {
-            _quest.SetTaskProcessorType(processorType);
-            return this;
-        }
 
         public QuestBuilder DoNotAddAggregatorOnCreate()
         {

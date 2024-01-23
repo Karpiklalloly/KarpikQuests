@@ -17,6 +17,6 @@ namespace KarpikQuests.Interfaces
         public void ResetAll(bool canBeCompleted = false);
         public void ResetFirst(bool canBeCompleted = false);
         public void ClearTasks();
-        public bool CheckCompletion() => CompletionType.CheckCompletion(this);
+        public bool CheckCompletion();
     }
 }

@@ -22,15 +22,5 @@ namespace KarpikQuests.TaskProcessorTypes
                 task.Reset(true);
             }
         }
-
-        public void OnTaskCompleted(ITaskBundle bundle, IQuestTask task)
-        {
-            
-        }
-
-        public void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
-        {
-            
-        }
     }
 }

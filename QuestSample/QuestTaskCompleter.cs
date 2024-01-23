@@ -4,7 +4,7 @@ namespace KarpikQuests.QuestSample
 {
     public class QuestTaskCompleter : IQuestTaskCompleter
     {
-        private IQuestTaskCollection _tasks = new QuestTaskCollection();
+        private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
 
         public bool Complete(IQuestTask task)
         {

@@ -17,13 +17,15 @@ namespace KarpikQuests.QuestSample
     [System.Serializable]
     public class QuestCollection : IQuestCollection
     {
+        #region serialize
 #if UNITY
-[SerializeField]
+        [SerializeField]
 #endif
 #if JSON_NEWTONSOFT
         [JsonProperty("Data")]
 #endif
         [SerializeThis("Data")]
+        #endregion
         private readonly List<IQuest> _data = new List<IQuest>();
 
         public int Count => _data.Count;
