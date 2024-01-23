@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IReadOnlyQuestTaskCollection : ICollection<IQuestTask>, ICloneable, IEquatable<IReadOnlyQuestTaskCollection>
+    public interface IReadOnlyQuestTaskCollection : IList<IQuestTask>, ICloneable, IEquatable<IReadOnlyQuestTaskCollection>
     {
         public bool Has(IQuestTask task);
     }

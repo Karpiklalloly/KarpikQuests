@@ -2,10 +2,10 @@
 using KarpikQuests.Saving;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
-using System.Linq;
 #endif
 
 #if UNITY
@@ -32,8 +32,15 @@ namespace KarpikQuests.QuestSample
 
         public bool IsReadOnly => false;
 
+        public IQuestTask this[int index]
+        {
+            get => _tasks[index];
+            set => _tasks[index] = value;
+        }
+
         public void Add(IQuestTask item)
         {
+            if (Has(item)) return;
             _tasks.Add(item);
         }
 
@@ -107,7 +114,11 @@ namespace KarpikQuests.QuestSample
 
         public bool Remove(IQuestTask item)
         {
-            return _tasks.Remove(item);
+            if (!Has(item)) return false;
+            var index = IndexOf(item);
+            if (index < 0) return false;
+            _tasks.RemoveAt(index);
+            return true;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -118,6 +129,21 @@ namespace KarpikQuests.QuestSample
         public override int GetHashCode()
         {
             return _tasks.GetHashCode();
+        }
+
+        public int IndexOf(IQuestTask item)
+        {
+            return _tasks.FindIndex(x => x.Equals(item));
+        }
+
+        public void Insert(int index, IQuestTask item)
+        {
+            _tasks.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _tasks.RemoveAt(index);
         }
     }
 }

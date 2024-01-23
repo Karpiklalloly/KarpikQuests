@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using KarpikQuests.CompletionTypes;
 using KarpikQuests.TaskProcessorTypes;
+using System.Linq;
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace KarpikQuests.QuestSample
 {
     public class TaskBundleCollection : ITaskBundleCollection
     {
-        public ICollection<ITaskBundle> Bundles { get; private set; } = new List<ITaskBundle>();
+        private List<ITaskBundle> _bundles = new List<ITaskBundle>();
 
         public ICompletionType CompletionType
         {
@@ -39,13 +40,19 @@ namespace KarpikQuests.QuestSample
                 if (value is null) throw new ArgumentNullException(nameof(value));
 
                 _processor = value;
-                _processor.Setup(Bundles);
+                _processor.Setup(_bundles);
             }
         }
 
-        public int Count => Bundles.Count;
+        public int Count => _bundles.Count;
 
         public bool IsReadOnly => false;
+
+        public ITaskBundle this[int index]
+        {
+            get => _bundles[index];
+            set => _bundles[index] = value;
+        }
 
         #region serialize
 #if UNITY
@@ -82,18 +89,19 @@ namespace KarpikQuests.QuestSample
 
         public void Add(ITaskBundle item)
         {
-            Bundles.Add(item);
+            if (Has(item)) return;
+            _bundles.Add(item);
         }
 
         public void Clear()
         {
-            Bundles.Clear();
+            _bundles.Clear();
         }
 
         public object Clone()
         {
             TaskBundleCollection another = new TaskBundleCollection();
-            foreach (var bundle in Bundles)
+            foreach (var bundle in _bundles)
             {
                 another.Add((ITaskBundle)bundle.Clone());
             }
@@ -107,7 +115,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Has(IQuestTask task)
         {
-            foreach (var bundle in Bundles)
+            foreach (var bundle in _bundles)
             {
                 if (bundle.Has(task))
                 {
@@ -119,27 +127,31 @@ namespace KarpikQuests.QuestSample
 
         public void CopyTo(ITaskBundle[] array, int arrayIndex)
         {
-            Bundles.CopyTo(array, arrayIndex);
+            _bundles.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<ITaskBundle> GetEnumerator()
         {
-            return Bundles.GetEnumerator();
+            return _bundles.GetEnumerator();
         }
 
         public bool Remove(ITaskBundle item)
         {
-            return Bundles.Remove(item);
+            if (!Has(item)) return false;
+            var index = IndexOf(item);
+            if (index < 0) return false;
+            _bundles.RemoveAt(index);
+            return true;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Bundles.GetEnumerator();
+            return _bundles.GetEnumerator();
         }
 
         public bool Has(ITaskBundle item)
         {
-            foreach (var bundle in Bundles)
+            foreach (var bundle in _bundles)
             {
                 if (bundle.Equals(item))
                 {
@@ -152,6 +164,51 @@ namespace KarpikQuests.QuestSample
         public bool CheckCompletion()
         {
             return CompletionType.CheckCompletion(this);
+        }
+
+        public int IndexOf(ITaskBundle item)
+        {
+            return _bundles.FindIndex(x => x.Equals(item));
+        }
+
+        public void Insert(int index, ITaskBundle item)
+        {
+            _bundles.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _bundles.RemoveAt(index);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null || !(obj is TaskBundleCollection collection))
+            {
+                return false;
+            }
+
+            return Equals(collection);
+        }
+
+        public bool Equals(IReadOnlyTaskBundleCollection? other)
+        {
+            if (other is null) return false;
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return _bundles.GetHashCode();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IReadOnlyTaskBundleCollection : ICollection<ITaskBundle>, ICloneable
+    public interface IReadOnlyTaskBundleCollection : IList<ITaskBundle>, ICloneable, IEquatable<IReadOnlyTaskBundleCollection>
     {
         public ICompletionType CompletionType { get; }
 

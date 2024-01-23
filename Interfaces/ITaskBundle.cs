@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface ITaskBundle : ICollection<IQuestTask>, IEnumerable<IQuestTask>, ICloneable, IEquatable<ITaskBundle>
+    public interface ITaskBundle : ICollection<IQuestTask>, ICloneable, IEquatable<ITaskBundle>
     {
         public event Action<ITaskBundle> Updated;
         public event Action<ITaskBundle> Completed;

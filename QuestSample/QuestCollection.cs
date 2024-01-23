@@ -3,6 +3,8 @@ using KarpikQuests.Saving;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+
 
 #if JSON_NEWTONSOFT
 using Newtonsoft.Json;
@@ -34,12 +36,13 @@ namespace KarpikQuests.QuestSample
 
         public IQuest this[int index]
         {
-            get { return _data[index]; }
-            set { _data[index] = value; }
+            get => _data[index];
+            set => _data[index] = value;
         }
 
         public void Add(IQuest item)
         {
+            if (Has(item)) return;
             _data.Add(item);
         }
 
@@ -65,7 +68,11 @@ namespace KarpikQuests.QuestSample
 
         public bool Remove(IQuest item)
         {
-            return _data.Remove(item);
+            if (!Has(item)) return false;
+            var index = IndexOf(item);
+            if (index < 0) return false;
+            _data.RemoveAt(index);
+            return true;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -86,7 +93,7 @@ namespace KarpikQuests.QuestSample
 
         public int IndexOf(IQuest item)
         {
-            return _data.IndexOf(item);
+            return _data.FindIndex(x => x.Equals(item));
         }
 
         public void Insert(int index, IQuest item)
@@ -109,6 +116,47 @@ namespace KarpikQuests.QuestSample
             }
 
             return false;
+        }
+
+        public object Clone()
+        {
+            QuestCollection quests = new QuestCollection();
+            foreach (var quest in _data)
+            {
+                quests.Add((IQuest)quest.Clone());
+            }
+
+            return quests;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null || !(obj is QuestCollection collection))
+            {
+                return false;
+            }
+
+            return Equals(collection);
+        }
+
+        public bool Equals(IReadOnlyQuestCollection? other)
+        {
+            if (other is null) return false;
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return _data.GetHashCode();
         }
     }
 }
