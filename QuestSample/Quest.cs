@@ -106,7 +106,7 @@ namespace KarpikQuests.QuestSample
         #endregion
         private string _key;
 
-        public void Init(string key, string name, string description, IProcessorType? processor, ICompletionType? completionType)
+        public void Init(string key, string name, string description, ITaskBundleCollection bundles)
         {
             if (!key.IsValid()) throw new ArgumentNullException(nameof(key));
 
@@ -117,7 +117,7 @@ namespace KarpikQuests.QuestSample
             Key = key;
             Name = name;
             Description = description;
-            _bundles = new TaskBundleCollection(completionType, processor);
+            _bundles = bundles ?? new TaskBundleCollection();
         }
 
         public void AddTask(IQuestTask task)
