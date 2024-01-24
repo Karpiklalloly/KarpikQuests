@@ -1,5 +1,6 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
+using KarpikQuests.QuestSample;
 using System;
 
 namespace KarpikQuests
@@ -32,7 +33,16 @@ namespace KarpikQuests
             IProcessorType? processor, ICompletionType? completionType) where T : IQuest, new()
         {
             _quest = new T();
-            _quest.Init(key, name, description, processor, completionType);
+            _quest.Init(key, name, description, new TaskBundleCollection(completionType, processor));
+            _addToAggregator = true;
+            return this;
+        }
+
+        public QuestBuilder Start<T>(string key, string name, string description,
+            ITaskBundleCollection bundles) where T : IQuest, new()
+        {
+            _quest = new T();
+            _quest.Init(key, name, description, bundles);
             _addToAggregator = true;
             return this;
         }
