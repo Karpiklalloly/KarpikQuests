@@ -22,6 +22,7 @@ namespace KarpikQuests.Saving
 #if JSON_NEWTONSOFT
             return LoadJsonNewtonsoft(path);
 #endif
+            return null;
         }
 
 #if JSON_NEWTONSOFT

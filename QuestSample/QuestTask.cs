@@ -1,82 +1,83 @@
 ﻿using KarpikQuests.Interfaces;
+using KarpikQuests.Keys;
 using KarpikQuests.Saving;
 using System;
-
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
 
 namespace KarpikQuests.QuestSample
 {
     [Serializable]
     public class QuestTask : IQuestTask
     {
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Key")]
-#endif
-        [SerializeThis("Key")]
-        #endregion
-        public string Key { get; private set; }
+        public string Key
+        {
+            get => _key;
+            private set => _key = value;
+        }
+        
+        public string Name
+        {
+            get => _name;
+            private set => _name = value;
+        }
+        
+        public string Description
+        {
+            get => _description;
+            private set => _description = value;
+        }
 
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Name")]
-#endif
-        [SerializeThis("Name")]
-        #endregion
-        public string Name { get; private set; }
+        public IQuestTask.TaskStatus Status
+        {
+            get => _status;
+            private set => _status = value;
+        }
+        
+        public bool CanBeCompleted
+        {
+            get => _canBeCompleted;
+            set => _canBeCompleted = value;
+        }
 
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Description")]
-#endif
-        [SerializeThis("Description")]
-        #endregion
-        public string Description { get; private set; }
-
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Status")]
-#endif
-        [SerializeThis("Status")]
-        #endregion
-        public IQuestTask.TaskStatus Status { get; private set; } = IQuestTask.TaskStatus.UnCompleted;
-
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("CanBeCompleted")]
-#endif
-        [SerializeThis("CanBeCompleted")]
-        #endregion
-        public bool CanBeCompleted { get; private set; }
+        public bool Inited
+        {
+            get => _inited;
+            set => _inited = value;
+        }
 
         public event Action<IQuestTask>? Completed;
 
-        public void Init(string key, string name, string description = "")
+        [SerializeThis("Key")]
+        private string _key;
+
+        [SerializeThis("Name")]
+        private string _name;
+
+        [SerializeThis("Description")]
+        private string _description;
+
+        [SerializeThis("Status")]
+        private IQuestTask.TaskStatus _status;
+
+        [SerializeThis("CanBeCompleted")]
+        private bool _canBeCompleted;
+
+        [SerializeThis("Inited")]
+        private bool _inited;
+
+        public void Init()
+        {
+            Init(KeyGenerator.GenerateKey(""), "Task", "Description");
+        }
+
+        public void Init(string key, string name, string description)
         {
             Key = key;
             Name = name;
             Description = description;
+
+            _status = IQuestTask.TaskStatus.UnCompleted;
+
+            _inited = true;
         }
 
         public void Reset(bool canBeCompleted = false)
@@ -108,10 +109,7 @@ namespace KarpikQuests.QuestSample
 
         public bool TryToComplete()
         {
-            if (!CanBeCompleted)
-            {
-                return false;
-            }
+            if (!CanBeCompleted) return false;
 
             Status = IQuestTask.TaskStatus.Completed;
             CanBeCompleted = false;

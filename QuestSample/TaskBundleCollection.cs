@@ -7,14 +7,6 @@ using KarpikQuests.CompletionTypes;
 using KarpikQuests.TaskProcessorTypes;
 using System.Linq;
 
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
-
 namespace KarpikQuests.QuestSample
 {
     public class TaskBundleCollection : ITaskBundleCollection
@@ -35,7 +27,7 @@ namespace KarpikQuests.QuestSample
         public IProcessorType Processor
         {
             get => _processor;
-            set
+            private set
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
 
@@ -44,7 +36,10 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        public int Count => _bundles.Count;
+        public int Count
+        {
+            get => _bundles.Count;
+        }
 
         public bool IsReadOnly => false;
 
@@ -54,26 +49,10 @@ namespace KarpikQuests.QuestSample
             set => _bundles[index] = value;
         }
 
-        #region serialize
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("CompletionType", Order = 6)]
-#endif
         [SerializeThis("CompletionType", Order = 6)]
-        #endregion
         private ICompletionType _completionType;
 
-        #region serialize
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("TaskProcessor", Order = 6)]
-#endif
         [SerializeThis("TaskProcessor", Order = 6)]
-        #endregion
         private IProcessorType _processor;
 
         public TaskBundleCollection() : this(new AND(), new Disorderly())
@@ -81,12 +60,23 @@ namespace KarpikQuests.QuestSample
 
         }
 
-        public TaskBundleCollection(ICompletionType? completionType, IProcessorType? processor)
+        public TaskBundleCollection(ICompletionType completionType, IProcessorType processor)
         {
-            CompletionType = completionType ?? new AND();
-            Processor = processor ?? new Disorderly();
+            SetCompletionType(completionType);
+            SetProcessorType(processor);
         }
 
+        public void SetCompletionType(ICompletionType completionType)
+        {
+            CompletionType = completionType;
+        }
+
+        public void SetProcessorType(IProcessorType processor)
+        {
+            Processor = processor;
+        }
+
+#region list
         public void Add(ITaskBundle item)
         {
             if (Has(item)) return;
@@ -180,6 +170,7 @@ namespace KarpikQuests.QuestSample
         {
             _bundles.RemoveAt(index);
         }
+#endregion
 
         public override bool Equals(object? obj)
         {

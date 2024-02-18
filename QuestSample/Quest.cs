@@ -2,22 +2,11 @@
 using KarpikQuests.Statuses;
 using System.Runtime.Serialization;
 using System.Text;
-using KarpikQuests.CompletionTypes;
-using KarpikQuests.TaskProcessorTypes;
 using KarpikQuests.Saving;
 using KarpikQuests.Extensions;
 using System;
 using System.Linq;
-using KarpikQuests.Misc;
-
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
+using KarpikQuests.Keys;
 
 namespace KarpikQuests.QuestSample
 {
@@ -36,38 +25,23 @@ namespace KarpikQuests.QuestSample
                 KeyChanged?.Invoke(temp, _key);
             }
         }
+        public string Name
+        {
+            get => _name;
+            private set => _name = value;
+        }
+        public string Description
+        {
+            get => _description;
+            private set => _description = value;
+        }
+        public bool Inited
+        {
+            get => _inited;
+            private set => _inited = value;
+        }
 
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Name", Order = 2)]
-#endif
-        [SerializeThis("Name", Order = 2)]
-        #endregion
-        public string Name { get; private set; }
-
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Description", Order = 3)]
-#endif
-        [SerializeThis("Description", Order = 3)]
-        #endregion
-        public string Description { get; private set; }
-
-        #region serialize
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Tasks", Order = 5)]
-#endif
-        [SerializeThis("Tasks", Order = 5)]
-        #endregion
+        [SerializeThis("Tasks", Order = 6)]
         private ITaskBundleCollection _bundles;
         private bool disposedValue;
 
@@ -76,53 +50,44 @@ namespace KarpikQuests.QuestSample
         public event Action<IQuest, ITaskBundle>? Updated;
         public event Action<IQuest>? Completed;
 
-        #region noserialize
-#if JSON_NEWTONSOFT
-        [JsonIgnore]
-#endif
-        [DoNotSerializeThis]
-        #endregion
-        public IReadOnlyTaskBundleCollection TaskBundles => _bundles;
+        public IReadOnlyTaskBundleCollection TaskBundles
+        {
+            get => _bundles;
+        }
 
-        #region serialize
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Status", Order = 4)]
-#endif
-        [SerializeThis("Status", Order = 4)]
-        #endregion
+        [SerializeThis("Status", Order = 5)]
         public IStatus Status { get; private set; } = new UnStarted();
 
-        #region serialize
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Key", Order = 1)]
-#endif
         [SerializeThis("Key", Order = 1)]
-        #endregion
         private string _key;
+        [SerializeThis("Name", Order = 2)]
+        private string _name;
+        [SerializeThis("Description", Order = 3)]
+        private string _description;
+        [SerializeThis("Inited", Order = 4)]
+        private bool _inited;
+
+        public void Init()
+        {
+            Init(KeyGenerator.GenerateKey(""), "Quest", "Description", new TaskBundleCollection());
+        }
 
         public void Init(string key, string name, string description, ITaskBundleCollection bundles)
         {
-            if (!key.IsValid()) throw new ArgumentNullException(nameof(key));
-
-            if (!name.IsValid()) throw new ArgumentNullException(nameof(name));
-
-            if (!description.IsValid()) throw new ArgumentNullException(nameof(description));
+            if (!bundles.IsValid()) throw new ArgumentNullException(nameof(bundles));
 
             Key = key;
             Name = name;
             Description = description;
-            _bundles = bundles ?? new TaskBundleCollection();
+            _bundles = bundles;
+
+            Inited = true;
         }
 
         public void AddTask(IQuestTask task)
         {
             if (_bundles.Has(task)) return;
+
             var bundle = new TaskBundle
             {
                 task
@@ -134,6 +99,7 @@ namespace KarpikQuests.QuestSample
         public void RemoveTask(IQuestTask task)
         {
             if (!_bundles.Has(task)) return;
+
             ITaskBundle b = _bundles.First();
             foreach (var bundle in _bundles)
             {
@@ -194,10 +160,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Equals(IQuest? other)
         {
-            if (other is null)
-            {
-                return false;
-            }
+            if (other is null) return false;
 
             return Key.Equals(other.Key);
         }

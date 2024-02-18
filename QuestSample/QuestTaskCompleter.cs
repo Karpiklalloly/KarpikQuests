@@ -8,10 +8,8 @@ namespace KarpikQuests.QuestSample
 
         public bool Complete(IQuestTask task)
         {
-            if (!_tasks.Has(task))
-            {
-                return false;
-            }
+            if (!_tasks.Has(task)) return false;
+
             return task.TryToComplete();
         }
 
@@ -38,10 +36,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Unsubscribe(IQuestTask task)
         {
-            if (!_tasks.Has(task))
-            {
-                return false;
-            }
+            if (!_tasks.Has(task)) return false;
 
             _tasks.Remove(task);
             return true;

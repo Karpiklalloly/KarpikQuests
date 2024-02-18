@@ -3,28 +3,12 @@ using KarpikQuests.Saving;
 using System.Collections.Generic;
 using System.Linq;
 
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
-
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestLinker : IQuestLinker
     {
-        #region serialize
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Quest_dependencies")]
-#endif
         [SerializeThis("Quest_dependencies")]
-        #endregion
         private readonly Dictionary<string, List<string>> _dependencies = new Dictionary<string, List<string>>();
 
         public void Clear()
@@ -71,23 +55,14 @@ namespace KarpikQuests.QuestSample
                 _dependencies.Add(key, new List<string>());
             }
 
-            if (_dependencies[key].Contains(dependenceKey))
-            {
-                return false;
-            }
+            if (_dependencies[key].Contains(dependenceKey)) return false;
 
-            if (key.Equals(dependenceKey))
-            {
-                return false;
-            }
+            if (key.Equals(dependenceKey)) return false;
 
             //Check to not link to each other
             if (_dependencies.ContainsKey(dependenceKey))
             {
-                if (_dependencies[dependenceKey].Contains(key))
-                {
-                    return false;
-                }
+                if (_dependencies[dependenceKey].Contains(key)) return false;
             }
 
             _dependencies[key].Add(dependenceKey);
@@ -96,15 +71,9 @@ namespace KarpikQuests.QuestSample
 
         public bool TryRemoveDependence(string key, string dependentKey)
         {
-            if (!_dependencies.ContainsKey(key))
-            {
-                return false;
-            }
+            if (!_dependencies.ContainsKey(key)) return false;
 
-            if (!_dependencies[key].Contains(dependentKey))
-            {
-                return false;
-            }
+            if (!_dependencies[key].Contains(dependentKey)) return false;
 
             _dependencies[key].Remove(dependentKey);
 
@@ -112,15 +81,13 @@ namespace KarpikQuests.QuestSample
             {
                 _dependencies.Remove(key);
             }
+
             return true;
         }
 
         public bool TryReplace(string key, string newKey)
         {
-            if (!_dependencies.TryGetValue(key, out var value))
-            {
-                return false;
-            }
+            if (!_dependencies.TryGetValue(key, out var value)) return false;
 
             _dependencies.Remove(key);
             _dependencies.Add(key, value);

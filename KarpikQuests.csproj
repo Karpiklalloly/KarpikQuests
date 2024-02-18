@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <VersionPrefix>0.5.0</VersionPrefix>
-  <DefineConstants>JSON_NEWTONSOFT;UNITY</DefineConstants>
+  <DefineConstants></DefineConstants>
   </PropertyGroup>
 
 <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,17 +17,5 @@
 <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
   <WarningLevel>7</WarningLevel>
 </PropertyGroup>
-
-	<ItemGroup>
-		<Reference Include="UnityEngine">
-			<HintPath>Externallibs\UnityEngine.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>Externallibs\UnityEngine.CoreModule.dll</HintPath>
-		</Reference>
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>Externallibs\Newtonsoft.Json.dll</HintPath>
-		</Reference>
-	</ItemGroup>
 	
 </Project>

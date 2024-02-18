@@ -5,12 +5,6 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarpikQuests", "KarpikQuests.csproj", "{26FB7689-8946-4EC2-B8DE-FA620B12504B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarpikQuestsTests", "..\KarpikQuestsTests\KarpikQuestsTests.csproj", "{B7F28758-3443-4129-91B0-87CAB581FB4E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuestSample", "..\QuestSample\QuestSample.csproj", "{ADDC81F5-6951-4DE7-A64B-76D760B8927A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarpikQuestsExamples", "..\KarpikQuestsExamples\KarpikQuestsExamples.csproj", "{8008A20E-AF6A-4720-9BCA-786DEAD0B991}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EB56947C-7714-48E5-A6C9-EB4D64C1992A}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -26,18 +20,6 @@ Global
 		{26FB7689-8946-4EC2-B8DE-FA620B12504B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26FB7689-8946-4EC2-B8DE-FA620B12504B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26FB7689-8946-4EC2-B8DE-FA620B12504B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7F28758-3443-4129-91B0-87CAB581FB4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7F28758-3443-4129-91B0-87CAB581FB4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7F28758-3443-4129-91B0-87CAB581FB4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7F28758-3443-4129-91B0-87CAB581FB4E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADDC81F5-6951-4DE7-A64B-76D760B8927A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADDC81F5-6951-4DE7-A64B-76D760B8927A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADDC81F5-6951-4DE7-A64B-76D760B8927A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADDC81F5-6951-4DE7-A64B-76D760B8927A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8008A20E-AF6A-4720-9BCA-786DEAD0B991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8008A20E-AF6A-4720-9BCA-786DEAD0B991}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8008A20E-AF6A-4720-9BCA-786DEAD0B991}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8008A20E-AF6A-4720-9BCA-786DEAD0B991}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

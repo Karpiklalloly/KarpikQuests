@@ -2,7 +2,7 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuest : IEquatable<IQuest>, IDisposable, ICloneable
+    public interface IQuest : IInitable, IEquatable<IQuest>, IDisposable, ICloneable
     {
         public event Action<string, string> KeyChanged;
         public event Action<IQuest> Started;

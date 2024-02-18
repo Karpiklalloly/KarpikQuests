@@ -4,28 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
-
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestTaskCollection : IQuestTaskCollection
     {
-        #region serialize
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Tasks")]
-#endif
         [SerializeThis("Tasks")]
-        #endregion
         private readonly List<IQuestTask> _tasks = new List<IQuestTask>();
 
         public int Count => _tasks.Count;
@@ -72,10 +56,7 @@ namespace KarpikQuests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is QuestTaskCollection collection))
-            {
-                return false;
-            }
+            if (obj is null || !(obj is QuestTaskCollection collection)) return false;
 
             return Equals(collection);
         }

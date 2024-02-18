@@ -1,4 +1,4 @@
-﻿namespace KarpikQuests.Misc
+﻿namespace KarpikQuests.Extensions
 {
     public static class StringExtensions
     {

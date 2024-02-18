@@ -2,7 +2,7 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTask : IEquatable<IQuestTask>, ICloneable
+    public interface IQuestTask : IInitable, IEquatable<IQuestTask>, ICloneable
     {
         public event Action<IQuestTask> Completed;
 
