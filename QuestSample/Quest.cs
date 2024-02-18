@@ -41,8 +41,6 @@ namespace KarpikQuests.QuestSample
             private set => _inited = value;
         }
 
-        [SerializeThis("Tasks", Order = 6)]
-        private ITaskBundleCollection _bundles;
         private bool disposedValue;
 
         public event Action<string, string>? KeyChanged;
@@ -55,17 +53,29 @@ namespace KarpikQuests.QuestSample
             get => _bundles;
         }
 
-        [SerializeThis("Status", Order = 5)]
-        public IStatus Status { get; private set; } = new UnStarted();
+        public IStatus Status
+        {
+            get => _status;
+            private set => _status = value;
+        }
 
         [SerializeThis("Key", Order = 1)]
         private string _key;
+        
         [SerializeThis("Name", Order = 2)]
         private string _name;
+
         [SerializeThis("Description", Order = 3)]
         private string _description;
+
         [SerializeThis("Inited", Order = 4)]
         private bool _inited;
+
+        [SerializeThis("Status", Order = 5)]
+        private IStatus _status;
+
+        [SerializeThis("Tasks", Order = 6)]
+        private ITaskBundleCollection _bundles;
 
         public void Init()
         {
@@ -80,6 +90,7 @@ namespace KarpikQuests.QuestSample
             Name = name;
             Description = description;
             _bundles = bundles;
+            _status = new UnStarted();
 
             Inited = true;
         }

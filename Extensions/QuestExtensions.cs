@@ -1,5 +1,4 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.Misc;
 
 namespace KarpikQuests.Extensions
 {
