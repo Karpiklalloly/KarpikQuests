@@ -5,12 +5,13 @@ using KarpikQuests.QuestSample;
 
 namespace KarpikQuests.Factories
 {
-    public class QuestFactory : IFactory<IQuest>
+    public struct QuestFactory : IFactory<IQuest>
     {
         private IFactory<ITaskBundleCollection> _bundleFactory;
 
         public QuestFactory(IFactory<ITaskBundleCollection> bundleFactory = null)
         {
+            _bundleFactory = bundleFactory;
             _bundleFactory ??= new TaskBundleCollectionFactory();
         }
 

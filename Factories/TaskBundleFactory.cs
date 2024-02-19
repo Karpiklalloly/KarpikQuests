@@ -6,7 +6,7 @@ using KarpikQuests.TaskProcessorTypes;
 
 namespace KarpikQuests.Factories
 {
-    public class TaskBundleFactory : IFactory<ITaskBundle>
+    public struct TaskBundleFactory : IFactory<ITaskBundle>
     {
         public ITaskBundle Create()
         {
