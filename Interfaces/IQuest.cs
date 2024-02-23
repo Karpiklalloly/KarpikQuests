@@ -24,6 +24,5 @@ namespace KarpikQuests.Interfaces
         public void Init(string key, string name, string description, ITaskBundleCollection bundles);
         public void AddBundle(ITaskBundle bundle);
         public void RemoveBundle(ITaskBundle bundle);
-        public bool CheckCompletion();
     }
 }

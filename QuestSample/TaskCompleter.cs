@@ -2,20 +2,20 @@
 
 namespace KarpikQuests.QuestSample
 {
-    public class QuestTaskCompleter : IQuestTaskCompleter
+    public class TaskCompleter : ITaskCompleter
     {
-        private readonly IQuestTaskCollection _tasks = new QuestTaskCollection();
+        private readonly ITaskCollection _tasks = new TaskCollection();
 
-        public bool Complete(IQuestTask task)
+        public bool TryComplete(ITask task)
         {
             if (!_tasks.Has(task)) return false;
 
             return task.TryToComplete();
         }
 
-        public IQuestTaskCollection CompleteAll()
+        public ITaskCollection TryCompleteAll()
         {
-            IQuestTaskCollection tasks = new QuestTaskCollection();
+            ITaskCollection tasks = new TaskCollection();
 
             foreach (var task in _tasks)
             {
@@ -28,13 +28,13 @@ namespace KarpikQuests.QuestSample
             return tasks;
         }
 
-        public void Subscribe(IQuestTask task)
+        public void Subscribe(ITask task)
         {
             Unsubscribe(task);
             _tasks.Add(task);
         }
 
-        public bool Unsubscribe(IQuestTask task)
+        public bool Unsubscribe(ITask task)
         {
             if (!_tasks.Has(task)) return false;
 

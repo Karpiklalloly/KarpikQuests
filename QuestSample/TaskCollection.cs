@@ -7,22 +7,24 @@ using System.Linq;
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
-    public class QuestTaskCollection : IQuestTaskCollection
+    public class TaskCollection : ITaskCollection
     {
         [SerializeThis("Tasks")]
-        private readonly List<IQuestTask> _tasks = new List<IQuestTask>();
+        private readonly List<ITask> _tasks = new List<ITask>();
 
         public int Count => _tasks.Count;
 
         public bool IsReadOnly => false;
 
-        public IQuestTask this[int index]
+#region list
+
+        public ITask this[int index]
         {
             get => _tasks[index];
             set => _tasks[index] = value;
         }
 
-        public void Add(IQuestTask item)
+        public void Add(ITask item)
         {
             if (Has(item)) return;
             _tasks.Add(item);
@@ -33,55 +35,22 @@ namespace KarpikQuests.QuestSample
             _tasks.Clear();
         }
 
-        public object Clone()
-        {
-            QuestTaskCollection clone = new QuestTaskCollection();
-            foreach (IQuestTask item in _tasks)
-            {
-                clone.Add((IQuestTask)item.Clone());
-            }
-
-            return clone;
-        }
-
-        public bool Contains(IQuestTask item)
+        public bool Contains(ITask item)
         {
             return Has(item);
         }
 
-        public void CopyTo(IQuestTask[] array, int arrayIndex)
+        public void CopyTo(ITask[] array, int arrayIndex)
         {
             _tasks.CopyTo(array, arrayIndex);
         }
 
-        public override bool Equals(object? obj)
-        {
-            if (obj is null || !(obj is QuestTaskCollection collection)) return false;
-
-            return Equals(collection);
-        }
-
-        public bool Equals(IReadOnlyQuestTaskCollection? other)
-        {
-            if (other is null) return false;
-
-            for (int i = 0; i < Count; i++)
-            {
-                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public IEnumerator<IQuestTask> GetEnumerator()
+        public IEnumerator<ITask> GetEnumerator()
         {
             return _tasks.GetEnumerator();
         }
 
-        public bool Has(IQuestTask task)
+        public bool Has(ITask task)
         {
             if (task is null) return false;
 
@@ -93,7 +62,7 @@ namespace KarpikQuests.QuestSample
             return false;
         }
 
-        public bool Remove(IQuestTask item)
+        public bool Remove(ITask item)
         {
             if (!Has(item)) return false;
             var index = IndexOf(item);
@@ -112,12 +81,12 @@ namespace KarpikQuests.QuestSample
             return _tasks.GetHashCode();
         }
 
-        public int IndexOf(IQuestTask item)
+        public int IndexOf(ITask item)
         {
             return _tasks.FindIndex(x => x.Equals(item));
         }
 
-        public void Insert(int index, IQuestTask item)
+        public void Insert(int index, ITask item)
         {
             _tasks.Insert(index, item);
         }
@@ -125,6 +94,40 @@ namespace KarpikQuests.QuestSample
         public void RemoveAt(int index)
         {
             _tasks.RemoveAt(index);
+        }
+#endregion
+
+        public object Clone()
+        {
+            TaskCollection clone = new TaskCollection();
+            foreach (ITask item in _tasks)
+            {
+                clone.Add((ITask)item.Clone());
+            }
+
+            return clone;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null || !(obj is TaskCollection collection)) return false;
+
+            return Equals(collection);
+        }
+
+        public bool Equals(IReadOnlyTaskCollection? other)
+        {
+            if (other is null) return false;
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

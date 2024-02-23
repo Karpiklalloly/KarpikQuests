@@ -13,6 +13,11 @@ namespace KarpikQuests.QuestSample
     [Serializable]
     public class Quest : IQuest
     {
+        public event Action<string, string>? KeyChanged;
+        public event Action<IQuest>? Started;
+        public event Action<IQuest, ITaskBundle>? Updated;
+        public event Action<IQuest>? Completed;
+
         public string Key
         {
             get => _key;
@@ -41,16 +46,10 @@ namespace KarpikQuests.QuestSample
             private set => _inited = value;
         }
 
-        private bool disposedValue;
-
-        public event Action<string, string>? KeyChanged;
-        public event Action<IQuest>? Started;
-        public event Action<IQuest, ITaskBundle>? Updated;
-        public event Action<IQuest>? Completed;
-
         public IReadOnlyTaskBundleCollection TaskBundles
         {
             get => _bundles;
+            private set => _bundles = (ITaskBundleCollection)value;
         }
 
         public IStatus Status
@@ -59,23 +58,25 @@ namespace KarpikQuests.QuestSample
             private set => _status = value;
         }
 
-        [SerializeThis("Key", Order = 1)]
+        [SerializeThis("Key")]
         private string _key;
-        
-        [SerializeThis("Name", Order = 2)]
+
+        [SerializeThis("Name")]
         private string _name;
 
-        [SerializeThis("Description", Order = 3)]
+        [SerializeThis("Description")]
         private string _description;
 
-        [SerializeThis("Inited", Order = 4)]
+        [SerializeThis("Inited")]
         private bool _inited;
 
-        [SerializeThis("Status", Order = 5)]
+        [SerializeThis("Status")]
         private IStatus _status;
 
-        [SerializeThis("Tasks", Order = 6)]
+        [SerializeThis("Tasks")]
         private ITaskBundleCollection _bundles;
+
+        private bool disposedValue;
 
         public void Init()
         {
@@ -89,13 +90,20 @@ namespace KarpikQuests.QuestSample
             Key = key;
             Name = name;
             Description = description;
-            _bundles = bundles;
-            _status = new UnStarted();
+            TaskBundles = bundles;
+            Status = new UnStarted();
 
             Inited = true;
         }
 
-        public void AddTask(IQuestTask task)
+        public void Start()
+        {
+            Status = new Started();
+            TaskBundles.Processor.Setup(TaskBundles);
+            Started?.Invoke(this);
+        }
+
+        public void AddTask(ITask task)
         {
             if (_bundles.Has(task)) return;
 
@@ -107,7 +115,7 @@ namespace KarpikQuests.QuestSample
             bundle.Completed += OnBundleComplete;
         }
 
-        public void RemoveTask(IQuestTask task)
+        public void RemoveTask(ITask task)
         {
             if (!_bundles.Has(task)) return;
 
@@ -128,19 +136,18 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        public override string ToString()
+        public void AddBundle(ITaskBundle bundle)
         {
-            StringBuilder str = new StringBuilder();
-            str.Append($"'{Key}': {Name}:\n" +
-                $"{Description}\n" +
-                $"Status: {Status}\n" +
-                $"\tTasks:\n");
-            foreach (var task in TaskBundles)
-            {
-                str.Append($"\t{task}\n");
-            }
+            if (_bundles.Has(bundle)) return;
+            _bundles.Add(bundle);
+            bundle.Completed += OnBundleComplete;
+        }
 
-            return str.ToString();
+        public void RemoveBundle(ITaskBundle bundle)
+        {
+            if (!_bundles.Has(bundle)) return;
+            _bundles.Remove(bundle);
+            bundle.Completed -= OnBundleComplete;
         }
 
         public void Reset()
@@ -151,6 +158,21 @@ namespace KarpikQuests.QuestSample
                 bundle.ResetAll();
             }
         }
+
+        public void Clear()
+        {
+            foreach (var bundle in _bundles)
+            {
+                bundle.ClearTasks();
+                bundle.Clear();
+            }
+            _bundles.Clear();
+
+            Started = null;
+            Updated = null;
+            Completed = null;
+        }
+
 
         public object Clone()
         {
@@ -169,62 +191,47 @@ namespace KarpikQuests.QuestSample
             return quest;
         }
 
-        public bool Equals(IQuest? other)
-        {
-            if (other is null) return false;
-
-            return Key.Equals(other.Key);
-        }
-
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
-        public void AddBundle(ITaskBundle bundle)
-        {
-            if (_bundles.Has(bundle)) return;
-            _bundles.Add(bundle);
-            bundle.Completed += OnBundleComplete;
-        }
-
-        public void RemoveBundle(ITaskBundle bundle)
-        {
-            if (!_bundles.Has(bundle)) return;
-            _bundles.Remove(bundle);
-            bundle.Completed -= OnBundleComplete;
-        }
-
-        public void Start()
-        {
-            Status = new Started();
-            TaskBundles.Processor.Setup(TaskBundles);
-            Started?.Invoke(this);
-        }
-
-        public void Clear()
-        {
-            foreach (var bundle in _bundles)
-            {
-                bundle.ClearTasks();
-                bundle.Clear();
-            }
-            _bundles.Clear();
-
-            Started = null;
-            Updated = null;
-            Completed = null;
-        }
-
-        public bool CheckCompletion()
-        {
-            return TaskBundles.CheckCompletion();
-        }
-
         public override int GetHashCode()
         {
             return Key.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder();
+            str.Append($"'{Key}': {Name}:\n" +
+                $"{Description}\n" +
+                $"Status: {Status}\n" +
+                $"\tTasks:\n");
+            foreach (var task in TaskBundles)
+            {
+                str.Append($"\t{task}\n");
+            }
+
+            return str.ToString();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null || !(obj is Quest quest))
+            {
+                return false;
+            }
+
+            return Equals(quest);
+        }
+
+        public bool Equals(IQuest? other)
+        {
+            if (other is null) return false;
+
+            return Key.Equals(other.Key);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -233,10 +240,18 @@ namespace KarpikQuests.QuestSample
             {
                 if (disposing)
                 {
-                    Disposing();
+
                 }
 
-                FreeResources();
+                _bundles.Clear();
+
+                KeyChanged = null;
+                Started    = null;
+                Updated    = null;
+                Completed  = null;
+
+                _inited = false;
+
                 disposedValue = true;
             }
         }
@@ -250,30 +265,16 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        private void Disposing()
-        {
-            _bundles.Clear();
-
-            Started = null;
-            Updated = null;
-            Completed = null;
-        }
-
-        private void FreeResources()
-        {
-
-        }
-
         private void OnBundleComplete(ITaskBundle bundle)
         {
-            if (this.IsNotStarted())
+            if (Status is UnStarted)
             {
                 Start();
             }
 
             Updated?.Invoke(this, bundle);
 
-            if (CheckCompletion())
+            if (_bundles.IsCompleted())
             {
                 Status = new Completed();
                 Completed?.Invoke(this);

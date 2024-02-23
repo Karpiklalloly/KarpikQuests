@@ -4,26 +4,38 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System;
 using KarpikQuests.Saving;
+using KarpikQuests.Statuses;
 
 namespace KarpikQuests.QuestSample
 {
     [Serializable]
     public class QuestAggregator : IQuestAggregator
     {
+        public IReadOnlyQuestCollection Quests
+        {
+            get => _quests;
+        }
+
         [SerializeThis("Quests")]
         private readonly IQuestCollection _quests = new QuestCollection();
 
         [SerializeThis("Links")]
         private readonly IQuestLinker _linker = new QuestLinker();
 
-        public IReadOnlyQuestCollection Quests
+        public QuestAggregator()
         {
-            get => _quests;
+
         }
 
-        internal QuestAggregator()
+        public void Start()
         {
-
+            foreach (var quest in _quests)
+            {
+                if (!GetDependencies(quest).Any() && quest.Status is UnStarted)
+                {
+                    quest.Start();
+                }
+            }
         }
 
         public bool TryAddQuest(IQuest quest)
@@ -39,7 +51,7 @@ namespace KarpikQuests.QuestSample
         }
 
         /// <summary>
-        /// Note that if there are many dependencies this method will not delete quest
+        /// Note if there are many dependencies <param name="autoChangeDependencies"> is <see cref="false"/>, this method will not delete quest
         /// </summary>
         /// <param name="quest"></param>
         /// <param name="autoChangeDependencies"></param>
@@ -136,6 +148,38 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
+        public bool TryRemoveDependencies(IQuest quest)
+        {
+            if (quest is null) throw new ArgumentNullException(nameof(quest));
+
+            if (!Has(quest)) return false;
+
+            var dependencies = GetDependencies(quest);
+
+            foreach (var dep in dependencies)
+            {
+                if (!TryRemoveDependence(quest, dep)) return false;
+            }
+
+            return true;
+        }
+
+        public bool TryRemoveDependents(IQuest quest)
+        {
+            if (quest is null) throw new ArgumentNullException(nameof(quest));
+
+            if (!Has(quest)) return false;
+
+            var dependents = GetDependents(quest);
+
+            foreach (var dep in dependents)
+            {
+                if (!TryRemoveDependence(dep, quest)) return false;
+            }
+
+            return true;
+        }
+
         public IQuestCollection GetDependencies(IQuest quest)
         {
             if (quest is null) throw new ArgumentNullException(nameof(quest));
@@ -175,57 +219,9 @@ namespace KarpikQuests.QuestSample
             return true;
         }
 
-        public void Start()
-        {
-            foreach (var quest in _quests)
-            {
-                if (!GetDependencies(quest).Any() && quest.IsNotStarted())
-                {
-                    quest.Start();
-                }
-            }
-        }
-
-        public bool TryRemoveDependencies(IQuest quest)
-        {
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-
-            if (!Has(quest)) return false;
-
-            var dependencies = GetDependencies(quest);
-
-            foreach (var dep in dependencies)
-            {
-                if (!TryRemoveDependence(quest, dep)) return false;
-            }
-
-            return true;
-        }
-
-        public bool TryRemoveDependents(IQuest quest)
-        {
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-
-            if (!Has(quest)) return false;
-
-            var dependents = GetDependents(quest);
-
-            foreach (var dep in dependents)
-            {
-                if (!TryRemoveDependence(dep, quest)) return false;
-            }
-
-            return true;
-        }
-
         public bool Has(IQuest quest)
         {
             return _quests.Has(quest);
-        }
-
-        public IQuest GetQuest(string questKey)
-        {
-            return _quests.First(x => x.Key == questKey);
         }
 
         public void ResetQuests()
@@ -309,7 +305,7 @@ namespace KarpikQuests.QuestSample
         {
             foreach (var quest in _quests)
             {
-                if (quest.IsCompleted())
+                if (quest.Status is Completed)
                 {
                     continue;
                 }
@@ -321,6 +317,11 @@ namespace KarpikQuests.QuestSample
         private void OnKeyChanged(string oldKey, string newKey)
         {
             _linker.TryReplace(oldKey, newKey);
+        }
+    
+        private IQuest GetQuest(string key)
+        {
+            return Quests.First(x => x.Key == key);
         }
     }
 }

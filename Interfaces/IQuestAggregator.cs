@@ -18,7 +18,6 @@ namespace KarpikQuests.Interfaces
         public IQuestCollection GetDependents(IQuest quest);
 
         public bool Has(IQuest quest);
-        public IQuest GetQuest(string questKey);
 
         /// <summary>
         /// Call after quests added

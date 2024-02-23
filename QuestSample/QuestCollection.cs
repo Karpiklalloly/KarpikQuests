@@ -17,6 +17,7 @@ namespace KarpikQuests.QuestSample
 
         public bool IsReadOnly => false;
 
+#region list
         public IQuest this[int index]
         {
             get => _data[index];
@@ -63,17 +64,6 @@ namespace KarpikQuests.QuestSample
             return _data.GetEnumerator();
         }
 
-        public override string ToString()
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.Append($" Count:{Count}\n");
-            foreach (IQuest item in _data)
-            {
-                builder.Append(item.ToString() + '\n');
-            }
-            return builder.ToString();
-        }
-
         public int IndexOf(IQuest item)
         {
             return _data.FindIndex(x => x.Equals(item));
@@ -100,6 +90,7 @@ namespace KarpikQuests.QuestSample
 
             return false;
         }
+#endregion
 
         public object Clone()
         {
@@ -110,6 +101,17 @@ namespace KarpikQuests.QuestSample
             }
 
             return quests;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append($" Count:{Count}\n");
+            foreach (IQuest item in _data)
+            {
+                builder.Append(item.ToString() + '\n');
+            }
+            return builder.ToString();
         }
 
         public override bool Equals(object? obj)
@@ -137,5 +139,3 @@ namespace KarpikQuests.QuestSample
         }
     }
 }
-
-

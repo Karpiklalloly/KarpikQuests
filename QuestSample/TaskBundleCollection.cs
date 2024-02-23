@@ -41,7 +41,10 @@ namespace KarpikQuests.QuestSample
             get => _bundles.Count;
         }
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get => false;
+        }
 
         public ITaskBundle this[int index]
         {
@@ -103,7 +106,7 @@ namespace KarpikQuests.QuestSample
             return Has(item);
         }
 
-        public bool Has(IQuestTask task)
+        public bool Has(ITask task)
         {
             foreach (var bundle in _bundles)
             {
@@ -150,12 +153,7 @@ namespace KarpikQuests.QuestSample
             }
             return false;
         }
-
-        public bool CheckCompletion()
-        {
-            return CompletionType.CheckCompletion(this);
-        }
-
+        
         public int IndexOf(ITaskBundle item)
         {
             return _bundles.FindIndex(x => x.Equals(item));
@@ -171,6 +169,11 @@ namespace KarpikQuests.QuestSample
             _bundles.RemoveAt(index);
         }
 #endregion
+
+        public bool IsCompleted()
+        {
+            return CompletionType.CheckCompletion(this);
+        }
 
         public override bool Equals(object? obj)
         {

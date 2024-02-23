@@ -1,4 +1,5 @@
-﻿using KarpikQuests.Interfaces;
+﻿using KarpikQuests.Extensions;
+using KarpikQuests.Interfaces;
 using KarpikQuests.QuestSample;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,10 +90,10 @@ namespace KarpikQuests
             return list;
         }
 
-        public static IQuestTaskCollection GetTasks()
+        public static ITaskCollection GetTasks()
         {
             var listOfBundles = GetQuests().Select(x => x.TaskBundles);
-            QuestTaskCollection collection = new QuestTaskCollection();
+            TaskCollection collection = new TaskCollection();
             foreach (var list in listOfBundles)
             {
                 foreach (var bundle in list)
@@ -110,7 +111,7 @@ namespace KarpikQuests
             return collection;
         }
 
-        public static IQuestTask? GetTask(string taskKey)
+        public static ITask? GetTask(string taskKey)
         {
             var quest = GetQuestByTask(taskKey);
             return quest?.TaskBundles.First(x => x.Has(taskKey))
@@ -127,6 +128,11 @@ namespace KarpikQuests
                 }
             }
             return false;
+        }
+
+        public static bool Has(IQuestAggregator aggregator)
+        {
+            return Contains(aggregator);
         }
     }
 }

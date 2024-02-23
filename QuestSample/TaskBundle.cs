@@ -11,8 +11,11 @@ namespace KarpikQuests.QuestSample
 {
     public class TaskBundle : ITaskBundle
     {
+        public event Action<ITaskBundle> Updated;
+        public event Action<ITaskBundle> Completed;
+
         [SerializeThis("Tasks")]
-        public IReadOnlyQuestTaskCollection QuestTasks { get; private set; } = new QuestTaskCollection();
+        public IReadOnlyTaskCollection QuestTasks { get; private set; } = new TaskCollection();
 
         public ICompletionType CompletionType
         {
@@ -46,9 +49,6 @@ namespace KarpikQuests.QuestSample
 
         public bool IsCompleted { get; private set; } = false;
 
-        public event Action<ITaskBundle> Updated;
-        public event Action<ITaskBundle> Completed;
-
         [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
 
@@ -76,8 +76,28 @@ namespace KarpikQuests.QuestSample
             Processor = processor;
         }
 
+        public void ClearTasks()
+        {
+            foreach (ITask task in QuestTasks)
+            {
+                task.Reset();
+            }
+            Updated = null;
+            Completed = null;
+        }
+
+        public void ResetAll(bool canBeCompleted = false)
+        {
+            Processor.Setup(this);
+        }
+
+        public void ResetFirst(bool canBeCompleted = false)
+        {
+            QuestTasks?.First()?.Reset(canBeCompleted);
+        }
+
 #region list
-        public void Add(IQuestTask item)
+        public void Add(ITask item)
         {
             QuestTasks.Add(item);
             item.Completed += OnTaskCompleted;
@@ -88,22 +108,22 @@ namespace KarpikQuests.QuestSample
             QuestTasks.Clear();
         }
 
-        public bool Contains(IQuestTask item)
+        public bool Contains(ITask item)
         {
             return QuestTasks.Has(item);
         }
 
-        public void CopyTo(IQuestTask[] array, int arrayIndex)
+        public void CopyTo(ITask[] array, int arrayIndex)
         {
             QuestTasks.CopyTo(array, arrayIndex);
         }
         
-        public IEnumerator<IQuestTask> GetEnumerator()
+        public IEnumerator<ITask> GetEnumerator()
         {
             return QuestTasks.GetEnumerator();
         }
 
-        public bool Remove(IQuestTask item)
+        public bool Remove(ITask item)
         {
             item.Completed -= OnTaskCompleted;
             return QuestTasks.Remove(item);
@@ -114,7 +134,7 @@ namespace KarpikQuests.QuestSample
             return (QuestTasks as IEnumerable).GetEnumerator();
         }
 
-        public bool Has(IQuestTask task)
+        public bool Has(ITask task)
         {
             return QuestTasks.Has(task);
         }
@@ -126,35 +146,6 @@ namespace KarpikQuests.QuestSample
         }
 #endregion
 
-        public void ClearTasks()
-        {
-            foreach (IQuestTask task in QuestTasks)
-            {
-                task.Clear();
-            }
-            Updated = null;
-            Completed = null;
-        }
-
-        public bool CheckCompletion()
-        {
-            return CompletionType.CheckCompletion(this);
-        }
-
-        private void OnTaskCompleted(IQuestTask task)
-        {
-            Updated?.Invoke(this);
-
-            if (CompletionType.CheckCompletion(this))
-            {
-                Completed?.Invoke(this);
-                IsCompleted = true;
-
-                Updated = null;
-                Completed = null;
-            }
-        }
-    
         public bool Equals(ITaskBundle? other)
         {
             if (other is null) return false;
@@ -191,7 +182,7 @@ namespace KarpikQuests.QuestSample
         {
             TaskBundle clone = new TaskBundle
             {
-                QuestTasks = (IReadOnlyQuestTaskCollection)QuestTasks.Clone(),
+                QuestTasks = (IReadOnlyTaskCollection)QuestTasks.Clone(),
                 CompletionType = CompletionType,
                 Processor = Processor
             };
@@ -199,14 +190,18 @@ namespace KarpikQuests.QuestSample
             return clone;
         }
     
-        public void ResetAll(bool canBeCompleted = false)
+        private void OnTaskCompleted(ITask task)
         {
-            Processor.Setup(this);
-        }
+            Updated?.Invoke(this);
 
-        public void ResetFirst(bool canBeCompleted = false)
-        {
-            QuestTasks?.First()?.Reset(canBeCompleted);
+            if (CompletionType.CheckCompletion(this))
+            {
+                Completed?.Invoke(this);
+                IsCompleted = true;
+
+                Updated = null;
+                Completed = null;
+            }
         }
     }
 }

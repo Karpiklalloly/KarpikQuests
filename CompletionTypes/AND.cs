@@ -24,7 +24,7 @@ namespace KarpikQuests.CompletionTypes
 
             foreach (var bundle in bundles)
             {
-                if (!bundle.CheckCompletion())
+                if (!bundle.IsCompleted)
                 {
                     return false;
                 }
@@ -42,7 +42,7 @@ namespace KarpikQuests.CompletionTypes
 
             foreach (var task in bundle)
             {
-                if (task.Status == IQuestTask.TaskStatus.UnCompleted)
+                if (task.Status == ITask.TaskStatus.UnCompleted)
                 {
                     return false;
                 }

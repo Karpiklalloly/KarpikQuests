@@ -2,9 +2,9 @@
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestTask : IInitable, IEquatable<IQuestTask>, ICloneable
+    public interface ITask : IInitable, IEquatable<ITask>, ICloneable
     {
-        public event Action<IQuestTask> Completed;
+        public event Action<ITask> Completed;
 
         public string Key { get; }
         public string Name { get; }
@@ -14,7 +14,6 @@ namespace KarpikQuests.Interfaces
 
         public void Init(string key, string name, string description = "");
         public void Reset(bool canBeCompleted = false);
-        public void Clear();
         public bool TryToComplete();
 
         public enum TaskStatus

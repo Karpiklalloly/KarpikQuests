@@ -6,7 +6,7 @@ using System;
 namespace KarpikQuests.QuestSample
 {
     [Serializable]
-    public class QuestTask : IQuestTask
+    public class Task : ITask
     {
         public string Key
         {
@@ -26,7 +26,7 @@ namespace KarpikQuests.QuestSample
             private set => _description = value;
         }
 
-        public IQuestTask.TaskStatus Status
+        public ITask.TaskStatus Status
         {
             get => _status;
             private set => _status = value;
@@ -44,7 +44,7 @@ namespace KarpikQuests.QuestSample
             set => _inited = value;
         }
 
-        public event Action<IQuestTask>? Completed;
+        public event Action<ITask>? Completed;
 
         [SerializeThis("Key")]
         private string _key;
@@ -56,7 +56,7 @@ namespace KarpikQuests.QuestSample
         private string _description;
 
         [SerializeThis("Status")]
-        private IQuestTask.TaskStatus _status;
+        private ITask.TaskStatus _status;
 
         [SerializeThis("CanBeCompleted")]
         private bool _canBeCompleted;
@@ -75,7 +75,7 @@ namespace KarpikQuests.QuestSample
             Name = name;
             Description = description;
 
-            _status = IQuestTask.TaskStatus.UnCompleted;
+            _status = ITask.TaskStatus.UnCompleted;
 
             _inited = true;
         }
@@ -83,24 +83,25 @@ namespace KarpikQuests.QuestSample
         public void Reset(bool canBeCompleted = false)
         {
             CanBeCompleted = canBeCompleted;
-            Status = IQuestTask.TaskStatus.UnCompleted;
+            Status = ITask.TaskStatus.UnCompleted;
+            Completed = null;
         }
 
         public object Clone()
         {
-            QuestTask task = new QuestTask
+            Task task = new Task
             {
                 Key = Key,
                 Name = Name,
                 Status = Status,
                 CanBeCompleted = CanBeCompleted,
-                Completed = (Action<IQuestTask>?)Completed?.Clone()
+                Completed = (Action<ITask>?)Completed?.Clone()
             };
 
             return task;
         }
 
-        public bool Equals(IQuestTask? other)
+        public bool Equals(ITask? other)
         {
             if (other is null) return false;
             if (Key is null) return false;
@@ -111,17 +112,11 @@ namespace KarpikQuests.QuestSample
         {
             if (!CanBeCompleted) return false;
 
-            Status = IQuestTask.TaskStatus.Completed;
+            Status = ITask.TaskStatus.Completed;
             CanBeCompleted = false;
             Completed?.Invoke(this);
 
             return true;
-        }
-
-        public void Clear()
-        {
-            Reset(false);
-            Completed = null;
         }
 
         public override string ToString()

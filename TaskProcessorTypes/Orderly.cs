@@ -33,7 +33,7 @@ namespace KarpikQuests.TaskProcessorTypes
             bundle.First()?.Reset(true);
         }
 
-        private void OnTaskCompleted(ITaskBundle bundle, IQuestTask task)
+        private void OnTaskCompleted(ITaskBundle bundle, ITask task)
         {
             var index = bundle.QuestTasks.ToList().IndexOf(task);
             if (index != -1)

@@ -27,7 +27,7 @@ namespace KarpikQuests.CompletionTypes
             {
                 foreach (var task in bundle)
                 {
-                    if (task.Status == IQuestTask.TaskStatus.Completed)
+                    if (task.Status == ITask.TaskStatus.Completed)
                     {
                         curCount++;
                     }
@@ -52,7 +52,7 @@ namespace KarpikQuests.CompletionTypes
 
             foreach (var task in bundle)
             {
-                if (task.Status == IQuestTask.TaskStatus.Completed)
+                if (task.Status == ITask.TaskStatus.Completed)
                 {
                     curCount++;
                 }
