@@ -1,4 +1,5 @@
-﻿using KarpikQuests.Interfaces;
+﻿using KarpikQuests.Extensions;
+using KarpikQuests.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,12 @@ namespace KarpikQuests.CompletionTypes
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
             var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
-            return !arr.Any() || arr.SelectMany(bundle => bundle).Any(task => task.Status == ITask.TaskStatus.Completed);
+            return !arr.Any() || arr.SelectMany(bundle => bundle).Any(task => task.IsCompleted());
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
         {
-            return !bundle.Any() || bundle.Any(task => task.Status == ITask.TaskStatus.Completed);
+            return !bundle.Any() || bundle.Any(task => task.IsCompleted());
         }
     }
 }

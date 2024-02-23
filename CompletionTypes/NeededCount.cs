@@ -1,4 +1,5 @@
-﻿using KarpikQuests.Interfaces;
+﻿using KarpikQuests.Extensions;
+using KarpikQuests.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +22,7 @@ namespace KarpikQuests.CompletionTypes
                 return false;
             }
 
-            int curCount = arr.Sum(bundle => bundle.Count(task => task.Status == ITask.TaskStatus.Completed));
+            int curCount = arr.Sum(bundle => bundle.Count(task => task.IsCompleted()));
 
             if (curCount >= Count)
             {
@@ -38,7 +39,7 @@ namespace KarpikQuests.CompletionTypes
                 return true;
             }
 
-            int curCount = bundle.Count(task => task.Status == ITask.TaskStatus.Completed);
+            int curCount = bundle.Count(task => task.IsCompleted());
 
             if (curCount >= Count)
             {

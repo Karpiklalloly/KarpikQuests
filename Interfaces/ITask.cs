@@ -14,7 +14,9 @@ namespace KarpikQuests.Interfaces
         public bool CanBeCompleted { get; }
 
         public void Init(string key, string name, string description = "");
-        public void Reset(bool canBeCompleted = false);
+        public void Setup();
+        public void Start();
+        public void Reset();
         public bool TryToComplete();
 
         public enum TaskStatus

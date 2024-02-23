@@ -91,14 +91,31 @@ namespace KarpikQuests.QuestSample
             Completed = null;
         }
 
-        public void ResetAll(bool canBeCompleted = false)
+        public void Setup()
         {
             Processor.Setup(this);
         }
 
-        public void ResetFirst(bool canBeCompleted = false)
+        public void StartFirst()
         {
-            QuestTasks.FirstOrDefault()?.Reset(canBeCompleted);
+            QuestTasks.FirstOrDefault()?.Start();
+        }
+
+        public void ResetAll()
+        {
+            foreach (var task in QuestTasks)
+            {
+                task.Reset();
+                task.Completed += OnTaskCompleted;
+            }
+        }
+
+        public void ResetFirst()
+        {
+            if (!QuestTasks.Any()) return;
+
+            QuestTasks[0].Reset();
+            QuestTasks[0].Completed += OnTaskCompleted;
         }
 
 #region list

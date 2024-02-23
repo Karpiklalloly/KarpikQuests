@@ -7,12 +7,14 @@ using KarpikQuests.CompletionTypes;
 using KarpikQuests.TaskProcessorTypes;
 using System.Linq;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace KarpikQuests.QuestSample
 {
     public sealed class TaskBundleCollection : ITaskBundleCollection
     {
-        private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
+        public event Action<IReadOnlyTaskBundleCollection, ITaskBundle>? Updated;
+        public event Action<IReadOnlyTaskBundleCollection>? Completed;
 
         public ICompletionType CompletionType
         {
@@ -41,27 +43,13 @@ namespace KarpikQuests.QuestSample
             }
         }
 
-        public int Count
-        {
-            get => _bundles.Count;
-        }
-
-        public bool IsReadOnly
-        {
-            get => false;
-        }
-
-        public ITaskBundle this[int index]
-        {
-            get => _bundles[index];
-            set => _bundles[index] = value;
-        }
-
         [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
 
         [SerializeThis("TaskProcessor")]
         private IProcessorType _processor;
+
+        private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
 
         public TaskBundleCollection() : this(new AND(), new Disorderly())
         {
@@ -84,15 +72,40 @@ namespace KarpikQuests.QuestSample
             Processor = processor;
         }
 
-#region list
+        #region list
+        public int Count
+        {
+            get => _bundles.Count;
+        }
+
+        public bool IsReadOnly
+        {
+            get => false;
+        }
+
+        public ITaskBundle this[int index]
+        {
+            get => _bundles[index];
+            set => _bundles[index] = value;
+        }
+
         public void Add(ITaskBundle item)
         {
             if (Has(item)) return;
+            
             _bundles.Add(item);
+            item.Updated += OnBundleUpdated;
+            item.Completed += OnBundleComplete;
         }
 
         public void Clear()
         {
+            foreach (var bundle in _bundles)
+            {
+                bundle.Completed -= OnBundleComplete;
+                bundle.Updated -= OnBundleUpdated;
+            }
+
             _bundles.Clear();
         }
 
@@ -145,6 +158,8 @@ namespace KarpikQuests.QuestSample
             var index = IndexOf(item);
             if (index < 0) return false;
             _bundles.RemoveAt(index);
+            item.Completed -= OnBundleComplete;
+            item.Updated -= OnBundleUpdated;
             return true;
         }
 
@@ -209,6 +224,53 @@ namespace KarpikQuests.QuestSample
         public int GetHashCode([DisallowNull] IReadOnlyTaskBundleCollection obj)
         {
             return obj.GetHashCode();
+        }
+
+        public void Setup()
+        {
+            Processor.Setup(this);
+        }
+
+        public void StartFirst()
+        {
+            if (!_bundles.Any()) return;
+
+            _bundles[0].StartFirst();
+        }
+
+        public void ResetAll()
+        {
+            foreach (var bundle in _bundles)
+            {
+                bundle.ResetAll();
+            }
+        }
+
+        public void ResetFirst()
+        {
+            if (!_bundles.Any()) return;
+
+            _bundles[0].ResetAll();
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext constext)
+        {
+            foreach (var bundle in _bundles)
+            {
+                bundle.Updated += OnBundleUpdated;
+                bundle.Completed += OnBundleComplete;
+            }
+        }
+
+        private void OnBundleUpdated(ITaskBundle bundle)
+        {
+            Updated?.Invoke(this, bundle);
+        }
+
+        private void OnBundleComplete(ITaskBundle bundle)
+        {
+            Completed?.Invoke(this);
         }
     }
 }

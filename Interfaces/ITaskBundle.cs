@@ -13,8 +13,13 @@ namespace KarpikQuests.Interfaces
 
         public bool Has(ITask task);
         public bool Has(string taskKey);
-        public void ResetAll(bool canBeCompleted = false);
-        public void ResetFirst(bool canBeCompleted = false);
+
+        public void Setup();
+        public void StartFirst();
+
+        public void ResetAll();
+        public void ResetFirst();
+
         public void ClearTasks();
     }
 }

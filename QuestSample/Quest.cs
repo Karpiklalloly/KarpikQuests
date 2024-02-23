@@ -1,12 +1,12 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Statuses;
-using System.Runtime.Serialization;
 using System.Text;
 using KarpikQuests.Saving;
 using KarpikQuests.Extensions;
 using System;
 using KarpikQuests.Keys;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace KarpikQuests.QuestSample
 {
@@ -98,6 +98,9 @@ namespace KarpikQuests.QuestSample
             Status = new UnStarted();
 
             Inited = true;
+
+            TaskBundles.Updated += OnBundlesUpdated;
+            TaskBundles.Completed += OnBundlesCompleted;
         }
 
         public void Start()
@@ -116,7 +119,6 @@ namespace KarpikQuests.QuestSample
                 task
             };
             _bundles.Add(bundle);
-            bundle.Completed += OnBundleComplete;
         }
 
         public void RemoveTask(ITask task)
@@ -143,14 +145,12 @@ namespace KarpikQuests.QuestSample
         {
             if (_bundles.Has(bundle)) return;
             _bundles.Add(bundle);
-            bundle.Completed += OnBundleComplete;
         }
 
         public void RemoveBundle(ITaskBundle bundle)
         {
             if (!_bundles.Has(bundle)) return;
             _bundles.Remove(bundle);
-            bundle.Completed -= OnBundleComplete;
         }
 
         public void Reset()
@@ -263,13 +263,11 @@ namespace KarpikQuests.QuestSample
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            foreach (var bundle in TaskBundles)
-            {
-                bundle.Completed += OnBundleComplete;
-            }
+            TaskBundles.Updated += OnBundlesUpdated;
+            TaskBundles.Completed += OnBundlesCompleted;
         }
 
-        private void OnBundleComplete(ITaskBundle bundle)
+        private void OnBundlesUpdated(IReadOnlyTaskBundleCollection bundles, ITaskBundle bundle)
         {
             if (Status is UnStarted)
             {
@@ -277,15 +275,13 @@ namespace KarpikQuests.QuestSample
             }
 
             Updated?.Invoke(this, bundle);
+        }
 
-            if (_bundles.IsCompleted())
-            {
-                Status = new Completed();
-                Completed?.Invoke(this);
+        private void OnBundlesCompleted(IReadOnlyTaskBundleCollection bundles)
+        {
+            Status = new Completed();
 
-                Updated = null;
-                Completed = null;
-            }
+            Completed?.Invoke(this);
         }
     }
 }

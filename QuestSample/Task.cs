@@ -81,9 +81,21 @@ namespace KarpikQuests.QuestSample
             _inited = true;
         }
 
-        public void Reset(bool canBeCompleted = false)
+        public void Setup()
         {
-            CanBeCompleted = canBeCompleted;
+            CanBeCompleted = false;
+            Status = ITask.TaskStatus.UnCompleted;
+        }
+
+        public void Start()
+        {
+            CanBeCompleted = true;
+            Status = ITask.TaskStatus.UnCompleted;
+        }
+
+        public void Reset()
+        {
+            CanBeCompleted = false;
             Status = ITask.TaskStatus.UnCompleted;
             Completed = null;
         }

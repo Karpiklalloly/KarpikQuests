@@ -11,7 +11,7 @@ namespace KarpikQuests.TaskProcessorTypes
         {
             foreach (var bundle in bundles)
             {
-                bundle.ResetAll(true);
+                bundle.Setup();
             }
         }
 
@@ -19,7 +19,7 @@ namespace KarpikQuests.TaskProcessorTypes
         {
             foreach (var task in bundle)
             {
-                task.Reset(true);
+                task.Setup();
             }
         }
     }
