@@ -22,11 +22,6 @@ namespace KarpikQuests.QuestSample
         [SerializeThis("Links")]
         private readonly IQuestLinker _linker = new QuestLinker();
 
-        public QuestAggregator()
-        {
-
-        }
-
         public void Start()
         {
             foreach (var quest in _quests)
@@ -150,7 +145,9 @@ namespace KarpikQuests.QuestSample
 
         public bool TryRemoveDependencies(IQuest quest)
         {
+#if DEBUG
             if (quest is null) throw new ArgumentNullException(nameof(quest));
+#endif
 
             if (!Has(quest)) return false;
 
@@ -166,7 +163,9 @@ namespace KarpikQuests.QuestSample
 
         public bool TryRemoveDependents(IQuest quest)
         {
+#if DEBUG
             if (quest is null) throw new ArgumentNullException(nameof(quest));
+#endif
 
             if (!Has(quest)) return false;
 
@@ -182,7 +181,9 @@ namespace KarpikQuests.QuestSample
 
         public IQuestCollection GetDependencies(IQuest quest)
         {
+#if DEBUG
             if (quest is null) throw new ArgumentNullException(nameof(quest));
+#endif
 
             var keys = _linker.GetQuestKeyDependencies(quest.Key);
             var collection = new QuestCollection();
@@ -195,7 +196,9 @@ namespace KarpikQuests.QuestSample
 
         public IQuestCollection GetDependents(IQuest quest)
         {
+#if DEBUG
             if (quest is null) throw new ArgumentNullException(nameof(quest));
+#endif
 
             var collection = new QuestCollection();
             var keys = _linker.GetQuestKeyDependents(quest.Key);

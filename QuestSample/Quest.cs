@@ -23,7 +23,9 @@ namespace KarpikQuests.QuestSample
             get => _key;
             set
             {
+#if DEBUG
                 if (!value.IsValid()) throw new ArgumentNullException(nameof(value));
+#endif
 
                 string temp = _key;
                 _key = value;
@@ -85,7 +87,9 @@ namespace KarpikQuests.QuestSample
 
         public void Init(string key, string name, string description, ITaskBundleCollection bundles)
         {
+#if DEBUG
             if (!bundles.IsValid()) throw new ArgumentNullException(nameof(bundles));
+#endif
 
             Key = key;
             Name = name;

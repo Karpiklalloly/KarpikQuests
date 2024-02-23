@@ -22,7 +22,9 @@ namespace KarpikQuests.QuestSample
             get => _completionType;
             private set
             {
+#if DEBUG
                 if (value is null) throw new ArgumentNullException(nameof(value));
+#endif
 
                 _completionType = value;
             }
@@ -33,7 +35,9 @@ namespace KarpikQuests.QuestSample
             get => _processor;
             private set
             {
+#if DEBUG
                 if (value is null) throw new ArgumentNullException(nameof(value));
+#endif
 
                 _processor = value;
                 _processor.Setup(this);

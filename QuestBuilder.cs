@@ -69,7 +69,9 @@ namespace KarpikQuests
 
             public QuestBuilderPart AddToAggregatorOnCreate(IQuestAggregator aggregator)
             {
+#if DEBUG
                 if (aggregator is null) throw new ArgumentNullException(nameof(aggregator));
+#endif
 
                 _questAggregator = aggregator;
                 _addToAggregator = true;
