@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface ITask : IInitable, IEquatable<ITask>, ICloneable
+    public interface ITask : IInitable, IEqualityComparer<ITask>, ICloneable
     {
         public event Action<ITask> Completed;
 

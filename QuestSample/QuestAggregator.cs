@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System;
 using KarpikQuests.Saving;
 using KarpikQuests.Statuses;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
@@ -46,7 +47,7 @@ namespace KarpikQuests.QuestSample
         }
 
         /// <summary>
-        /// Note if there are many dependencies <param name="autoChangeDependencies"> is <see cref="false"/>, this method will not delete quest
+        /// Note if there are many dependencies <param name="autoChangeDependencies"/> is false, this method will not delete quest
         /// </summary>
         /// <param name="quest"></param>
         /// <param name="autoChangeDependencies"></param>
@@ -107,13 +108,13 @@ namespace KarpikQuests.QuestSample
             return _linker.TryRemoveDependence(quest.Key, dependence.Key);
         }
 
-        public bool TryReplaceQuest(IQuest quest1, IQuest quest2, bool keysMayBeEquel)
+        public bool TryReplaceQuest(IQuest quest1, IQuest quest2, bool keysAreEquel)
         {
             if (!quest1.IsValid()) return false;
 
             if (!quest2.IsValid()) return false;
 
-            if (!keysMayBeEquel)
+            if (!keysAreEquel)
             {
                 if (quest1.Equals(quest2)) return false;
 
@@ -209,7 +210,7 @@ namespace KarpikQuests.QuestSample
             return collection;
         }
 
-        public bool CheckKeyCollisions()
+        public bool HasCollisions()
         {
             var keys = _quests.GroupBy(x => x.Key)
                 .Where(group => group.Count() > 1)
@@ -217,9 +218,10 @@ namespace KarpikQuests.QuestSample
 
             if (keys.Count() > 1)
             {
-                return false;
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         public bool Has(IQuest quest)
@@ -238,7 +240,7 @@ namespace KarpikQuests.QuestSample
 
         public override string ToString()
         {
-            return _quests.ToString() + '\n' + _linker.ToString();
+            return _quests.ToString() + '\n' + _linker;
         }
 
         public void Clear()
@@ -254,34 +256,31 @@ namespace KarpikQuests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (obj is null) return false;
-
-            if (obj is IQuestAggregator aggregator)
+            return obj switch
             {
-                Equals(aggregator);
-            }
-
-            return false;
+                null => false,
+                IQuestAggregator aggregator => Equals(this, aggregator),
+                _ => false
+            };
         }
 
-        public bool Equals(IQuestAggregator? other)
+        public bool Equals(IQuestAggregator? x, IQuestAggregator? y)
         {
-            var a1 = this;
-            if (a1 is null && other is null) return true;
+            if (x is null && y is null) return true;
 
-            if (a1 is null || other is null) return false;
+            if (x is null || y is null) return false;
 
-            if (a1.Quests.Count != other.Quests.Count) return false;
+            if (x.Quests.Count != y.Quests.Count) return false;
 
-            var quests1 = a1.Quests.ToList();
-            var quests2 = other.Quests.ToList();
+            var quests1 = x.Quests.ToList();
+            var quests2 = y.Quests.ToList();
 
-            for (int i = 0; i < quests1.Count; i++)
-            {
-                if (!quests1[i].Equals(quests2[i])) return false;
-            }
+            return !quests1.Where((t, i) => !t.Equals(quests2[i])).Any();
+        }
 
-            return true;
+        public int GetHashCode([DisallowNull] IQuestAggregator obj)
+        {
+            return obj.GetHashCode();
         }
 
         public override int GetHashCode()

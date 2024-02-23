@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface ITaskBundle : ICollection<ITask>, ICloneable, IEquatable<ITaskBundle>
+    public interface ITaskBundle : ICollection<ITask>, ICloneable, IEqualityComparer<ITaskBundle>
     {
-        public event Action<ITaskBundle> Updated;
-        public event Action<ITaskBundle> Completed;
+        public event Action<ITaskBundle>? Updated;
+        public event Action<ITaskBundle>? Completed;
 
         public bool IsCompleted { get; }
         public IReadOnlyTaskCollection QuestTasks { get; }

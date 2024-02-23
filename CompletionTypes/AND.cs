@@ -6,49 +6,19 @@ using System.Linq;
 namespace KarpikQuests.CompletionTypes
 {
     [Serializable]
+#pragma warning disable S101 // Types should be named in PascalCase
     public class AND : ICompletionType
+#pragma warning restore S101 // Types should be named in PascalCase
     {
-        public bool SuccessResult { get; }
-
-        public AND(bool successResult = true)
-        {
-            SuccessResult = successResult;
-        }
-
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
-            if (!bundles.Any())
-            {
-                return true;
-            }
-
-            foreach (var bundle in bundles)
-            {
-                if (!bundle.IsCompleted)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
+            return !arr.Any() || Array.TrueForAll(arr, bundle => bundle.IsCompleted);
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
         {
-            if (!bundle.Any())
-            {
-                return true;
-            }
-
-            foreach (var task in bundle)
-            {
-                if (task.Status == ITask.TaskStatus.UnCompleted)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !bundle.Any() || bundle.All(task => task.Status == ITask.TaskStatus.Completed);
         }
     }
 }

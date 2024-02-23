@@ -5,25 +5,25 @@ using KarpikQuests.QuestSample;
 
 namespace KarpikQuests.Factories
 {
-    public struct QuestTaskFactory : IFactory<ITask>
+    public readonly struct QuestTaskFactory : IFactory<ITask>
     {
-        public ITask Create()
+        public readonly ITask Create()
         {
             return Create("Task", "Description");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITask Create(string name)
+        public readonly ITask Create(string name)
         {
             return Create(name, "Description");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITask Create(string name, string description)
+        public readonly ITask Create(string name, string description)
         {
-            Task task = new Task();
+            var task = new Task();
 
-            task.Init(KeyGenerator.GenerateKey(""), name, description);
+            task.Init(KeyGenerator.GenerateKey(), name, description);
 
             return task;
         }

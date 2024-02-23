@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IReadOnlyTaskBundleCollection : IList<ITaskBundle>, ICloneable, IEquatable<IReadOnlyTaskBundleCollection>
+    public interface IReadOnlyTaskBundleCollection : IList<ITaskBundle>, ICloneable, IEqualityComparer<IReadOnlyTaskBundleCollection>
     {
         public ICompletionType CompletionType { get; }
 

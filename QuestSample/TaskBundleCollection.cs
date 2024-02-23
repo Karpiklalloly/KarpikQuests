@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using KarpikQuests.CompletionTypes;
 using KarpikQuests.TaskProcessorTypes;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
-    public class TaskBundleCollection : ITaskBundleCollection
+    public sealed class TaskBundleCollection : ITaskBundleCollection
     {
-        private List<ITaskBundle> _bundles = new List<ITaskBundle>();
+        private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
 
         public ICompletionType CompletionType
         {
@@ -56,10 +57,10 @@ namespace KarpikQuests.QuestSample
             set => _bundles[index] = value;
         }
 
-        [SerializeThis("CompletionType", Order = 6)]
+        [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
 
-        [SerializeThis("TaskProcessor", Order = 6)]
+        [SerializeThis("TaskProcessor")]
         private IProcessorType _processor;
 
         public TaskBundleCollection() : this(new AND(), new Disorderly())
@@ -112,9 +113,15 @@ namespace KarpikQuests.QuestSample
 
         public bool Has(ITask task)
         {
-            foreach (var bundle in _bundles)
+            return _bundles.Exists((bundle) =>  bundle.Has(task));
+        }
+
+        public bool Has(ITaskBundle bundle)
+        {
+            for (int i = 0; i < _bundles.Count; i++)
             {
-                if (bundle.Has(task))
+                ITaskBundle? anotherTaskBundle = _bundles[i];
+                if (anotherTaskBundle.Equals(bundle))
                 {
                     return true;
                 }
@@ -145,18 +152,6 @@ namespace KarpikQuests.QuestSample
         {
             return _bundles.GetEnumerator();
         }
-
-        public bool Has(ITaskBundle item)
-        {
-            foreach (var bundle in _bundles)
-            {
-                if (bundle.Equals(item))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         
         public int IndexOf(ITaskBundle item)
         {
@@ -181,21 +176,23 @@ namespace KarpikQuests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is TaskBundleCollection collection))
+            if (!(obj is TaskBundleCollection collection))
             {
                 return false;
             }
 
-            return Equals(collection);
+            return Equals(this, collection);
         }
 
-        public bool Equals(IReadOnlyTaskBundleCollection? other)
+        public bool Equals(IReadOnlyTaskBundleCollection? x, IReadOnlyTaskBundleCollection? y)
         {
-            if (other is null) return false;
+            if (x is null && y is null) return true;
+
+            if (x is null || y is null) return false;
 
             for (int i = 0; i < Count; i++)
             {
-                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
+                if (!x[i].Equals(y[i]))
                 {
                     return false;
                 }
@@ -207,6 +204,11 @@ namespace KarpikQuests.QuestSample
         public override int GetHashCode()
         {
             return _bundles.GetHashCode();
+        }
+
+        public int GetHashCode([DisallowNull] IReadOnlyTaskBundleCollection obj)
+        {
+            return obj.GetHashCode();
         }
     }
 }

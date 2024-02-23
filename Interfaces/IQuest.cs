@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuest : IInitable, IEquatable<IQuest>, IDisposable, ICloneable
+    public interface IQuest : IInitable, IEqualityComparer<IQuest>, IDisposable, ICloneable
     {
         public event Action<string, string> KeyChanged;
         public event Action<IQuest> Started;

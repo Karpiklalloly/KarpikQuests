@@ -32,7 +32,7 @@ namespace KarpikQuests
 
             bundles ??= new TaskBundleCollection();
 
-            quest.Init(KeyGenerator.GenerateKey(""), name, description, bundles);
+            quest.Init(KeyGenerator.GenerateKey(), name, description, bundles);
 
             return new QuestBuilderPart(quest);
         }

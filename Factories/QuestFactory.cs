@@ -5,14 +5,13 @@ using KarpikQuests.QuestSample;
 
 namespace KarpikQuests.Factories
 {
-    public struct QuestFactory : IFactory<IQuest>
+    public readonly struct QuestFactory : IFactory<IQuest>
     {
-        private IFactory<ITaskBundleCollection> _bundleFactory;
+        private readonly IFactory<ITaskBundleCollection> _bundleFactory;
 
-        public QuestFactory(IFactory<ITaskBundleCollection> bundleFactory = null)
+        public QuestFactory(IFactory<ITaskBundleCollection>? bundleFactory = null)
         {
-            _bundleFactory = bundleFactory;
-            _bundleFactory ??= new TaskBundleCollectionFactory();
+            _bundleFactory = bundleFactory ?? new TaskBundleCollectionFactory();
         }
 
         public IQuest Create()
@@ -35,13 +34,13 @@ namespace KarpikQuests.Factories
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IQuest Create(string name,
             string description,
-            ITaskBundleCollection bundles)
+            ITaskBundleCollection? bundles)
         {
-            Quest quest = new Quest();
+            var quest = new Quest();
 
             bundles ??= new TaskBundleCollectionFactory().Create();
 
-            quest.Init(KeyGenerator.GenerateKey(""), name, description, bundles);
+            quest.Init(KeyGenerator.GenerateKey(), name, description, bundles);
 
             return quest;
         }

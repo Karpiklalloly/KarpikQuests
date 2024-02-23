@@ -6,32 +6,26 @@ namespace KarpikQuests.Statuses
     [Serializable]
     public struct UnStarted : IStatus
     {
-        public readonly string Status => GetType().Name;
+        public readonly string Status => nameof(UnStarted);
 
         public readonly bool Equals(IStatus? other)
         {
-            if (other is null) return false;
-
-            if (other is UnStarted)
-            {
-                return true;
-            }
-            return false;
+            return other is UnStarted;
         }
 
-        public override readonly bool Equals(object? obj)
+        public readonly override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is IStatus status)) return false;
+            if (!(obj is IStatus status)) return false;
 
             return Equals(status);
         }
 
-        public override readonly int GetHashCode()
+        public readonly override int GetHashCode()
         {
             return Status.GetHashCode();
         }
 
-        public override readonly string ToString()
+        public readonly override string ToString()
         {
             return Status;
         }

@@ -3,7 +3,7 @@ using KarpikQuests.Saving;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
@@ -83,12 +83,7 @@ namespace KarpikQuests.QuestSample
         {
             if (item is null) return false;
 
-            foreach (var quest in _data)
-            {
-                if (quest.Equals(item)) return true;
-            }
-
-            return false;
+            return _data.Contains(item);
         }
 #endregion
 
@@ -116,26 +111,33 @@ namespace KarpikQuests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is QuestCollection collection)) return false;
+            if (!(obj is QuestCollection collection)) return false;
 
-            return Equals(collection);
-        }
-
-        public bool Equals(IReadOnlyQuestCollection? other)
-        {
-            if (other is null) return false;
-
-            for (int i = 0; i < Count; i++)
-            {
-                if (!this.ElementAt(i).Equals(other.ElementAt(i))) return false;
-            }
-
-            return true;
+            return Equals(this, collection);
         }
 
         public override int GetHashCode()
         {
             return _data.GetHashCode();
+        }
+
+        public bool Equals(IReadOnlyQuestCollection? x, IReadOnlyQuestCollection? y)
+        {
+            if (x is null && y is null) return true;
+
+            if (x is null || y is null) return false;
+
+            for (int i = 0; i < x.Count; i++)
+            {
+                if (!x[i].Equals(y[i])) return false;
+            }
+
+            return true;
+        }
+
+        public int GetHashCode([DisallowNull] IReadOnlyQuestCollection obj)
+        {
+            return obj.GetHashCode();
         }
     }
 }

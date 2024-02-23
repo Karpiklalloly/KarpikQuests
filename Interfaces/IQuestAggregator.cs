@@ -1,8 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuestAggregator : IEquatable<IQuestAggregator>
+    public interface IQuestAggregator : IEqualityComparer<IQuestAggregator>
     {
         public IReadOnlyQuestCollection Quests { get; }
 
@@ -30,6 +30,6 @@ namespace KarpikQuests.Interfaces
         /// 
         /// </summary>
         /// <returns>True if no collisions</returns>
-        public bool CheckKeyCollisions();
+        public bool HasCollisions();
     }
 }

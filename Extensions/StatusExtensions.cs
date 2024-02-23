@@ -3,7 +3,7 @@ using KarpikQuests.Statuses;
 
 namespace KarpikQuests.Extensions
 {
-    public static partial class StatusExtensions
+    public static class StatusExtensions
     {
         public static bool IsCompleted(this IQuest quest)
         {

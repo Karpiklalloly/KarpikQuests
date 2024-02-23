@@ -1,6 +1,6 @@
 namespace KarpikQuests.Interfaces
 {
-    public interface IFactory<T>
+    public interface IFactory<out T>
     {
         public T Create();
     }

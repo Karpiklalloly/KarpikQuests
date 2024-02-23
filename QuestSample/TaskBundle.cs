@@ -6,13 +6,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using KarpikQuests.TaskProcessorTypes;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
-    public class TaskBundle : ITaskBundle
+    public sealed class TaskBundle : ITaskBundle
     {
-        public event Action<ITaskBundle> Updated;
-        public event Action<ITaskBundle> Completed;
+        public event Action<ITaskBundle>? Updated;
+        public event Action<ITaskBundle>? Completed;
 
         [SerializeThis("Tasks")]
         public IReadOnlyTaskCollection QuestTasks { get; private set; } = new TaskCollection();
@@ -51,7 +52,7 @@ namespace KarpikQuests.QuestSample
 
         public bool IsReadOnly => false;
 
-        public bool IsCompleted { get; private set; } = false;
+        public bool IsCompleted { get; private set; }
 
         [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
@@ -97,7 +98,7 @@ namespace KarpikQuests.QuestSample
 
         public void ResetFirst(bool canBeCompleted = false)
         {
-            QuestTasks?.First()?.Reset(canBeCompleted);
+            QuestTasks.FirstOrDefault()?.Reset(canBeCompleted);
         }
 
 #region list
@@ -150,38 +151,45 @@ namespace KarpikQuests.QuestSample
         }
 #endregion
 
-        public bool Equals(ITaskBundle? other)
-        {
-            if (other is null) return false;
-
-            if (QuestTasks.GetType() != other.QuestTasks.GetType())
-            {
-                return false;
-            }
-
-            if (QuestTasks.Count != other.Count)
-            {
-                return false;
-            }
-
-            return QuestTasks.Equals(other.QuestTasks);
-        }
-
         public override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is TaskBundle bundle))
+            if (!(obj is TaskBundle bundle))
             {
                 return false;
             }
 
-            return Equals(bundle);
+            return Equals(this, bundle);
+        }
+
+        public bool Equals(ITaskBundle? x, ITaskBundle? y)
+        {
+            if (x is null && y is null) return true;
+
+            if (x is null || y is null) return false;
+
+            if (x.QuestTasks.GetType() != y.QuestTasks.GetType())
+            {
+                return false;
+            }
+
+            if (x.QuestTasks.Count != y.Count)
+            {
+                return false;
+            }
+
+            return x.QuestTasks.Equals(y.QuestTasks);
+        }
+
+        public int GetHashCode([DisallowNull] ITaskBundle obj)
+        {
+            return obj.GetHashCode();
         }
 
         public override int GetHashCode()
         {
             return QuestTasks.GetHashCode();
         }
-    
+
         public object Clone()
         {
             TaskBundle clone = new TaskBundle
@@ -193,7 +201,7 @@ namespace KarpikQuests.QuestSample
 
             return clone;
         }
-    
+
         private void OnTaskCompleted(ITask task)
         {
             Updated?.Invoke(this);

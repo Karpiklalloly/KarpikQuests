@@ -6,64 +6,46 @@ namespace KarpikQuests.CompletionTypes
 {
     public class NeededCount : ICompletionType
     {
-        public bool SuccessResult { get; }
         public readonly int Count;
 
-        public NeededCount(int count, bool successResult = true)
+        public NeededCount(int count)
         {
             Count = count;
-            SuccessResult = successResult;
         }
 
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
-            int curCount = 0;
-            if (!bundles.Any())
+            var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
+            if (!arr.Any())
             {
-                return !SuccessResult;
+                return false;
             }
 
-            foreach (var bundle in bundles)
-            {
-                foreach (var task in bundle)
-                {
-                    if (task.Status == ITask.TaskStatus.Completed)
-                    {
-                        curCount++;
-                    }
-                }
-            }
+            int curCount = arr.Sum(bundle => bundle.Count(task => task.Status == ITask.TaskStatus.Completed));
 
             if (curCount >= Count)
             {
-                return SuccessResult;
+                return true;
             }
 
-            return !SuccessResult;
+            return false;
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
         {
-            int curCount = 0;
             if (!bundle.Any())
             {
-                return SuccessResult;
+                return true;
             }
 
-            foreach (var task in bundle)
-            {
-                if (task.Status == ITask.TaskStatus.Completed)
-                {
-                    curCount++;
-                }
-            }
+            int curCount = bundle.Count(task => task.Status == ITask.TaskStatus.Completed);
 
             if (curCount >= Count)
             {
-                return SuccessResult;
+                return true;
             }
 
-            return !SuccessResult;
+            return false;
         }
     }
 }

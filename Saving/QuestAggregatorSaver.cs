@@ -1,10 +1,5 @@
 ﻿using KarpikQuests.Interfaces;
 using System;
-using System.IO;
-
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-#endif
 
 namespace KarpikQuests.Saving
 {
@@ -61,7 +56,7 @@ namespace KarpikQuests.Saving
         }
 #endif
         [Serializable]
-        private class SaveData
+        private sealed class SaveData
         {
             public Version Version { get; set; }
             public IQuestAggregator Aggregator { get; set; }

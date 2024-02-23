@@ -5,8 +5,8 @@ using System.Text;
 using KarpikQuests.Saving;
 using KarpikQuests.Extensions;
 using System;
-using System.Linq;
 using KarpikQuests.Keys;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
@@ -78,11 +78,11 @@ namespace KarpikQuests.QuestSample
         [SerializeThis("Tasks")]
         private ITaskBundleCollection _bundles;
 
-        private bool disposedValue;
+        private bool _disposedValue;
 
         public void Init()
         {
-            Init(KeyGenerator.GenerateKey(""), "Quest", "Description", new TaskBundleCollection());
+            Init(KeyGenerator.GenerateKey(), "Quest", "Description", new TaskBundleCollection());
         }
 
         public void Init(string key, string name, string description, ITaskBundleCollection bundles)
@@ -123,15 +123,14 @@ namespace KarpikQuests.QuestSample
         {
             if (!_bundles.Has(task)) return;
 
-            ITaskBundle b = _bundles.First();
+            ITaskBundle? b = null;
             foreach (var bundle in _bundles)
             {
-                if (bundle.Has(task))
-                {
-                    bundle.Remove(task);
-                    b = bundle;
-                    break;
-                }
+                if (!bundle.Has(task)) continue;
+
+                bundle.Remove(task);
+                b = bundle;
+                break;
             }
 
             if (b?.QuestTasks.Count == 0)
@@ -176,7 +175,6 @@ namespace KarpikQuests.QuestSample
             Updated = null;
             Completed = null;
         }
-
 
         public object Clone()
         {
@@ -223,40 +221,42 @@ namespace KarpikQuests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is Quest quest))
+            if (!(obj is Quest quest))
             {
                 return false;
             }
 
-            return Equals(quest);
+            return Equals(this, quest);
         }
 
-        public bool Equals(IQuest? other)
+        public bool Equals(IQuest? x, IQuest? y)
         {
-            if (other is null) return false;
+            if (x is null && y is null) return true;
 
-            return Key.Equals(other.Key);
+            if (x is null || y is null) return false;
+
+            return x.Key.Equals(y.Key);
+        }
+
+        public int GetHashCode([DisallowNull] IQuest obj)
+        {
+            return obj.GetHashCode();
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
-                if (disposing)
-                {
-
-                }
-
                 _bundles.Clear();
 
                 KeyChanged = null;
-                Started    = null;
-                Updated    = null;
-                Completed  = null;
+                Started = null;
+                Updated = null;
+                Completed = null;
 
                 _inited = false;
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

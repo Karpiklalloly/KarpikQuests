@@ -6,27 +6,27 @@ using KarpikQuests.TaskProcessorTypes;
 
 namespace KarpikQuests.Factories
 {
-    public struct TaskBundleFactory : IFactory<ITaskBundle>
+    public readonly struct TaskBundleFactory : IFactory<ITaskBundle>
     {
-        public ITaskBundle Create()
+        public readonly ITaskBundle Create()
         {
             return Create(new AND(), new Disorderly());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITaskBundle Create(ICompletionType completionType)
+        public readonly ITaskBundle Create(ICompletionType? completionType)
         {
             return Create(completionType, new Disorderly());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITaskBundle Create(IProcessorType processor)
+        public readonly ITaskBundle Create(IProcessorType? processor)
         {
             return Create(new AND(), processor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITaskBundle Create(ICompletionType completionType, IProcessorType processor)
+        public readonly ITaskBundle Create(ICompletionType? completionType, IProcessorType? processor)
         {
             completionType ??= new AND();
             processor      ??= new Disorderly();

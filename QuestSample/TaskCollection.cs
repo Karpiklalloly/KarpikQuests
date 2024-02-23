@@ -2,7 +2,7 @@
 using KarpikQuests.Saving;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
@@ -54,12 +54,7 @@ namespace KarpikQuests.QuestSample
         {
             if (task is null) return false;
 
-            foreach (var task1 in _tasks)
-            {
-                if (task1.Equals(task)) return true;
-            }
-
-            return false;
+            return _tasks.Contains(task);
         }
 
         public bool Remove(ITask item)
@@ -110,24 +105,31 @@ namespace KarpikQuests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (obj is null || !(obj is TaskCollection collection)) return false;
+            if (!(obj is TaskCollection collection)) return false;
 
-            return Equals(collection);
+            return Equals(this, collection);
         }
 
-        public bool Equals(IReadOnlyTaskCollection? other)
+        public bool Equals(IReadOnlyTaskCollection? x, IReadOnlyTaskCollection? y)
         {
-            if (other is null) return false;
+            if (x is null && y is null) return true;
 
-            for (int i = 0; i < Count; i++)
+            if (x is null || y is null) return false;
+
+            for (int i = 0; i < x.Count; i++)
             {
-                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
+                if (!x[i].Equals(y[i]))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        public int GetHashCode([DisallowNull] IReadOnlyTaskCollection obj)
+        {
+            return obj.GetHashCode();
         }
     }
 }

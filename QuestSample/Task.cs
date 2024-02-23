@@ -2,6 +2,7 @@
 using KarpikQuests.Keys;
 using KarpikQuests.Saving;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KarpikQuests.QuestSample
 {
@@ -66,10 +67,10 @@ namespace KarpikQuests.QuestSample
 
         public void Init()
         {
-            Init(KeyGenerator.GenerateKey(""), "Task", "Description");
+            Init(KeyGenerator.GenerateKey(), "Task", "Description");
         }
 
-        public void Init(string key, string name, string description)
+        public void Init(string key, string name, string description = "")
         {
             Key = key;
             Name = name;
@@ -87,6 +88,17 @@ namespace KarpikQuests.QuestSample
             Completed = null;
         }
 
+        public bool TryToComplete()
+        {
+            if (!CanBeCompleted) return false;
+
+            Status = ITask.TaskStatus.Completed;
+            CanBeCompleted = false;
+            Completed?.Invoke(this);
+
+            return true;
+        }
+
         public object Clone()
         {
             Task task = new Task
@@ -101,32 +113,35 @@ namespace KarpikQuests.QuestSample
             return task;
         }
 
-        public bool Equals(ITask? other)
+        public override bool Equals(object? obj)
         {
-            if (other is null) return false;
-            if (Key is null) return false;
-            return Key.Equals(other.Key);
+            if (!(obj is Task task)) return false;
+
+            return Equals(this, task);
         }
 
-        public bool TryToComplete()
+        public bool Equals(ITask? x, ITask? y)
         {
-            if (!CanBeCompleted) return false;
+            if (x is null && y is null) return true;
 
-            Status = ITask.TaskStatus.Completed;
-            CanBeCompleted = false;
-            Completed?.Invoke(this);
+            if (x is null || y is null) return false;
 
-            return true;
+            return x.Key.Equals(y.Key);
         }
 
-        public override string ToString()
+        public int GetHashCode([DisallowNull] ITask obj)
         {
-            return $"{Key} {Name} ({Status})";
+            return obj.GetHashCode();
         }
 
         public override int GetHashCode()
         {
             return Key.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Key} {Name} ({Status})";
         }
     }
 }

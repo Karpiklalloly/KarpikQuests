@@ -17,41 +17,13 @@ namespace KarpikQuests.CompletionTypes
 
         public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
         {
-            if (!bundles.Any())
-            {
-                return true;
-            }
-
-            foreach (var bundle in bundles)
-            {
-                foreach (var task in bundle)
-                {
-                    if (task.Status == ITask.TaskStatus.Completed)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
+            return !arr.Any() || arr.SelectMany(bundle => bundle).Any(task => task.Status == ITask.TaskStatus.Completed);
         }
 
         public bool CheckCompletion(ITaskBundle bundle)
         {
-            if (!bundle.Any())
-            {
-                return true;
-            }
-
-            foreach (var task in bundle)
-            {
-                if (task.Status == ITask.TaskStatus.Completed)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return !bundle.Any() || bundle.Any(task => task.Status == ITask.TaskStatus.Completed);
         }
     }
 }

@@ -27,10 +27,10 @@ namespace KarpikQuests.QuestSample
 
         public IReadOnlyCollection<string> GetQuestKeyDependents(string key)
         {
-            List<string> collection = new List<string>();
+            var collection = new List<string>();
             foreach (var pair in _dependencies)
             {
-                if (pair.Value is null || !pair.Value.Any())
+                if (!pair.Value.Any())
                 {
                     continue;
                 }
@@ -60,16 +60,18 @@ namespace KarpikQuests.QuestSample
             if (key.Equals(dependenceKey)) return false;
 
             //Check to not link to each other
-            if (_dependencies.ContainsKey(dependenceKey))
+            if (_dependencies.TryGetValue(dependenceKey, out var dependence) && dependence.Contains(key))
             {
-                if (_dependencies[dependenceKey].Contains(key)) return false;
+                return false;
             }
 
             _dependencies[key].Add(dependenceKey);
             return true;
         }
 
+#pragma warning disable S927 // Parameter names should match base declaration and other partial definitions
         public bool TryRemoveDependence(string key, string dependentKey)
+#pragma warning restore S927 // Parameter names should match base declaration and other partial definitions
         {
             if (!_dependencies.ContainsKey(key)) return false;
 

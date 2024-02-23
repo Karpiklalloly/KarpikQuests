@@ -10,17 +10,16 @@ namespace KarpikQuests.TaskProcessorTypes
     {
         public void Setup(IEnumerable<ITaskBundle> bundles)
         {
-            foreach (var bundle in bundles)
+            var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
+            foreach (var bundle in arr)
             {
                 bundle.ResetAll(false);
-                bundle.Completed += (b) => OnBundleCompleted(bundles, b);
+                bundle.Completed += (b) => OnBundleCompleted(arr, b);
             }
 
-            if (bundles.Any())
-            {
-                var bundle = bundles.ElementAt(0);
-                bundle?.ResetFirst();
-            }
+            if (!arr.Any()) return;
+
+            arr[0].ResetFirst();
         }
 
         public void Setup(ITaskBundle bundle)
@@ -30,33 +29,34 @@ namespace KarpikQuests.TaskProcessorTypes
                 task.Reset(false);
                 task.Completed += (t) => OnTaskCompleted(bundle, t);
             }
-            bundle.First()?.Reset(true);
+
+            bundle.FirstOrDefault()?.Reset(true);
         }
 
         private void OnTaskCompleted(ITaskBundle bundle, ITask task)
         {
             var index = bundle.QuestTasks.ToList().IndexOf(task);
-            if (index != -1)
+            if (index == -1) return;
+
+            if (bundle.QuestTasks.Count == index + 1)
             {
-                if (bundle.QuestTasks.Count == index + 1)
-                {
-                    return;
-                }
-                bundle.QuestTasks.ElementAt(index + 1).Reset(true);
+                return;
             }
+            bundle.QuestTasks[index + 1].Reset(true);
         }
 
         private void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
         {
-            var index = bundles.ToList().IndexOf(bundle);
-            if (index != -1)
+            var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
+            var index = arr.ToList().IndexOf(bundle);
+            if (index == -1) return;
+
+            if (arr.Length == index + 1)
             {
-                if (bundles.Count() == index + 1)
-                {
-                    return;
-                }
-                bundles.ElementAt(index + 1).ResetFirst(true);
+                return;
             }
+
+            arr[index + 1].ResetFirst(true);
         }
 
 
