@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KarpikQuests.TaskProcessorTypes;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace KarpikQuests.QuestSample
 {
@@ -15,9 +16,12 @@ namespace KarpikQuests.QuestSample
         public event Action<ITaskBundle>? Updated;
         public event Action<ITaskBundle>? Completed;
 
-        [SerializeThis("Tasks")]
+        [SerializeThis(Name = "Tasks")]
+        [JsonProperty("Tasks")]
         public IReadOnlyTaskCollection QuestTasks { get; private set; } = new TaskCollection();
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public ICompletionType CompletionType
         {
             get => _completionType;
@@ -31,6 +35,8 @@ namespace KarpikQuests.QuestSample
             }
         }
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public IProcessorType Processor
         {
             get => _processor;
@@ -45,19 +51,27 @@ namespace KarpikQuests.QuestSample
             }
         }
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public int Count
         {
             get => QuestTasks.Count;
         }
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public bool IsReadOnly => false;
 
+        [SerializeThis(Name = "IsCompleted")]
+        [JsonProperty("IsCompleted")]
         public bool IsCompleted { get; private set; }
 
-        [SerializeThis("CompletionType")]
+        [SerializeThis(Name = "CompletionType")]
+        [JsonProperty("CompletionType")]
         private ICompletionType _completionType;
 
-        [SerializeThis("TaskProcessor")]
+        [SerializeThis(Name = "TaskProcessor")]
+        [JsonProperty("TaskProcessor")]
         private IProcessorType _processor;
 
         public TaskBundle() : this(new AND(), new Orderly())

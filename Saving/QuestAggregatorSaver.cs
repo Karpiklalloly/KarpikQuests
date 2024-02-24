@@ -1,65 +1,51 @@
 ﻿using KarpikQuests.Interfaces;
 using System;
+using System.IO;
 
 namespace KarpikQuests.Saving
 {
     public static class QuestAggregatorSaver
     {
+        private static ISerializer<IQuestAggregator> _serializer = new JsonResolver();
+
+        public static ISerializer<IQuestAggregator> Serializer
+        {
+            get
+            {
+                return _serializer;
+            }
+            set
+            {
+                if (value == null)
+                {
+#if DEBUG
+                    throw new ArgumentNullException(nameof(value));
+#endif
+                }
+                _serializer = value;
+            }
+        }
+
         public static void Save(IQuestAggregator aggregator, string path, bool readable = false)
         {
-#if JSON_NEWTONSOFT
-            SaveJsonNewtonsoft(aggregator, path, readable);
-#endif
+            var str = Serializer.Serialize(aggregator);
+            File.WriteAllText(path, str);
         }
 
         public static IQuestAggregator? Load(string path)
         {
-#if JSON_NEWTONSOFT
-            return LoadJsonNewtonsoft(path);
-#endif
-            return null;
+            return Serializer.Deserialize(File.ReadAllText(path));
         }
 
-#if JSON_NEWTONSOFT
-        private static void SaveJsonNewtonsoft(IQuestAggregator aggregator, string path, bool readable = false)
-        {
-            var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-            };
-
-            if (readable)
-            {
-                settings.Formatting = Formatting.Indented;
-            }
-
-            SaveData data = new SaveData()
-            {
-                Version = Environment.Version,
-                Aggregator = aggregator
-            };
-            var json = JsonConvert.SerializeObject(data, settings);
-
-            File.WriteAllText(path, json);
-        }
-
-        private static IQuestAggregator? LoadJsonNewtonsoft(string path)
-        {
-            var json = File.ReadAllText(path);
-            var data = JsonConvert.DeserializeObject<SaveData>(json, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
-
-            if (data is null) return null;
-            return data.Aggregator;
-        }
-#endif
         [Serializable]
-        private sealed class SaveData
+        public sealed class SaveData
         {
+            [SerializeThis(Name = "Version")]
             public Version Version { get; set; }
+            [SerializeThis(Name = "Aggregator")]
             public IQuestAggregator Aggregator { get; set; }
+            [SerializeThis(Name = "AggregatorType")]
+            public Type AggregatorType { get; set; }
         }
     }
 }

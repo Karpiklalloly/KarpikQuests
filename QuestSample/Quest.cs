@@ -7,6 +7,7 @@ using System;
 using KarpikQuests.Keys;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace KarpikQuests.QuestSample
 {
@@ -18,6 +19,8 @@ namespace KarpikQuests.QuestSample
         public event Action<IQuest, ITaskBundle>? Updated;
         public event Action<IQuest>? Completed;
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public string Key
         {
             get => _key;
@@ -32,50 +35,66 @@ namespace KarpikQuests.QuestSample
                 KeyChanged?.Invoke(temp, _key);
             }
         }
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public string Name
         {
             get => _name;
             private set => _name = value;
         }
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public string Description
         {
             get => _description;
             private set => _description = value;
         }
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public bool Inited
         {
             get => _inited;
             private set => _inited = value;
         }
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public IReadOnlyTaskBundleCollection TaskBundles
         {
             get => _bundles;
             private set => _bundles = (ITaskBundleCollection)value;
         }
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public IStatus Status
         {
             get => _status;
             private set => _status = value;
         }
 
-        [SerializeThis("Key")]
+        [SerializeThis(Name = "Key")]
+        [JsonProperty("Key")]
         private string _key;
 
-        [SerializeThis("Name")]
+        [SerializeThis(Name = "Name")]
+        [JsonProperty("Name")]
         private string _name;
 
-        [SerializeThis("Description")]
+        [SerializeThis(Name = "Description")]
+        [JsonProperty("Description")]
         private string _description;
 
-        [SerializeThis("Inited")]
+        [SerializeThis(Name = "Inited")]
+        [JsonProperty("Inited")]
         private bool _inited;
 
-        [SerializeThis("Status")]
+        [SerializeThis(Name = "Status")]
+        [JsonProperty("Status")]
         private IStatus _status;
 
-        [SerializeThis("Tasks")]
+        [SerializeThis(Name = "Tasks")]
+        [JsonProperty("Tasks")]
         private ITaskBundleCollection _bundles;
 
         private bool _disposedValue;
@@ -106,7 +125,7 @@ namespace KarpikQuests.QuestSample
         public void Start()
         {
             Status = new Started();
-            TaskBundles.Processor.Setup(TaskBundles);
+            TaskBundles.Setup();
             Started?.Invoke(this);
         }
 

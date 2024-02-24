@@ -1,5 +1,6 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Saving;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,8 @@ namespace KarpikQuests.QuestSample
     [System.Serializable]
     public class QuestLinker : IQuestLinker
     {
-        [SerializeThis("Quest_dependencies")]
+        [SerializeThis(Name = "Quest_dependencies")]
+        [JsonProperty("Quest_dependencies")]
         private readonly Dictionary<string, List<string>> _dependencies = new Dictionary<string, List<string>>();
 
         public void Clear()

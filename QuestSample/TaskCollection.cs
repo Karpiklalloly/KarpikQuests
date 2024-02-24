@@ -1,5 +1,6 @@
 ﻿using KarpikQuests.Interfaces;
 using KarpikQuests.Saving;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,14 +10,19 @@ namespace KarpikQuests.QuestSample
     [System.Serializable]
     public class TaskCollection : ITaskCollection
     {
-        [SerializeThis("Tasks")]
+        [SerializeThis(Name = "Tasks")]
+        [JsonProperty("Tasks")]
         private readonly List<ITask> _tasks = new List<ITask>();
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public int Count => _tasks.Count;
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public bool IsReadOnly => false;
 
-#region list
+        #region list
 
         public ITask this[int index]
         {

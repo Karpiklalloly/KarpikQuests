@@ -4,17 +4,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestCollection : IQuestCollection
     {
-        [SerializeThis("Data")]
+        [SerializeThis(Name = "Data")]
+        [JsonProperty("Data")]
         private readonly List<IQuest> _data = new List<IQuest>();
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public int Count => _data.Count;
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public bool IsReadOnly => false;
 
 #region list

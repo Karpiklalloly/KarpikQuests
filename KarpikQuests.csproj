@@ -24,5 +24,11 @@
     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
   </PackageReference>
 </ItemGroup>
+
+<ItemGroup>
+  <Reference Include="Newtonsoft.Json">
+    <HintPath>Externallibs\Newtonsoft.Json.dll</HintPath>
+  </Reference>
+</ItemGroup>
 	
 </Project>

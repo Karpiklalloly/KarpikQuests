@@ -6,21 +6,26 @@ using System;
 using KarpikQuests.Saving;
 using KarpikQuests.Statuses;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace KarpikQuests.QuestSample
 {
     [Serializable]
     public class QuestAggregator : IQuestAggregator
     {
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public IReadOnlyQuestCollection Quests
         {
             get => _quests;
         }
 
-        [SerializeThis("Quests")]
+        [SerializeThis(Name = "Quests")]
+        [JsonProperty("Quests")]
         private readonly IQuestCollection _quests = new QuestCollection();
 
-        [SerializeThis("Links")]
+        [SerializeThis(Name = "Links")]
+        [JsonProperty("Links")]
         private readonly IQuestLinker _linker = new QuestLinker();
 
         public void Start()
