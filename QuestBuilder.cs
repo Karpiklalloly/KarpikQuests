@@ -1,146 +1,115 @@
-﻿using JetBrains.Annotations;
+﻿using KarpikQuests.CompletionTypes;
 using KarpikQuests.Interfaces;
 using KarpikQuests.Keys;
+using KarpikQuests.QuestSample;
+using KarpikQuests.TaskProcessorTypes;
 using System;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace KarpikQuests
 {
-    public class QuestBuilder
+    public static class QuestBuilder
     {
-        private IQuest _quest;
-        private readonly IQuestAggregator _questAggregator;
-        private bool _addToAggregator = true;
-
-        public QuestBuilder(IQuestAggregator aggregator)
+        public static QuestBuilderPart Start<T>(string name, string description) where T : IQuest, new()
         {
-            _questAggregator = aggregator;
+            return Start<T>(name, description, new TaskBundleCollection());
         }
 
-        public QuestBuilder Start<T>(string name, string description) where T : IQuest, new()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuestBuilderPart Start<T>(string name, string description,
+            IProcessorType? processor, ICompletionType? completionType) where T : IQuest, new()
         {
-            return Start<T>("Empty key" + QuestKeyGenerator.GenerateNextAutoKey(), name, description);
+            processor ??= new Disorderly();
+            completionType ??= new AND();
+            return Start<T>(name, description, new TaskBundleCollection(completionType, processor));
         }
 
-        public QuestBuilder Start<T>(string key, string name, string description) where T : IQuest, new()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuestBuilderPart Start<T>(string name, string description,
+            ITaskBundleCollection? bundles) where T : IQuest, new()
         {
-            if (!IsValid(key))
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            var quest = new T();
 
-            if (!IsValid(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            bundles ??= new TaskBundleCollection();
 
-            if (!IsValid(description))
-            {
-                throw new ArgumentNullException(nameof(description));
-            }
+            quest.Init(KeyGenerator.GenerateKey(), name, description, bundles);
 
-            _quest = new T();
-            _quest.Init(key, name, description);
-            _addToAggregator = true;
-            return this;
+            return new QuestBuilderPart(quest);
         }
 
         /// <summary>
-        /// Copy quest
+        /// Clone quest
         /// </summary>
         /// <param name="quest"></param>
         /// <returns></returns>
-        public QuestBuilder Start(IQuest quest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuestBuilderPart Start(IQuest quest)
         {
-            _quest = (IQuest)quest.Clone();
-            return this;
-        }
+#if DEBUG
+            if (quest is null) throw new ArgumentNullException(nameof(quest));
+#endif
 
-        public QuestBuilder AddTask(IQuestTask task)
+            return new QuestBuilderPart((IQuest)quest.Clone());
+        }
+        
+        public struct QuestBuilderPart
         {
-            if (_quest.Tasks.Select(x => x.Key).Contains(task.Key))
+            private IQuest _quest;
+            private IQuestAggregator _questAggregator;
+            private bool _addToAggregator;
+
+            public QuestBuilderPart(IQuest quest)
             {
-                throw new InvalidOperationException("Quest can't contain equel tasks' keys");
+#if DEBUG
+                if (quest is null) throw new ArgumentNullException(nameof(quest));
+#endif
+
+                _quest = quest;
+                _questAggregator = null;
+                _addToAggregator = false;
             }
-            _quest.AddTask(task);
-            task.Completed += _quest.OnTaskComplete;
-            return this;
-        }
-
-        public QuestBuilder RemoveTask(IQuestTask task)
-        {
-            if (!_quest.Tasks.Select(x => x.Key).Contains(task.Key))
+        
+            public readonly QuestBuilderPart AddBundle(ITaskBundle bundle)
             {
-                throw new InvalidOperationException("Quest does not contain equel tasks' keys");
-            }
-            _quest.RemoveTask(task);
-            return this;
-        }
+#if DEBUG
+                if (bundle is null) throw new ArgumentNullException(nameof(bundle));
+#endif
+                if (_quest.TaskBundles.Has(bundle)) throw new InvalidOperationException("Quest can't contain equel bundle");
 
-        public QuestBuilder SetCustomKey(string key)
-        {
-            if (!IsValid(key))
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            IQuest quest = (IQuest)_quest.Clone();
-            quest.SetKey(key);
-
-            _questAggregator.TryToReplace(_quest, quest, true);
-            _quest.Dispose();
-            _quest = quest;
-            return this;
-        }
-
-        public QuestBuilder SetComplitionType([NotNull] IQuestCompletionType completionType)
-        {
-            _quest.SetCompletionType(completionType);
-            return this;
-        }
-
-        public QuestBuilder SetTaskProcessorType([NotNull] IQuestTaskProcessorType processorType)
-        {
-            _quest.SetTaskProcessorType(processorType);
-            return this;
-        }
-
-        public QuestBuilder DoNotAddAggregatorOnCreate()
-        {
-            _addToAggregator = false;
-            return this;
-        }
-
-        public QuestBuilder OnComplete(Action<IQuest> onComplete)
-        {
-            _quest.Completed += onComplete;
-            return this;
-        }
-
-        public IQuest Create()
-        {
-            if (_quest == null)
-            {
-                throw new InvalidOperationException("Quest is not setted");
+                _quest.AddBundle(bundle);
+                return this;
             }
 
-            if (_addToAggregator)
+            public QuestBuilderPart AddToAggregatorOnCreate(IQuestAggregator aggregator)
             {
-                _questAggregator.TryAddQuest(_quest);
-            }
-            IQuest quest = _quest;
-            _quest = null;
-            return quest;
-        }
+#if DEBUG
+                if (aggregator is null) throw new ArgumentNullException(nameof(aggregator));
+#endif
 
-        private bool IsValid(string str)
-        {
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                return false;
+                _questAggregator = aggregator;
+                _addToAggregator = true;
+                return this;
             }
 
-            return true;
+            public readonly QuestBuilderPart OnComplete(Action<IQuest> onComplete)
+            {
+                _quest.Completed += onComplete;
+                return this;
+            }
+
+            public IQuest Create()
+            {
+                if (_quest is null) throw new InvalidOperationException("Quest is not setted");
+
+                if (_addToAggregator)
+                {
+                    _questAggregator.TryAddQuest(_quest);
+                }
+
+                var quest = _quest;
+                _quest = null;
+                return quest;
+            }
         }
     }
 }

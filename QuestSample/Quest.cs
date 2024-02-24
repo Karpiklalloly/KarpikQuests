@@ -1,109 +1,226 @@
 ﻿using KarpikQuests.Interfaces;
-using KarpikQuests.Interfaces.AbstractBases;
-using KarpikQuests.QuestStatuses;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+using KarpikQuests.Statuses;
 using System.Text;
-using KarpikQuests.QuestCompletionTypes;
-using KarpikQuests.QuestTaskProcessorTypes;
 using KarpikQuests.Saving;
-
-#if JSON_NEWTONSOFT
+using KarpikQuests.Extensions;
+using System;
+using KarpikQuests.Keys;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
 
 namespace KarpikQuests.QuestSample
 {
-    [System.Serializable]
-    public class Quest : QuestBase
+    [Serializable]
+    public class Quest : IQuest
     {
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Key", Order = 1)]
-#endif
-        [SerializeThis("Key", 1)]
-        public override string Key { get; protected set; }
+        public event Action<string, string>? KeyChanged;
+        public event Action<IQuest>? Started;
+        public event Action<IQuest, ITaskBundle>? Updated;
+        public event Action<IQuest>? Completed;
 
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Name", Order = 2)]
-#endif
-        [SerializeThis("Name", 2)]
-        public override string Name { get; protected set; }
-
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Description", Order = 3)]
-#endif
-        [SerializeThis("Description", 3)]
-        public override string Description { get; protected set; }
-
-#if UNITY
-        [SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Tasks", Order = 5)]
-#endif
-        [SerializeThis("Tasks", 3)]
-        private IQuestTaskCollection _tasks = new QuestTaskCollection();
-
-        public override event Action<IQuest> Started;
-        public override event Action<IQuest, IQuestTask> Updated;
-        public override event Action<IQuest> Completed;
-
-#if JSON_NEWTONSOFT
-        [Newtonsoft.Json.JsonIgnore]
-#endif
+        [property: JsonIgnore]
         [DoNotSerializeThis]
-        public override IEnumerable<IQuestTask> Tasks => _tasks;
-
-#if UNITY
-        [field: SerializeField]
-#endif
-#if JSON_NEWTONSOFT
-        [JsonProperty("Status", Order = 4)]
-#endif
-        [SerializeThis("Status", 4)]
-        public override IQuestStatus Status { get; protected set; } = new UnStartedQuest();
-
-        public override IQuestCompletionType CompletionType { get; protected set; } = new QuestCompletionAND();
-        public override IQuestTaskProcessorType QuestTaskProcessor { get; protected set; } = new QuestTaskProcessorDisorderly();
-
-        protected override void Init(string key, string name, string description)
+        public string Key
         {
+            get => _key;
+            set
+            {
+#if DEBUG
+                if (!value.IsValid()) throw new ArgumentNullException(nameof(value));
+#endif
+
+                string temp = _key;
+                _key = value;
+                KeyChanged?.Invoke(temp, _key);
+            }
+        }
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
+        public string Name
+        {
+            get => _name;
+            private set => _name = value;
+        }
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
+        public string Description
+        {
+            get => _description;
+            private set => _description = value;
+        }
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
+        public bool Inited
+        {
+            get => _inited;
+            private set => _inited = value;
+        }
+
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
+        public IReadOnlyTaskBundleCollection TaskBundles
+        {
+            get => _bundles;
+            private set => _bundles = (ITaskBundleCollection)value;
+        }
+
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
+        public IStatus Status
+        {
+            get => _status;
+            private set => _status = value;
+        }
+
+        [SerializeThis(Name = "Key")]
+        [JsonProperty("Key")]
+        private string _key;
+
+        [SerializeThis(Name = "Name")]
+        [JsonProperty("Name")]
+        private string _name;
+
+        [SerializeThis(Name = "Description")]
+        [JsonProperty("Description")]
+        private string _description;
+
+        [SerializeThis(Name = "Inited")]
+        [JsonProperty("Inited")]
+        private bool _inited;
+
+        [SerializeThis(Name = "Status")]
+        [JsonProperty("Status")]
+        private IStatus _status;
+
+        [SerializeThis(Name = "Tasks")]
+        [JsonProperty("Tasks")]
+        private ITaskBundleCollection _bundles;
+
+        private bool _disposedValue;
+
+        public void Init()
+        {
+            Init(KeyGenerator.GenerateKey(), "Quest", "Description", new TaskBundleCollection());
+        }
+
+        public void Init(string key, string name, string description, ITaskBundleCollection bundles)
+        {
+#if DEBUG
+            if (!bundles.IsValid()) throw new ArgumentNullException(nameof(bundles));
+#endif
+
             Key = key;
             Name = name;
             Description = description;
+            TaskBundles = bundles;
+            Status = new UnStarted();
+
+            Inited = true;
+
+            TaskBundles.Updated += OnBundlesUpdated;
+            TaskBundles.Completed += OnBundlesCompleted;
         }
 
-        protected override void SetKey(string key)
+        public void Start()
         {
-            Key = key;
+            Status = new Started();
+            TaskBundles.Setup();
+            Started?.Invoke(this);
         }
 
-        protected override void AddTask(IQuestTask task)
+        public void AddTask(ITask task)
         {
-            if (_tasks.Contains(task)) return;
-            _tasks.Add(task);
-        }
+            if (_bundles.Has(task)) return;
 
-        protected override void RemoveTask(IQuestTask task)
-        {
-            if (_tasks.Contains(task))
+            var bundle = new TaskBundle
             {
-                _tasks.Remove(task);
+                task
+            };
+            _bundles.Add(bundle);
+        }
+
+        public void RemoveTask(ITask task)
+        {
+            if (!_bundles.Has(task)) return;
+
+            ITaskBundle? b = null;
+            foreach (var bundle in _bundles)
+            {
+                if (!bundle.Has(task)) continue;
+
+                bundle.Remove(task);
+                b = bundle;
+                break;
             }
+
+            if (b?.QuestTasks.Count == 0)
+            {
+                _bundles.Remove(b);
+            }
+        }
+
+        public void AddBundle(ITaskBundle bundle)
+        {
+            if (_bundles.Has(bundle)) return;
+            _bundles.Add(bundle);
+        }
+
+        public void RemoveBundle(ITaskBundle bundle)
+        {
+            if (!_bundles.Has(bundle)) return;
+            _bundles.Remove(bundle);
+        }
+
+        public void Reset()
+        {
+            Status = new UnStarted();
+            foreach (var bundle in TaskBundles)
+            {
+                bundle.ResetAll();
+            }
+        }
+
+        public void Clear()
+        {
+            foreach (var bundle in _bundles)
+            {
+                bundle.ClearTasks();
+                bundle.Clear();
+            }
+            _bundles.Clear();
+
+            Started = null;
+            Updated = null;
+            Completed = null;
+        }
+
+        public object Clone()
+        {
+            Quest quest = new Quest
+            {
+                Key = Key,
+                Name = Name,
+                Description = Description,
+                _bundles = (ITaskBundleCollection)_bundles.Clone(),
+                Status = Status,
+                Started = (Action<IQuest>?)Started?.Clone(),
+                Updated = (Action<IQuest, ITaskBundle>?)Updated?.Clone(),
+                Completed = (Action<IQuest>?)Completed?.Clone()
+            };
+
+            return quest;
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
         }
 
         public override string ToString()
@@ -113,7 +230,7 @@ namespace KarpikQuests.QuestSample
                 $"{Description}\n" +
                 $"Status: {Status}\n" +
                 $"\tTasks:\n");
-            foreach (var task in Tasks)
+            foreach (var task in TaskBundles)
             {
                 str.Append($"\t{task}\n");
             }
@@ -121,93 +238,69 @@ namespace KarpikQuests.QuestSample
             return str.ToString();
         }
 
-        protected override void OnTaskComplete(IQuestTask task)
+        public override bool Equals(object? obj)
         {
-            if (Status is UnStartedQuest)
+            if (!(obj is Quest quest))
             {
-                Start();
+                return false;
             }
 
-            Updated?.Invoke(this, task);
-            QuestTaskProcessor.OnTaskCompleted(Tasks, task);
+            return Equals(this, quest);
+        }
 
-            if (CompletionType.CheckCompletion(Tasks))
+        public bool Equals(IQuest? x, IQuest? y)
+        {
+            if (x is null && y is null) return true;
+
+            if (x is null || y is null) return false;
+
+            return x.Key.Equals(y.Key);
+        }
+
+        public int GetHashCode([DisallowNull] IQuest obj)
+        {
+            return obj.GetHashCode();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
             {
-                Status = new CompletedQuest();
-                Completed?.Invoke(this);
+                _bundles.Clear();
 
+                KeyChanged = null;
+                Started = null;
                 Updated = null;
                 Completed = null;
-            }
-        }
 
-        protected override void Start()
-        {
-            Status = new StartedQuest();
-            QuestTaskProcessor.Setup(Tasks);
-            Started?.Invoke(this);
-            Started = null;
-        }
+                _inited = false;
 
-        public override void Reset()
-        {
-            Status = new UnStartedQuest();
-            foreach (var task in Tasks)
-            {
-                task.Reset();
+                _disposedValue = true;
             }
         }
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            var interf = this as IQuest;
-            foreach (var task in Tasks)
+            TaskBundles.Updated += OnBundlesUpdated;
+            TaskBundles.Completed += OnBundlesCompleted;
+        }
+
+        private void OnBundlesUpdated(IReadOnlyTaskBundleCollection bundles, ITaskBundle bundle)
+        {
+            if (Status is UnStarted)
             {
-                task.Completed += interf.OnTaskComplete;
+                Start();
             }
+
+            Updated?.Invoke(this, bundle);
         }
 
-        protected override void Disposing()
+        private void OnBundlesCompleted(IReadOnlyTaskBundleCollection bundles)
         {
-            _tasks.Clear();
+            Status = new Completed();
 
-            Started = null;
-            Updated = null;
-            Completed = null;
-        }
-
-        protected override void FreeResources()
-        {
-
-        }
-
-        public override object Clone()
-        {
-            Quest quest = new Quest
-            {
-                Key = Key,
-                Name = Name,
-                Description = Description,
-                _tasks = (IQuestTaskCollection)_tasks.Clone(),
-                Status = Status,
-            };
-
-            quest.Started = (Action<IQuest>)Started?.Clone();
-            quest.Updated = (Action<IQuest, IQuestTask>)Updated?.Clone();
-            quest.Completed = (Action<IQuest>)Completed?.Clone();
-
-            return quest;
-        }
-
-        protected override void SetCompletionType(IQuestCompletionType completionType)
-        {
-           CompletionType = completionType;
-        }
-
-        protected override void SetTaskProcessorType(IQuestTaskProcessorType processor)
-        {
-            QuestTaskProcessor = processor;
+            Completed?.Invoke(this);
         }
     }
 }

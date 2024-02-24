@@ -2,61 +2,44 @@
 using System;
 using System.IO;
 
-#if JSON_NEWTONSOFT
-using Newtonsoft.Json;
-#endif
-
 namespace KarpikQuests.Saving
 {
     public static class QuestAggregatorSaver
     {
+        private static ISerializer<IQuestAggregator> _serializer = new JsonResolver();
+
+        public static ISerializer<IQuestAggregator> Serializer
+        {
+            get
+            {
+                return _serializer;
+            }
+            set
+            {
+                _serializer = value ?? throw new ArgumentNullException(nameof(value));
+            }
+        }
+
         public static void Save(IQuestAggregator aggregator, string path, bool readable = false)
         {
-#if JSON_NEWTONSOFT
-            SaveJsonNewtonsoft(aggregator, path, readable);
-#endif
+            var str = Serializer.Serialize(aggregator);
+            File.WriteAllText(path, str);
         }
 
-        public static IQuestAggregator Load(string path)
+        public static IQuestAggregator? Load(string path)
         {
-#if JSON_NEWTONSOFT
-            return LoadJsonNewtonsoft(path);
-#endif
+            return Serializer.Deserialize(File.ReadAllText(path));
         }
 
-#if JSON_NEWTONSOFT
-        private static void SaveJsonNewtonsoft(IQuestAggregator aggregator, string path, bool readable = false)
+        [Serializable]
+        public sealed class SaveData
         {
-            var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-            };
-
-            if (readable)
-            {
-                settings.Formatting = Formatting.Indented;
-            }
-
-            var json = JsonConvert.SerializeObject(aggregator, settings);
-
-            File.WriteAllText(path, json);
-        }
-
-        private static IQuestAggregator LoadJsonNewtonsoft(string path)
-        {
-            var json = File.ReadAllText(path);
-            var aggregator = JsonConvert.DeserializeObject<KarpikQuests.QuestSample.QuestAggregator>(json, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
-            return aggregator;
-        }
-#endif
-        //TODO: Implement
-        private class SaveData
-        {
+            [SerializeThis(Name = "Version")]
             public Version Version { get; set; }
+            [SerializeThis(Name = "Aggregator")]
             public IQuestAggregator Aggregator { get; set; }
+            [SerializeThis(Name = "AggregatorType")]
+            public Type AggregatorType { get; set; }
         }
     }
 }

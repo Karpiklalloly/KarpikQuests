@@ -3,41 +3,36 @@ using KarpikQuests.Saving;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
-#if JSON_NEWTONSOFT
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
-#endif
-
-#if UNITY
-using UnityEngine;
-#endif
 
 namespace KarpikQuests.QuestSample
 {
     [System.Serializable]
     public class QuestCollection : IQuestCollection
     {
-#if UNITY
-[SerializeField]
-#endif
-#if JSON_NEWTONSOFT
+        [SerializeThis(Name = "Data")]
         [JsonProperty("Data")]
-#endif
-        [SerializeThis("Data")]
         private readonly List<IQuest> _data = new List<IQuest>();
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public int Count => _data.Count;
 
+        [property: JsonIgnore]
+        [DoNotSerializeThis]
         public bool IsReadOnly => false;
 
+#region list
         public IQuest this[int index]
         {
-            get { return _data[index]; }
-            set { _data[index] = value; }
+            get => _data[index];
+            set => _data[index] = value;
         }
 
         public void Add(IQuest item)
         {
+            if (Has(item)) return;
             _data.Add(item);
         }
 
@@ -48,7 +43,7 @@ namespace KarpikQuests.QuestSample
 
         public bool Contains(IQuest item)
         {
-            return _data.Contains(item);
+            return Has(item);
         }
 
         public void CopyTo(IQuest[] array, int arrayIndex)
@@ -63,12 +58,50 @@ namespace KarpikQuests.QuestSample
 
         public bool Remove(IQuest item)
         {
-            return _data.Remove(item);
+            if (!Has(item)) return false;
+            var index = IndexOf(item);
+            if (index < 0) return false;
+            _data.RemoveAt(index);
+            return true;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _data.GetEnumerator();
+        }
+
+        public int IndexOf(IQuest item)
+        {
+            return _data.FindIndex(x => x.Equals(item));
+        }
+
+        public void Insert(int index, IQuest item)
+        {
+            _data.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _data.RemoveAt(index);
+        }
+
+        public bool Has(IQuest item)
+        {
+            if (item is null) return false;
+
+            return _data.Contains(item);
+        }
+#endregion
+
+        public object Clone()
+        {
+            QuestCollection quests = new QuestCollection();
+            foreach (var quest in _data)
+            {
+                quests.Add((IQuest)quest.Clone());
+            }
+
+            return quests;
         }
 
         public override string ToString()
@@ -82,21 +115,35 @@ namespace KarpikQuests.QuestSample
             return builder.ToString();
         }
 
-        public int IndexOf(IQuest item)
+        public override bool Equals(object? obj)
         {
-            return _data.IndexOf(item);
+            if (!(obj is QuestCollection collection)) return false;
+
+            return Equals(this, collection);
         }
 
-        public void Insert(int index, IQuest item)
+        public override int GetHashCode()
         {
-            _data.Insert(index, item);
+            return _data.GetHashCode();
         }
 
-        public void RemoveAt(int index)
+        public bool Equals(IReadOnlyQuestCollection? x, IReadOnlyQuestCollection? y)
         {
-            _data.RemoveAt(index);
+            if (x is null && y is null) return true;
+
+            if (x is null || y is null) return false;
+
+            for (int i = 0; i < x.Count; i++)
+            {
+                if (!x[i].Equals(y[i])) return false;
+            }
+
+            return true;
+        }
+
+        public int GetHashCode([DisallowNull] IReadOnlyQuestCollection obj)
+        {
+            return obj.GetHashCode();
         }
     }
 }
-
-

@@ -3,32 +3,27 @@ using System.Collections.Generic;
 
 namespace KarpikQuests.Interfaces
 {
-    public interface IQuest : IEquatable<IQuest>, IDisposable, ICloneable
+    public interface IQuest : IInitable, IEqualityComparer<IQuest>, IDisposable, ICloneable
     {
-        public string Key { get; }
+        public event Action<string, string> KeyChanged;
+        public event Action<IQuest> Started;
+        public event Action<IQuest, ITaskBundle> Updated;
+        public event Action<IQuest> Completed;
 
+        public string Key { get; set; }
         public string Name { get; }
         public string Description { get; }
 
-        public IEnumerable<IQuestTask> Tasks { get; }
-        public IQuestCompletionType CompletionType { get; }
-        public IQuestTaskProcessorType QuestTaskProcessor { get; }
+        public IReadOnlyTaskBundleCollection TaskBundles { get; }
 
-        public IQuestStatus Status { get; }
+        public IStatus Status { get; }
 
-        public event Action<IQuest> Started;
-        public event Action<IQuest, IQuestTask> Updated;
-        public event Action<IQuest> Completed;
-
+        public void Start();
+        public void Clear();
         public void Reset();
 
-        internal void Init(string key, string name, string description);
-        internal void Start();
-        internal void SetKey(string key);
-        internal void AddTask(IQuestTask task);
-        internal void RemoveTask(IQuestTask task);
-        internal void OnTaskComplete(IQuestTask task);
-        internal void SetCompletionType(IQuestCompletionType completionType);
-        internal void SetTaskProcessorType(IQuestTaskProcessorType processor);
+        public void Init(string key, string name, string description, ITaskBundleCollection bundles);
+        public void AddBundle(ITaskBundle bundle);
+        public void RemoveBundle(ITaskBundle bundle);
     }
 }
