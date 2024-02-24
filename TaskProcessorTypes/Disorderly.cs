@@ -12,6 +12,7 @@ namespace KarpikQuests.TaskProcessorTypes
             foreach (var bundle in bundles)
             {
                 bundle.Setup();
+                bundle.StartFirst();
             }
         }
 
@@ -20,6 +21,7 @@ namespace KarpikQuests.TaskProcessorTypes
             foreach (var task in bundle)
             {
                 task.Setup();
+                task.Start();
             }
         }
     }

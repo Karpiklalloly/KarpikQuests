@@ -283,7 +283,10 @@ namespace KarpikQuests.QuestSample
 
         private void OnBundleComplete(ITaskBundle bundle)
         {
-            Completed?.Invoke(this);
+            if (IsCompleted())
+            {
+                Completed?.Invoke(this);
+            }
         }
     }
 }

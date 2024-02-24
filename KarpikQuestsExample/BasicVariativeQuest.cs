@@ -12,7 +12,6 @@ using System.Linq;
 
 namespace KarpikQuestsExample
 {
-    //TODO: Fix
     internal class BasicVariativeQuest : IQuestLine
     {
         public IQuestAggregator Aggregator { get; private set; }
@@ -33,15 +32,15 @@ namespace KarpikQuestsExample
         public void Init()
         {
             Task bearLeather = new Task();
-            bearLeather.Init(KeyGenerator.GenerateKey(""), "Bear Leather");
+            bearLeather.Init(KeyGenerator.GenerateKey(), "Bear Leather");
             _tasks.Add(bearLeather.Name.ToLower(), bearLeather);
 
             Task rabbitLeather = new Task();
-            rabbitLeather.Init(KeyGenerator.GenerateKey(""), "Rabbit Leather");
+            rabbitLeather.Init(KeyGenerator.GenerateKey(), "Rabbit Leather");
             _tasks.Add(rabbitLeather.Name.ToLower(), rabbitLeather);
 
             Task foxLeather = new Task();
-            foxLeather.Init(KeyGenerator.GenerateKey(""), "Fox Leather");
+            foxLeather.Init(KeyGenerator.GenerateKey(), "Fox Leather");
             _tasks.Add(foxLeather.Name.ToLower(), foxLeather);
 
             ITaskBundle leatherBundle = new TaskBundle(new OR(),
@@ -59,15 +58,15 @@ namespace KarpikQuestsExample
 
 
             Task sticksNeccesary = new Task();
-            sticksNeccesary.Init(KeyGenerator.GenerateKey(""), "Sticks");
+            sticksNeccesary.Init(KeyGenerator.GenerateKey(), "Sticks");
             _tasks.Add(sticksNeccesary.Name.ToLower(), sticksNeccesary);
 
             Task leavesNeccesary = new Task();
-            leavesNeccesary.Init(KeyGenerator.GenerateKey(""), "Leaves");
+            leavesNeccesary.Init(KeyGenerator.GenerateKey(), "Leaves");
             _tasks.Add(leavesNeccesary.Name.ToLower(), leavesNeccesary);
 
             Task stonesNeccesary = new Task();
-            stonesNeccesary.Init(KeyGenerator.GenerateKey(""), "Stones");
+            stonesNeccesary.Init(KeyGenerator.GenerateKey(), "Stones");
             _tasks.Add(stonesNeccesary.Name.ToLower(), stonesNeccesary);
 
             ITaskBundle neccesaryBundle = new TaskBundle(new AND(),
@@ -85,15 +84,15 @@ namespace KarpikQuestsExample
 
 
             Task purifiedWater = new Task();
-            purifiedWater.Init(KeyGenerator.GenerateKey(""), "Purified Water");
+            purifiedWater.Init(KeyGenerator.GenerateKey(), "Purified Water");
             _tasks.Add(purifiedWater.Name.ToLower(), purifiedWater);
 
             Task saltWater = new Task();
-            saltWater.Init(KeyGenerator.GenerateKey(""), "Salt Water");
+            saltWater.Init(KeyGenerator.GenerateKey(), "Salt Water");
             _tasks.Add(saltWater.Name.ToLower(), saltWater);
 
             Task dirtyWater = new Task();
-            dirtyWater.Init(KeyGenerator.GenerateKey(""), "Dirty Water");
+            dirtyWater.Init(KeyGenerator.GenerateKey(), "Dirty Water");
             _tasks.Add(dirtyWater.Name.ToLower(), dirtyWater);
 
             TaskBundle waterBundle = new TaskBundle(new OR(),

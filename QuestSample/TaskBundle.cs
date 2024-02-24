@@ -239,8 +239,8 @@ namespace KarpikQuests.QuestSample
 
             if (CompletionType.CheckCompletion(this))
             {
-                Completed?.Invoke(this);
                 IsCompleted = true;
+                Completed?.Invoke(this);
 
                 Updated = null;
                 Completed = null;
