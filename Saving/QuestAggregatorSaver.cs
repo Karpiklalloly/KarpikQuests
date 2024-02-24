@@ -16,13 +16,7 @@ namespace KarpikQuests.Saving
             }
             set
             {
-                if (value == null)
-                {
-#if DEBUG
-                    throw new ArgumentNullException(nameof(value));
-#endif
-                }
-                _serializer = value;
+                _serializer = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 

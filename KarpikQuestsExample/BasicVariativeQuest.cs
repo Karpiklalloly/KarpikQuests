@@ -12,6 +12,7 @@ using System.Linq;
 
 namespace KarpikQuestsExample
 {
+    //TODO: Fix
     internal class BasicVariativeQuest : IQuestLine
     {
         public IQuestAggregator Aggregator { get; private set; }

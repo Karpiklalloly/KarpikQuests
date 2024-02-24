@@ -52,7 +52,7 @@ namespace KarpikQuestsExample
                 curTask.TryToComplete();
             }
 
-            curTask = quest.TaskBundles.First().ElementAt(1);
+            curTask = quest.TaskBundles[0].ElementAt(1);
 
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
@@ -70,7 +70,7 @@ namespace KarpikQuestsExample
                 curTask.TryToComplete();
             }
 
-            curTask = quest.TaskBundles.First().ElementAt(2);
+            curTask = quest.TaskBundles[0].ElementAt(2);
 
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
