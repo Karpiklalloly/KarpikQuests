@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 External[Ll]ibs/
+.vscode/settings.json
+.vscode/launch.json
