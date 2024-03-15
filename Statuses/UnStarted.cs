@@ -4,28 +4,28 @@ using System;
 namespace KarpikQuests.Statuses
 {
     [Serializable]
-    public struct UnStarted : IStatus
+    public sealed class UnStarted : IStatus
     {
-        public readonly string Status => nameof(UnStarted);
+        public string Status => nameof(UnStarted);
 
-        public readonly bool Equals(IStatus? other)
+        public bool Equals(IStatus? other)
         {
             return other is UnStarted;
         }
 
-        public readonly override bool Equals(object? obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is IStatus status)) return false;
 
             return Equals(status);
         }
 
-        public readonly override int GetHashCode()
+        public override int GetHashCode()
         {
             return Status.GetHashCode();
         }
 
-        public readonly override string ToString()
+        public override string ToString()
         {
             return Status;
         }
