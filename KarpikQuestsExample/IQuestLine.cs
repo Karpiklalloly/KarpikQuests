@@ -1,6 +1,6 @@
-﻿using KarpikQuests.Interfaces;
+﻿using Karpik.Quests.Interfaces;
 
-namespace KarpikQuestsExample
+namespace Karpik.Quests.Example
 {
     internal interface IQuestLine
     {

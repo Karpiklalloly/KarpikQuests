@@ -1,4 +1,4 @@
-﻿namespace KarpikQuestsExample
+﻿namespace Karpik.Quests.Example
 {
     internal class Program
     {

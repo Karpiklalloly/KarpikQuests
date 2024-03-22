@@ -1,11 +1,11 @@
-﻿using KarpikQuests;
-using KarpikQuests.Interfaces;
-using KarpikQuests.QuestSample;
+﻿using Karpik.Quests;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.QuestSample;
 using System;
 using System.Linq;
-using Task = KarpikQuests.QuestSample.Task;
+using Task = Karpik.Quests.QuestSample.Task;
 
-namespace KarpikQuestsExample
+namespace Karpik.Quests.Example
 {
     internal class BasicLinearQuestLine : IQuestLine
     {

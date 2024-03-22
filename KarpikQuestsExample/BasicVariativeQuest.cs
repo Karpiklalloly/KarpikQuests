@@ -1,16 +1,15 @@
-﻿using KarpikQuests;
-using KarpikQuests.Extensions;
-using KarpikQuests.Interfaces;
-using KarpikQuests.Keys;
-using KarpikQuests.CompletionTypes;
-using KarpikQuests.QuestSample;
-using KarpikQuests.TaskProcessorTypes;
-using Task = KarpikQuests.QuestSample.Task;
+﻿using Karpik.Quests;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Keys;
+using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.QuestSample;
+using Karpik.Quests.TaskProcessorTypes;
+using Task = Karpik.Quests.QuestSample.Task;
 using System.Collections.Generic;
 using System;
-using System.Linq;
 
-namespace KarpikQuestsExample
+namespace Karpik.Quests.Example
 {
     internal class BasicVariativeQuest : IQuestLine
     {
@@ -43,8 +42,8 @@ namespace KarpikQuestsExample
             foxLeather.Init(KeyGenerator.GenerateKey(), "Fox Leather");
             _tasks.Add(foxLeather.Name.ToLower(), foxLeather);
 
-            ITaskBundle leatherBundle = new TaskBundle(new OR(),
-                new Disorderly())
+            ITaskBundle leatherBundle = new TaskBundle(Or.Instance, 
+                ProcessorTypesPool.Instance.Pull<Disorderly>())
             {
                 bearLeather,
                 rabbitLeather,
@@ -57,29 +56,29 @@ namespace KarpikQuestsExample
             }
 
 
-            Task sticksNeccesary = new Task();
-            sticksNeccesary.Init(KeyGenerator.GenerateKey(), "Sticks");
-            _tasks.Add(sticksNeccesary.Name.ToLower(), sticksNeccesary);
+            Task sticksNecessary = new Task();
+            sticksNecessary.Init(KeyGenerator.GenerateKey(), "Sticks");
+            _tasks.Add(sticksNecessary.Name.ToLower(), sticksNecessary);
 
-            Task leavesNeccesary = new Task();
-            leavesNeccesary.Init(KeyGenerator.GenerateKey(), "Leaves");
-            _tasks.Add(leavesNeccesary.Name.ToLower(), leavesNeccesary);
+            Task leavesNecessary = new Task();
+            leavesNecessary.Init(KeyGenerator.GenerateKey(), "Leaves");
+            _tasks.Add(leavesNecessary.Name.ToLower(), leavesNecessary);
 
-            Task stonesNeccesary = new Task();
-            stonesNeccesary.Init(KeyGenerator.GenerateKey(), "Stones");
-            _tasks.Add(stonesNeccesary.Name.ToLower(), stonesNeccesary);
+            Task stonesNecessary = new Task();
+            stonesNecessary.Init(KeyGenerator.GenerateKey(), "Stones");
+            _tasks.Add(stonesNecessary.Name.ToLower(), stonesNecessary);
 
-            ITaskBundle neccesaryBundle = new TaskBundle(new AND(),
-                new Disorderly())
+            ITaskBundle necessaryBundle = new TaskBundle(And.Instance, 
+                ProcessorTypesPool.Instance.Pull<Disorderly>())
             {
-                sticksNeccesary,
-                leavesNeccesary,
-                stonesNeccesary
+                sticksNecessary,
+                leavesNecessary,
+                stonesNecessary
             };
-            neccesaryBundle.Completed += OnBundleComplete;
-            foreach (var item in neccesaryBundle)
+            necessaryBundle.Completed += OnBundleComplete;
+            foreach (var item in necessaryBundle)
             {
-                _bundles.Add(item.Name.ToLower(), neccesaryBundle);
+                _bundles.Add(item.Name.ToLower(), necessaryBundle);
             }
 
 
@@ -95,8 +94,8 @@ namespace KarpikQuestsExample
             dirtyWater.Init(KeyGenerator.GenerateKey(), "Dirty Water");
             _tasks.Add(dirtyWater.Name.ToLower(), dirtyWater);
 
-            TaskBundle waterBundle = new TaskBundle(new OR(),
-                new Disorderly())
+            TaskBundle waterBundle = new TaskBundle(Or.Instance, 
+                ProcessorTypesPool.Instance.Pull<Disorderly>())
             {
                 purifiedWater,
                 saltWater,
@@ -109,9 +108,9 @@ namespace KarpikQuestsExample
                 _bundles.Add(item.Name.ToLower(), waterBundle);
             }
 
-            QuestBuilder.Start<Quest>("VariativeQuest", "Shows power of bundles", new Disorderly(), new AND())
+            QuestBuilder.Start<Quest>("VariativeQuest", "Shows power of bundles", ProcessorTypesPool.Instance.Pull<Disorderly>(), And.Instance)
                 .AddBundle(leatherBundle)
-                .AddBundle(neccesaryBundle)
+                .AddBundle(necessaryBundle)
                 .AddBundle(waterBundle)
                 .OnComplete(OnQuestComplete)
                 .AddToAggregatorOnCreate(Aggregator)

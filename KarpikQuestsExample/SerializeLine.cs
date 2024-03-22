@@ -1,12 +1,12 @@
-﻿using KarpikQuests;
-using KarpikQuests.Interfaces;
-using KarpikQuests.QuestSample;
-using KarpikQuests.Saving;
+﻿using Karpik.Quests;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.QuestSample;
+using Karpik.Quests.Saving;
 using System;
 using System.Linq;
-using Task = KarpikQuests.QuestSample.Task;
+using Task = Karpik.Quests.QuestSample.Task;
 
-namespace KarpikQuestsExample
+namespace Karpik.Quests.Example
 {
     internal class SerializeLine : IQuestLine
     {
@@ -45,13 +45,15 @@ namespace KarpikQuestsExample
 
         public void Start()
         {
-            _aggregator = QuestAggregatorSaver.Load(_fileName);
+            var aggregator = QuestAggregatorSaver.Load(_fileName);
 
-            if (_aggregator == null)
+            if (aggregator is null)
             {
                 Console.WriteLine("Something went wrong");
                 return;
             }
+
+            _aggregator = aggregator;
 
             _aggregator.Start();
             var quest = _aggregator.Quests.First();
