@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            IQuestLine questLine = new BasicVariativeQuest();
+            IQuestLine questLine = new SerializeLine();
             questLine.Init();
             questLine.Start();
             questLine.DeInit();

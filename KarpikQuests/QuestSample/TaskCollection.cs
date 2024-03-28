@@ -1,30 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.QuestSample
 {
-    [System.Serializable]
+    [Serializable]
     public class TaskCollection : ITaskCollection
     {
         [JsonProperty("Tasks")]
         private readonly List<ITask> _tasks = new List<ITask>();
 
-        #region list
+        #region collection
 
-        [JsonIgnore]
-        public int Count => _tasks.Count;
+        [JsonIgnore] public int Count => _tasks.Count;
 
-        [JsonIgnore]
-        public bool IsReadOnly => false;
-        
-        public ITask this[int index]
-        {
-            get => _tasks[index];
-            set => _tasks[index] = value;
-        }
+        [JsonIgnore] public bool IsReadOnly => false;
 
         public void Add(ITask item)
         {
@@ -46,58 +39,37 @@ namespace Karpik.Quests.QuestSample
         {
             _tasks.CopyTo(array, arrayIndex);
         }
-
-        public IEnumerator<ITask> GetEnumerator()
+        
+        public bool Has(ITask? task)
         {
-            return _tasks.GetEnumerator();
-        }
-
-        public bool Has(ITask task)
-        {
-            if (task is null) return false;
-
-            return _tasks.Contains(task);
+            return !(task is null) && _tasks.Contains(task);
         }
 
         public bool Remove(ITask item)
         {
             if (!Has(item)) return false;
-            var index = IndexOf(item);
+            var index = _tasks.FindIndex(x => x.Equals(item));
             if (index < 0) return false;
             _tasks.RemoveAt(index);
             return true;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public IEnumerator<ITask> GetEnumerator()
         {
             return _tasks.GetEnumerator();
         }
-
-        public override int GetHashCode()
+        
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return _tasks.GetHashCode();
-        }
-
-        public int IndexOf(ITask item)
-        {
-            return _tasks.FindIndex(x => x.Equals(item));
-        }
-
-        public void Insert(int index, ITask item)
-        {
-            _tasks.Insert(index, item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            _tasks.RemoveAt(index);
+            return _tasks.GetEnumerator();
         }
 #endregion
 
         public object Clone()
         {
-            TaskCollection clone = new TaskCollection();
-            foreach (ITask item in _tasks)
+            var clone = new TaskCollection();
+            
+            foreach (var item in _tasks)
             {
                 clone.Add((ITask)item.Clone());
             }
@@ -107,20 +79,17 @@ namespace Karpik.Quests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (!(obj is TaskCollection collection)) return false;
-
-            return Equals(this, collection);
+            return obj is TaskCollection collection && Equals(collection);
         }
 
-        public bool Equals(IReadOnlyTaskCollection? x, IReadOnlyTaskCollection? y)
+        public bool Equals(IReadOnlyTaskCollection? other)
         {
-            if (x is null && y is null) return true;
-
-            if (x is null || y is null) return false;
-
-            for (int i = 0; i < x.Count; i++)
+            if (other is null) return false;
+            if (Count != other.Count) return false;
+            
+            for (var i = 0; i < Count; i++)
             {
-                if (!x[i].Equals(y[i]))
+                if (!this.ElementAt(i).Equals(other.ElementAt(i)))
                 {
                     return false;
                 }
@@ -128,10 +97,10 @@ namespace Karpik.Quests.QuestSample
 
             return true;
         }
-
-        public int GetHashCode([DisallowNull] IReadOnlyTaskCollection obj)
+        
+        public override int GetHashCode()
         {
-            return obj.GetHashCode();
+            return _tasks.GetHashCode();
         }
     }
 }

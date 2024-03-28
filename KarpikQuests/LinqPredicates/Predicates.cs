@@ -8,17 +8,32 @@ namespace Karpik.Quests.LinqPredicates
     {
         public static bool BundleIsCompleted(ITaskBundle bundle)
         {
-            return bundle.IsCompleted;
+            return bundle.Status.IsCompleted();
+        }
+
+        public static bool BundleIsFailed(ITaskBundle bundle)
+        {
+            return bundle.Status.IsFailed();
         }
 
         public static bool TaskIsCompleted(ITask task)
         {
             return task.IsCompleted();
         }
+        
+        public static bool TaskIsFailed(ITask task)
+        {
+            return task.IsFailed();
+        }
 
-        public static int BundleCount(ITaskBundle bundle)
+        public static int BundleCountCompleted(ITaskBundle bundle)
         {
             return bundle.Count(TaskIsCompleted);
+        }
+        
+        public static int BundleCountFailed(ITaskBundle bundle)
+        {
+            return bundle.Count(TaskIsFailed);
         }
     }
 }

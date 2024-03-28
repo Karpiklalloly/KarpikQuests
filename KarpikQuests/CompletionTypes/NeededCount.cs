@@ -3,53 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.LinqPredicates;
+using Karpik.Quests.Statuses;
 
 namespace Karpik.Quests.CompletionTypes
 {
     public class NeededCount : ICompletionType
     {
-        public static NeededCount Instance => new NeededCount();
-        
-        public int Count { get; private set; }
+        public int Count { get; }
 
-        public NeededCount()
+        public NeededCount(int count)
         {
-            
-        }
-
-        public NeededCount SetCount(int count)
-        {
-#if DEBUG
-            if (count < 0) throw new ArgumentException(null, nameof(count));
-#endif
-            
             Count = count;
-            return this;
         }
 
-        public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
+        public IStatus Check(IEnumerable<ITaskBundle> bundles)
         {
+            var unStarted = StatusPool.Instance.Pull<UnStarted>();
+            var started = StatusPool.Instance.Pull<Started>();
+            var completed = StatusPool.Instance.Pull<Completed>();
+            var failed = StatusPool.Instance.Pull<Failed>();
+            
+            if (Count == 0) return completed;
+
             var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
-            if (!arr.Any())
-            {
-                return false;
-            }
-
-            var curCount = arr.Sum(Predicates.BundleCount);
-
-            return curCount >= Count;
+            
+            var completedCount = arr.Sum(Predicates.BundleCountCompleted);
+            var failedCount = arr.Sum(Predicates.BundleCountFailed);
+            
+            if (completedCount >= Count) return completed;
+            if (failedCount + completedCount == arr.Length) return failed;
+            if (completedCount > 0 || failedCount > 0) return started;
+            
+            return unStarted;
         }
 
-        public bool CheckCompletion(ITaskBundle bundle)
+        public IStatus Check(ITaskBundle bundle)
         {
-            if (!bundle.Any())
-            {
-                return true;
-            }
+            var unStarted = StatusPool.Instance.Pull<UnStarted>();
+            var started = StatusPool.Instance.Pull<Started>();
+            var completed = StatusPool.Instance.Pull<Completed>();
+            var failed = StatusPool.Instance.Pull<Failed>();
+            
+            if (Count == 0) return completed;
 
-            var curCount = bundle.Count(Predicates.TaskIsCompleted);
-
-            return curCount >= Count;
+            var arr = bundle.ToArray();
+            
+            var completedCount = arr.Count(Predicates.TaskIsCompleted);
+            var failedCount = arr.Count(Predicates.TaskIsFailed);
+            
+            if (completedCount >= Count) return completed;
+            if (failedCount + completedCount == arr.Length) return failed;
+            if (completedCount > 0 || failedCount > 0) return started;
+            
+            return unStarted;
         }
     }
 }

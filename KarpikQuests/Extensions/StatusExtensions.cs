@@ -1,28 +1,33 @@
-﻿using Karpik.Quests.Interfaces;
+﻿using System.Runtime.CompilerServices;
+using Karpik.Quests.Interfaces;
 using Karpik.Quests.Statuses;
 
 namespace Karpik.Quests.Extensions
 {
     public static class StatusExtensions
     {
-        public static bool IsCompleted(this IQuest quest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsCompleted(this IStatus status)
         {
-            return quest.Status is Completed;
+            return status is Completed;
         }
 
-        public static bool IsStarted(this IQuest quest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsStarted(this IStatus status)
         {
-            return quest.Status is Started;
+            return status is Started;
         }
 
-        public static bool IsUnStarted(this IQuest quest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsUnStarted(this IStatus status)
         {
-            return quest.Status is UnStarted;
+            return status is UnStarted;
         }
 
-        public static bool IsFailed(this IQuest quest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsFailed(this IStatus status)
         {
-            return quest.Status is Failed;
+            return status is Failed;
         }
     }
 }

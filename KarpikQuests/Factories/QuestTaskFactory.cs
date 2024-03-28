@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.Keys;
-using Karpik.Quests.QuestSample;
+using Karpik.Quests.ID;
 using Task = Karpik.Quests.QuestSample.Task;
 
 namespace Karpik.Quests.Factories
@@ -30,9 +29,9 @@ namespace Karpik.Quests.Factories
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ITask Create(string name, string description)
         {
-            var task = new Task();
+            var task = new Task(Id.NewId());
 
-            task.Init(KeyGenerator.GenerateKey(), name, description);
+            task.Init(name, description);
 
             return task;
         }

@@ -4,8 +4,8 @@ namespace Karpik.Quests.Interfaces
 {
     public interface ICompletionType
     {
-        public bool CheckCompletion(IEnumerable<ITaskBundle> bundles);
+        public IStatus Check(IEnumerable<ITaskBundle> bundles);
 
-        public bool CheckCompletion(ITaskBundle bundle);
+        public IStatus Check(ITaskBundle bundle);
     }
 }

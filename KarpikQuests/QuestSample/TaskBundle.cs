@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Statuses;
 using Karpik.Quests.TaskProcessorTypes;
 using Newtonsoft.Json;
 
@@ -13,49 +16,23 @@ namespace Karpik.Quests.QuestSample
     {
         public event Action<ITaskBundle>? Updated;
         public event Action<ITaskBundle>? Completed;
+        public event Action<ITaskBundle>? Failed;
+
+        [JsonIgnore] public IReadOnlyTaskCollection Tasks => _tasks;
+        [JsonIgnore] public ICompletionType CompletionType => _completionType;
+        [JsonIgnore] public IProcessorType Processor => _processor;
+        [JsonIgnore] public IStatus Status => _status;
 
         [JsonProperty("Tasks")]
-        public IReadOnlyTaskCollection QuestTasks { get; private set; } = new TaskCollection();
-
-        [JsonIgnore]
-        public ICompletionType CompletionType
-        {
-            get => _completionType;
-            private set
-            {
-#if DEBUG
-                if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
-
-                _completionType = value;
-            }
-        }
-
-        [JsonIgnore]
-        public IProcessorType Processor
-        {
-            get => _processor;
-            private set
-            {
-#if DEBUG
-                if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
-
-                _processor = value;
-                _processor.Setup(this);
-            }
-        }
-
-        [JsonProperty("IsCompleted")]
-        public bool IsCompleted { get; private set; }
-
-        [JsonProperty("CompletionType")]
-        private ICompletionType _completionType;
-
+        private IReadOnlyTaskCollection _tasks = new TaskCollection();
         [JsonProperty("TaskProcessor")]
         private IProcessorType _processor;
+        [JsonProperty("CompletionType")]
+        private ICompletionType _completionType;
+        [JsonProperty("Status")]
+        private IStatus _status;
 
-        public TaskBundle() : this(And.Instance, ProcessorTypesPool.Instance.Pull<Orderly>())
+        public TaskBundle() : this(CompletionTypesPool.Instance.Pull<And>(), ProcessorTypesPool.Instance.Pull<Orderly>())
         {
 
         }
@@ -64,21 +41,32 @@ namespace Karpik.Quests.QuestSample
         {
             SetCompletionType(completionType);
             SetProcessorType(questTaskProcessor);
+
+            _status = new UnStarted();
         }
 
         public void SetCompletionType(ICompletionType completionType)
         {
-            CompletionType = completionType;
+#if DEBUG
+            if (completionType is null) throw new ArgumentNullException(nameof(completionType));
+#endif
+
+            _completionType = completionType;
         }
 
         public void SetProcessorType(IProcessorType processor)
         {
-            Processor = processor;
+#if DEBUG
+            if (processor is null) throw new ArgumentNullException(nameof(processor));
+#endif
+
+            _processor = processor;
+            _processor.Setup(this);
         }
 
         public void ClearTasks()
         {
-            foreach (var task in QuestTasks)
+            foreach (var task in Tasks)
             {
                 task.Reset();
             }
@@ -91,148 +79,146 @@ namespace Karpik.Quests.QuestSample
             Processor.Setup(this);
         }
 
-        public void StartFirst()
+        public void Reset()
         {
-            QuestTasks.FirstOrDefault()?.Start();
-        }
-
-        public void ResetAll()
-        {
-            foreach (var task in QuestTasks)
+            foreach (var task in Tasks)
             {
                 task.Reset();
-                task.Completed += OnTaskCompleted;
+                Subscribe(task);
             }
+
+            _status = new UnStarted();
         }
 
         public void ResetFirst()
         {
-            if (!QuestTasks.Any()) return;
+            if (!Tasks.Any()) return;
 
-            QuestTasks[0].Reset();
-            QuestTasks[0].Completed += OnTaskCompleted;
+            Tasks.First().Reset();
+            Subscribe(Tasks.First());
         }
 
-#region list
+#region collection
 
         [JsonIgnore]
-        public int Count => QuestTasks.Count;
+        public int Count => Tasks.Count;
 
         [JsonIgnore]
         public bool IsReadOnly => false;
 
         public void Add(ITask item)
         {
-            QuestTasks.Add(item);
-            item.Completed += OnTaskCompleted;
+            Tasks.Add(item);
+            if (Tasks.Has(item))
+            {
+                Subscribe(item);
+            }
         }
 
         public void Clear()
         {
-            QuestTasks.Clear();
+            Tasks.Clear();
         }
 
         public bool Contains(ITask item)
         {
-            return QuestTasks.Has(item);
+            return Tasks.Has(item);
         }
 
         public void CopyTo(ITask[] array, int arrayIndex)
         {
-            QuestTasks.CopyTo(array, arrayIndex);
+            Tasks.CopyTo(array, arrayIndex);
         }
         
-        public IEnumerator<ITask> GetEnumerator()
-        {
-            return QuestTasks.GetEnumerator();
-        }
-
         public bool Remove(ITask item)
         {
-            item.Completed -= OnTaskCompleted;
-            return QuestTasks.Remove(item);
+            UnSubscribe(item);
+            return Tasks.Remove(item);
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return (QuestTasks as IEnumerable).GetEnumerator();
-        }
-
+        
         public bool Has(ITask task)
         {
-            return QuestTasks.Has(task);
+            return Tasks.Has(task);
+        }
+        
+        public bool Has(Id taskKey)
+        {
+            var task = Tasks.First(x => x.Id.Equals(taskKey));
+            return Tasks.Has(task);
         }
 
-        public bool Has(string taskKey)
+        public IEnumerator<ITask> GetEnumerator()
         {
-            var task = QuestTasks.First(x => x.Key.Equals(taskKey));
-            return QuestTasks.Has(task);
+            return Tasks.GetEnumerator();
         }
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (Tasks as IEnumerable).GetEnumerator();
+        }
+        
 #endregion
-
-        public override bool Equals(object? obj)
-        {
-            if (!(obj is TaskBundle bundle))
-            {
-                return false;
-            }
-
-            return Equals(this, bundle);
-        }
-
-        public bool Equals(ITaskBundle? x, ITaskBundle? y)
-        {
-            if (x is null && y is null) return true;
-
-            if (x is null || y is null) return false;
-
-            if (x.QuestTasks.GetType() != y.QuestTasks.GetType())
-            {
-                return false;
-            }
-
-            if (x.QuestTasks.Count != y.Count)
-            {
-                return false;
-            }
-
-            return x.QuestTasks.Equals(y.QuestTasks);
-        }
-
-        public int GetHashCode(ITaskBundle obj)
-        {
-            return obj.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            return QuestTasks.GetHashCode();
-        }
 
         public object Clone()
         {
-            TaskBundle clone = new TaskBundle
+            return new TaskBundle
             {
-                QuestTasks = (IReadOnlyTaskCollection)QuestTasks.Clone(),
-                CompletionType = CompletionType,
-                Processor = Processor
+                _tasks = (IReadOnlyTaskCollection)Tasks.Clone(),
+                _completionType = CompletionType,
+                _processor = Processor,
+                Updated = (Action<ITaskBundle>?)Updated?.Clone(),
+                Completed = (Action<ITaskBundle>?)Completed?.Clone(),
+                Failed = (Action<ITaskBundle>?)Failed?.Clone() 
             };
-
-            return clone;
         }
 
-        private void OnTaskCompleted(ITask task)
+        public bool Equals(ITaskBundle? other)
         {
-            Updated?.Invoke(this);
+            return !(other is null) && _tasks.Equals(other.Tasks);
+        }
 
-            if (CompletionType.CheckCompletion(this))
+        public override bool Equals(object? obj)
+        {
+            return obj is TaskBundle bundle && Equals(bundle);
+        }
+        
+        public override int GetHashCode()
+        {
+            return Tasks.GetHashCode();
+        }
+
+        private void Subscribe(ITask task)
+        {
+            task.Completed += OnTaskUpdated;
+            task.Failed    += OnTaskUpdated;
+        }
+        
+        private void UnSubscribe(ITask task)
+        {
+            task.Completed -= OnTaskUpdated;
+            task.Failed    -= OnTaskUpdated;
+        }
+
+        private void OnTaskUpdated(ITask task)
+        {
+            var result = CompletionType.Check(this);
+            if (_status.IsUnStarted())
             {
-                IsCompleted = true;
-                Completed?.Invoke(this);
-
-                Updated = null;
-                Completed = null;
+                _status = new Started();
             }
+            
+            if (result.IsCompleted())
+            {
+                _status = new Completed();
+                Completed?.Invoke(this);
+            }
+            else if (result.IsFailed())
+            {
+                _status = new Failed();
+                Failed?.Invoke(this);
+            }
+            
+            Updated?.Invoke(this);
         }
     }
 }

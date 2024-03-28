@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Karpik.Quests.Extensions;
 using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.TaskProcessorTypes
@@ -20,7 +21,7 @@ namespace Karpik.Quests.TaskProcessorTypes
 
             if (!arr.Any()) return;
 
-            arr[0].StartFirst();
+            arr[0].First().Start();
         }
 
         public void Setup(ITaskBundle bundle)
@@ -33,19 +34,30 @@ namespace Karpik.Quests.TaskProcessorTypes
                 task.Completed += (t) => OnTaskCompleted(bundle, t);
             }
 
-            bundle.StartFirst();
+            bundle.First().Start();
         }
 
         private void OnTaskCompleted(ITaskBundle bundle, ITask task)
         {
-            var index = bundle.QuestTasks.ToList().IndexOf(task);
+            var index = bundle.Tasks.ToList().IndexOf(task);
             if (index == -1) return;
-
-            if (bundle.QuestTasks.Count == index + 1)
+            
+            do
             {
-                return;
-            }
-            bundle.QuestTasks[index + 1].Start();
+                if (bundle.Tasks.Count == index + 1)
+                {
+                    return;
+                }
+                
+                var task2 = bundle.Tasks.ElementAt(index + 1);
+                if (task2.IsUnStarted())
+                {
+                    task2.Start();
+                    break;
+                }
+
+                index++;
+            } while (true);
         }
 
         private void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
@@ -54,14 +66,21 @@ namespace Karpik.Quests.TaskProcessorTypes
             var index = arr.ToList().IndexOf(bundle);
             if (index == -1) return;
 
-            if (arr.Length == index + 1)
+            do
             {
-                return;
-            }
+                if (arr.Length == index + 1)
+                {
+                    return;
+                }
+                
+                var bundle2 = arr[index + 1];
+                if (bundle2.IsUnStarted())
+                {
+                    bundle.Setup();
+                }
 
-            arr[index + 1].StartFirst();
+                index++;
+            } while (true);
         }
-
-
     }
 }

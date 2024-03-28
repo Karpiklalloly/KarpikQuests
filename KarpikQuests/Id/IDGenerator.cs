@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Karpik.Quests.Keys
+namespace Karpik.Quests.ID
 {
-    public static class KeyGenerator
+    public static class IDGenerator
     {
-        private const string DefaultPrefix = "";
+        public const string DefaultPrefix = "";
 
-        public static string GenerateKey(string prefix = DefaultPrefix)
+        public static string GenerateId(string prefix = DefaultPrefix)
         {
-            var key = GenerateKeyGuid().ToString();
+            var key = GenerateIdGuid().ToString();
             if (prefix == DefaultPrefix)
             {
                 return key;
@@ -16,27 +16,27 @@ namespace Karpik.Quests.Keys
             return prefix + key;
         }
 
-        public static Guid GenerateKeyGuid()
+        public static Guid GenerateIdGuid()
         {
             return Guid.NewGuid();
         }
 
-        public static string[] GenerateKeys(int count, string prefix = DefaultPrefix)
+        public static string[] GenerateIds(int count, string prefix = DefaultPrefix)
         {
             var keys = new string[count];
             for (int i = 0; i < count; i++)
             {
-                keys[i] = GenerateKey(prefix);
+                keys[i] = GenerateId(prefix);
             }
             return keys;
         }
 
-        public static Guid[] GenerateKeysGuid(int count)
+        public static Guid[] GenerateIdsGuid(int count)
         {
             var keys = new Guid[count];
             for (int i = 0; i < count; i++)
             {
-                keys[i] = GenerateKeyGuid();
+                keys[i] = GenerateIdGuid();
             }
             return keys;
         }

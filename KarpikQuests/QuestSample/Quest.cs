@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Text;
 using Karpik.Quests.Extensions;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.Keys;
+using Karpik.Quests.ID;
 using Karpik.Quests.Statuses;
+using Karpik.Quests.TaskProcessorTypes;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -13,107 +14,75 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class Quest : IQuest
     {
-        public event Action<string, string>? KeyChanged;
+        public event Action<Id, Id>? KeyChanged;
         public event Action<IQuest>? Started;
         public event Action<IQuest, ITaskBundle>? Updated;
         public event Action<IQuest>? Completed;
+        public event Action<IQuest>? Failed;
 
-        [JsonIgnore]
-        public string Key
-        {
-            get => _key;
-            set
-            {
-#if DEBUG
-                if (!value.IsValid()) throw new ArgumentNullException(nameof(value));
-#endif
-
-                var temp = _key;
-                _key = value;
-                KeyChanged?.Invoke(temp, _key);
-            }
-        }
-        [JsonIgnore]
-        public string Name
-        {
-            get => _name;
-            private set => _name = value;
-        }
-        [JsonIgnore]
-        public string Description
-        {
-            get => _description;
-            private set => _description = value;
-        }
-        [JsonIgnore]
-        public bool Inited
-        {
-            get => _inited;
-            private set => _inited = value;
-        }
-
-        [JsonIgnore]
-        public IReadOnlyTaskBundleCollection TaskBundles
-        {
-            get => _bundles;
-            private set => _bundles = (ITaskBundleCollection)value;
-        }
-
-        [JsonIgnore]
-        public IStatus Status
-        {
-            get => _status;
-            private set => _status = value;
-        }
-
-        [JsonProperty("Key")]
-        private string _key;
-
+        [JsonIgnore] public Id Id => _id;
+        [JsonIgnore] public string Name => _name;
+        [JsonIgnore] public string Description => _description;
+        [JsonIgnore] public bool Inited => _inited;
+        [JsonIgnore] public IReadOnlyTaskBundleCollection TaskBundles => _bundles;
+        [JsonIgnore] public ICompletionType CompletionType => _completionType;
+        [JsonIgnore] public IProcessorType Processor => _processor;
+        [JsonIgnore] public IStatus Status => _status;
+        
+        [JsonProperty("Id")]
+        private readonly Id _id;
         [JsonProperty("Name")]
         private string _name;
-
         [JsonProperty("Description")]
         private string _description;
-
         [JsonProperty("Inited")]
         private bool _inited;
 
+        [JsonProperty("CompletionType")]
+        private ICompletionType _completionType;
+        [JsonProperty("Processor")]
+        private IProcessorType _processor;
         [JsonProperty("Status")]
         private IStatus _status;
-
         [JsonProperty("Tasks")]
         private ITaskBundleCollection _bundles;
 
         private bool _disposedValue;
 
-        public void Init()
+        public Quest() : this(Id.NewId())
         {
-            Init(KeyGenerator.GenerateKey(), "Quest", "Description", new TaskBundleCollection());
+            
         }
 
-        public void Init(string key, string name, string description, ITaskBundleCollection bundles)
+        public Quest(Id id)
+        {
+            _id = id;
+        }
+
+        public void Init()
+        {
+            Init("Quest", "Description",
+                new TaskBundleCollection(),
+                CompletionTypesPool.Instance.Pull<And>(),
+                ProcessorTypesPool.Instance.Pull<Orderly>());
+        }
+
+        public void Init(string name, string description, ITaskBundleCollection bundles,
+            ICompletionType completionType, IProcessorType processorType)
         {
 #if DEBUG
             if (!bundles.IsValid()) throw new ArgumentNullException(nameof(bundles));
 #endif
+            _name = name;
+            _description = description;
+            _bundles = bundles;
+            _status = new UnStarted();
+            _completionType = completionType;
+            _processor = processorType;
 
-            Key = key;
-            Name = name;
-            Description = description;
-            TaskBundles = bundles;
-            Status = new UnStarted();
-
-            Inited = true;
-
-            TaskBundles.Updated += OnBundlesUpdated;
-            TaskBundles.Completed += OnBundlesCompleted;
-        }
-
-        public void Start()
-        {
-            Status = new Started();
-            TaskBundles.Setup();
-            Started?.Invoke(this);
+            _inited = true;
+            
+            Subscribe(TaskBundles);
         }
 
         public void AddTask(ITask task)
@@ -141,7 +110,7 @@ namespace Karpik.Quests.QuestSample
                 break;
             }
 
-            if (b?.QuestTasks.Count == 0)
+            if (b?.Tasks.Count == 0)
             {
                 _bundles.Remove(b);
             }
@@ -151,21 +120,41 @@ namespace Karpik.Quests.QuestSample
         {
             if (_bundles.Has(bundle)) return;
             _bundles.Add(bundle);
+            Subscribe(bundle);
         }
 
         public void RemoveBundle(ITaskBundle bundle)
         {
             if (!_bundles.Has(bundle)) return;
             _bundles.Remove(bundle);
+            UnSubscribe(bundle);
+        }
+
+        public void SetStatus(IStatus status, Action<IQuest, IStatus> moreStatusesSetting)
+        {
+            _status = status ?? throw new NullReferenceException();
+            switch (_status)
+            {
+                case Statuses.UnStarted:
+                    break;
+                case Statuses.Started:
+                    Started?.Invoke(this);
+                    break;
+                case Statuses.Completed:
+                    Completed?.Invoke(this);
+                    break;
+                case Statuses.Failed:
+                    Failed?.Invoke(this);
+                    break; 
+                default:
+                    moreStatusesSetting?.Invoke(this, status);
+                    break;
+            }
         }
 
         public void Reset()
         {
-            Status = new UnStarted();
-            foreach (var bundle in TaskBundles)
-            {
-                bundle.ResetAll();
-            }
+            this.UnStart();
         }
 
         public void Clear()
@@ -180,23 +169,23 @@ namespace Karpik.Quests.QuestSample
             Started = null;
             Updated = null;
             Completed = null;
+            Failed = null;
         }
 
         public object Clone()
         {
-            Quest quest = new Quest
+            return new Quest(_id)
             {
-                Key = Key,
-                Name = Name,
-                Description = Description,
+                _name = Name,
+                _description = Description,
                 _bundles = (ITaskBundleCollection)_bundles.Clone(),
-                Status = Status,
+                _status = Status,
+                KeyChanged = (Action<Id, Id>?)KeyChanged?.Clone(),
                 Started = (Action<IQuest>?)Started?.Clone(),
                 Updated = (Action<IQuest, ITaskBundle>?)Updated?.Clone(),
-                Completed = (Action<IQuest>?)Completed?.Clone()
-            };
-
-            return quest;
+                Completed = (Action<IQuest>?)Completed?.Clone(),
+                Failed = (Action<IQuest>?)Failed?.Clone(),
+            };;
         }
 
         public void Dispose()
@@ -207,13 +196,13 @@ namespace Karpik.Quests.QuestSample
 
         public override int GetHashCode()
         {
-            return Key.GetHashCode();
+            return _id.GetHashCode();
         }
 
         public override string ToString()
         {
-            StringBuilder str = new StringBuilder();
-            str.Append($"'{Key}': {Name}:\n" +
+            var str = new StringBuilder();
+            str.Append($"'{Id}': {Name}:\n" +
                 $"{Description}\n" +
                 $"Status: {Status}\n" +
                 $"\tTasks:\n");
@@ -227,38 +216,21 @@ namespace Karpik.Quests.QuestSample
 
         public override bool Equals(object? obj)
         {
-            if (!(obj is Quest quest))
-            {
-                return false;
-            }
-
-            return Equals(this, quest);
+            return obj is Quest quest && Equals(quest);
         }
 
-        public bool Equals(IQuest? x, IQuest? y)
+        public bool Equals(IQuest? other)
         {
-            if (x is null && y is null) return true;
+            if (other is null) return false;
 
-            if (x is null || y is null) return false;
-
-            return x.Key.Equals(y.Key);
+            return Id.Equals(other.Id);
         }
-
-        public int GetHashCode([DisallowNull] IQuest obj)
-        {
-            return obj.GetHashCode();
-        }
-
+        
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {
                 _bundles.Clear();
-
-                KeyChanged = null;
-                Started = null;
-                Updated = null;
-                Completed = null;
 
                 _inited = false;
 
@@ -269,25 +241,65 @@ namespace Karpik.Quests.QuestSample
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            TaskBundles.Updated += OnBundlesUpdated;
-            TaskBundles.Completed += OnBundlesCompleted;
+            Subscribe(TaskBundles);
         }
 
-        private void OnBundlesUpdated(IReadOnlyTaskBundleCollection bundles, ITaskBundle bundle)
+        private void Subscribe(IReadOnlyTaskBundleCollection collection)
+        {
+            foreach (var bundle in collection)
+            {
+                Subscribe(bundle);
+            }
+        }
+        
+        private void UnSubscribe(IReadOnlyTaskBundleCollection collection)
+        {
+            foreach (var bundle in collection)
+            {
+                UnSubscribe(bundle);
+            }
+        }
+
+        private void Subscribe(ITaskBundle bundle)
+        {
+            bundle.Updated   += OnBundleUpdated;
+            bundle.Completed += OnBundleCompleted;
+            bundle.Failed    += OnBundleFailed;
+        }
+
+        private void UnSubscribe(ITaskBundle bundle)
+        {
+            bundle.Updated   -= OnBundleUpdated;
+            bundle.Completed -= OnBundleCompleted;
+            bundle.Failed    -= OnBundleFailed;
+        }
+
+        private void OnBundleUpdated(ITaskBundle bundle)
         {
             if (Status is UnStarted)
             {
-                Start();
+                this.Start();
             }
 
             Updated?.Invoke(this, bundle);
         }
 
-        private void OnBundlesCompleted(IReadOnlyTaskBundleCollection bundles)
+        private void OnBundleCompleted(ITaskBundle bundle)
         {
-            Status = new Completed();
+            var result = _completionType.Check(TaskBundles);
+            if (result.IsCompleted())
+            {
+                this.Complete();
+            }
+        }
 
-            Completed?.Invoke(this);
+        private void OnBundleFailed(ITaskBundle bundle)
+        {
+            var result = _completionType.Check(TaskBundles);
+            if (result.IsFailed())
+            {
+                this.Fail();
+            }
         }
     }
 }

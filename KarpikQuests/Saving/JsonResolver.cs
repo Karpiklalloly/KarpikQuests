@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Karpik.Quests.Saving
 {
-    class JsonResolver : ISerializer<IQuestAggregator>
+    public class JsonResolver : ISerializer<IQuestAggregator>
     {
         public IQuestAggregator? Deserialize(string data)
         {

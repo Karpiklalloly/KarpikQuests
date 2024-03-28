@@ -1,165 +1,145 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.Keys;
+using Karpik.Quests.ID;
 
 namespace Karpik.Quests.QuestSample
 {
     [Serializable]
     public class Task : ITask
     {
+        public event Action<ITask>? Started;
         public event Action<ITask>? Completed;
+        public event Action<ITask>? Failed;
 
-        [JsonIgnore]
-        public string Key
-        {
-            get => _key;
-            private set => _key = value;
-        }
-        
-        [JsonIgnore]
-        public string Name
-        {
-            get => _name;
-            private set => _name = value;
-        }
-
-        [JsonIgnore]
-        public string Description
-        {
-            get => _description;
-            private set => _description = value;
-        }
-
-        [JsonIgnore]
-        public ITask.TaskStatus Status
-        {
-            get => _status;
-            private set => _status = value;
-        }
-
-        [JsonIgnore]
-        public bool CanBeCompleted
-        {
-            get => _canBeCompleted;
-            set => _canBeCompleted = value;
-        }
-
-        [JsonIgnore]
-        public bool Inited
-        {
-            get => _inited;
-            set => _inited = value;
-        }
+        [JsonIgnore] public Id Id => _id;
+        [JsonIgnore] public string Name => _name;
+        [JsonIgnore] public string Description => _description;
+        [JsonIgnore] public ITask.TaskStatus Status => _status;
+        [JsonIgnore] public bool CanBeCompleted => _canBeCompleted;
+        [JsonIgnore] public bool Inited => _inited;
 
         [JsonProperty("Key")]
-        private string _key;
-
+        private Id _id;
         [JsonProperty("Name")]
         private string _name;
-
         [JsonProperty("Description")]
         private string _description;
-
         [JsonProperty("Status")]
         private ITask.TaskStatus _status;
-
         [JsonProperty("CanBeCompleted")]
         private bool _canBeCompleted;
-
         [JsonProperty("Inited")]
         private bool _inited;
 
-        public void Init()
+        public Task() : this(Id.NewId())
         {
-            Init(KeyGenerator.GenerateKey(), "Task", "Description");
+            
         }
 
-        public void Init(string key, string name, string description = "")
+        public Task(Id id)
         {
-            Key = key;
-            Name = name;
-            Description = description;
+            _id = id;
+        }
 
-            _status = ITask.TaskStatus.UnCompleted;
+        public void Init()
+        {
+            Init("Task", "Description");
+        }
+
+        public void Init(string name, string description = "")
+        {
+            _name = name;
+            _description = description;
+
+            _status = ITask.TaskStatus.UnStarted;
 
             _inited = true;
         }
 
         public void Setup()
         {
-            CanBeCompleted = false;
-            Status = ITask.TaskStatus.UnCompleted;
+            _canBeCompleted = false;
+            _status = ITask.TaskStatus.UnStarted;
         }
 
         public void Start()
         {
-            CanBeCompleted = true;
-            Status = ITask.TaskStatus.UnCompleted;
+            _canBeCompleted = true;
+            _status = ITask.TaskStatus.UnStarted;
+            Started?.Invoke(this);
         }
 
         public void Reset()
         {
-            CanBeCompleted = false;
-            Status = ITask.TaskStatus.UnCompleted;
+            _canBeCompleted = false;
+            _status = ITask.TaskStatus.UnStarted;
             Completed = null;
         }
 
-        public bool TryToComplete()
+        public bool TryComplete()
         {
             if (!CanBeCompleted) return false;
 
-            Status = ITask.TaskStatus.Completed;
-            CanBeCompleted = false;
-            Completed?.Invoke(this);
+            ForceComplete();
 
             return true;
         }
 
+        public void ForceComplete()
+        {
+            _canBeCompleted = false;
+            _status = ITask.TaskStatus.Completed;
+            Completed?.Invoke(this);
+        }
+
+        public bool TryFail()
+        {
+            if (Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
+            
+            ForceFail();
+
+            return true;
+        }
+
+        public void ForceFail()
+        {
+            _canBeCompleted = false;
+            _status = ITask.TaskStatus.Failed;
+            Failed?.Invoke(this);
+        }
+
         public object Clone()
         {
-            Task task = new Task
+            return new Task
             {
-                Key = Key,
-                Name = Name,
-                Status = Status,
-                CanBeCompleted = CanBeCompleted,
-                Completed = (Action<ITask>?)Completed?.Clone()
+                _id = Id,
+                _name = Name,
+                _status = Status,
+                _canBeCompleted = CanBeCompleted,
+                Completed = (Action<ITask>?)Completed?.Clone(),
+                Failed = (Action<ITask>?)Failed?.Clone()
             };
-
-            return task;
         }
 
         public override bool Equals(object? obj)
         {
-            if (!(obj is Task task)) return false;
-
-            return Equals(this, task);
+            return obj is Task task && Equals(this, task);
         }
-
-        public bool Equals(ITask? x, ITask? y)
+        
+        public bool Equals(ITask? other)
         {
-            if (x is null && y is null) return true;
-
-            if (x is null || y is null) return false;
-
-            return x.Key.Equals(y.Key);
+            return !(other is null) && _id.Equals(other.Id);
         }
-
-        public int GetHashCode([DisallowNull] ITask obj)
-        {
-            return obj.GetHashCode();
-        }
-
+        
         public override int GetHashCode()
         {
-            return Key.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{Key} {Name} ({Status})";
+            return $"{Id} {Name} ({Status})";
         }
     }
 }

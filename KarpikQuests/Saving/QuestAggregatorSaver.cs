@@ -29,7 +29,8 @@ namespace Karpik.Quests.Saving
 
         public static IQuestAggregator? Load(string path)
         {
-            return Serializer.Deserialize(File.ReadAllText(path));
+            var data = File.ReadAllText(path);
+            return Serializer.Deserialize(data);
         }
 
         [Serializable]

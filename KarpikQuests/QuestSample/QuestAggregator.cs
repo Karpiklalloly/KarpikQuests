@@ -1,8 +1,8 @@
-﻿using Karpik.Quests.Extensions;
+using System;
 using System.Linq;
 using System.Runtime.Serialization;
-using System;
-using System.Diagnostics.CodeAnalysis;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Statuses;
 using Newtonsoft.Json;
@@ -12,222 +12,188 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class QuestAggregator : IQuestAggregator
     {
-        [JsonIgnore]
-        public IReadOnlyQuestCollection Quests
+        [JsonIgnore] public IReadOnlyQuestCollection Quests => _quests;
+        
+        [JsonProperty("Graphs")]
+        private IGraphCollection _graphs = new GraphCollection();
+        private IQuestCollection _quests = new QuestCollection();
+
+        public bool TryAddGraph(IGraph graph)
         {
-            get => _quests;
+            if (!graph.IsValid()) return false;
+            if (Has(graph)) return false;
+            
+            _graphs.Add(graph);
+            return true;
+        }
+        
+        public bool TryAddQuest(IGraph graph, IQuest quest)
+        {
+            if (!graph.IsValid()) return false;
+            if (!Has(graph)) return false;
+            if (!quest.IsValid()) return false;
+            if (graph.Has(quest)) return false;
+
+            var node = GraphNodePool.Instance.Pull<GraphNode>(quest);
+            var result = graph.TryAdd(node);
+
+            if (!result) return false;
+            
+            _quests.Add(quest);
+            Subscribe(node);
+
+            return true;
+        }
+        
+        public bool TryRemoveQuest(IGraph graph, IQuest quest)
+        {
+            if (!graph.IsValid()) return false;
+            if (!Has(graph)) return false;
+            if (!quest.IsValid()) return false;
+            if (!graph.Has(quest)) return false;
+            
+            var node = graph.Get(quest);
+            UnSubscribe(node);
+            graph.TryRemove(node);
+            _quests.Remove(quest);
+            
+            return true;
         }
 
-        [JsonProperty("Quests")]
-        private readonly IQuestCollection _quests = new QuestCollection();
+        public bool TryAddDependence(IGraph graph, IQuest quest, IQuest dependence, IDependencyType dependencyType)
+        {
+            if (!graph.IsValid()) return false;
+            if (!Has(graph)) return false;
+            if (!quest.IsValid()) return false;
+            if (!dependence.IsValid()) return false;
+            if (!dependencyType.IsValid()) return false;
+            if (!graph.Has(quest)) return false;
+            if (!graph.Has(dependence)) return false;
 
-        [JsonProperty("Links")]
-        private readonly IQuestLinker _linker = new QuestLinker();
+            var node = graph.Get(quest);
+            var dependenceNode = graph.Get(dependence);
+            return node.TryAddDependency(new IGraphNode.Connection(dependenceNode.NodeId, dependencyType));
+        }
+
+        public bool TryRemoveDependence(IGraph graph, IQuest quest, IQuest dependence)
+        {
+            if (!graph.IsValid()) return false;
+            if (!Has(graph)) return false;
+            if (!quest.IsValid()) return false;
+            if (!dependence.IsValid()) return false;
+            if (!graph.Has(quest)) return false;
+            if (!graph.Has(dependence)) return false;
+            
+            var node = graph.Get(quest);
+            var dependenceNode = graph.Get(dependence);
+            return node.TryRemoveDependency(dependenceNode.NodeId);
+        }
+
+        public bool TryRemoveDependencies(IGraph graph, IQuest quest)
+        {
+            if (!graph.IsValid()) return false;
+            if (!Has(graph)) return false;
+            if (!quest.IsValid()) return false;
+            if (!graph.Has(quest)) return false;
+            
+            var node = graph.Get(quest);
+            return graph.TryRemoveDependencies(node.NodeId);
+        }
+
+        public bool TryRemoveDependents(IGraph graph, IQuest quest)
+        {
+            if (!graph.IsValid()) return false;
+            if (!Has(graph)) return false;
+            if (!quest.IsValid()) return false;
+            if (!graph.Has(quest)) return false;
+            
+            var node = graph.Get(quest);
+            return graph.TryRemoveDependents(node.NodeId);
+        }
+
+        public IQuestCollection GetDependencies(IGraph graph, IQuest quest)
+        {
+            IQuestCollection collection = new QuestCollection();
+            
+            if (!graph.IsValid()) return collection;
+            if (!Has(graph)) return collection;
+            if (!quest.IsValid()) return collection;
+            if (!graph.Has(quest)) return collection;
+            
+            var dependencies = graph.GetDependenciesNodes(quest);
+
+            foreach (var dependency in dependencies)
+            {
+                var node = graph.Get(dependency.NodeId);
+                var dep = _quests.FirstOrDefault(x => x.Equals(node.Quest));
+                if (!dep.IsValid()) continue;
+                
+                collection.Add(dep);
+            }
+
+            return collection;
+        }
+
+        public IQuestCollection GetDependents(IGraph graph, IQuest quest)
+        {
+            IQuestCollection collection = new QuestCollection();
+            
+            if (!graph.IsValid()) return collection;
+            if (!Has(graph)) return collection;
+            if (!quest.IsValid()) return collection;
+            if (!graph.Has(quest)) return collection;
+            
+            var dependents = graph.GetDependentsNodes(quest);
+            
+            foreach (var dependent in dependents)
+            {
+                var node = graph.Get(dependent.NodeId);
+                var dep = _quests.FirstOrDefault(x => x.Equals(node.Quest));
+                if (!dep.IsValid()) continue;
+                
+                collection.Add(dep);
+            }
+
+            return collection;
+        }
+
+        public bool Has(IGraph graph)
+        {
+            return _graphs.Has(graph);
+        }
+
+        public bool Has(IQuest quest)
+        {
+            return _graphs.Any(graph => graph.Has(quest));
+        }
+
+        public IQuest Get(Id id)
+        {
+            foreach (var graph in _graphs)
+            {
+                var quest = _quests.FirstOrDefault(x => x.Id.Equals(id));
+                if (!quest.IsValid()) continue;
+                return quest;
+            }
+
+            return null;
+        }
 
         public void Start()
         {
             foreach (var quest in _quests)
             {
-                if (!GetDependencies(quest).Any() && quest.Status is UnStarted)
+                foreach (var graph in _graphs)
                 {
-                    quest.Start();
-                }
-            }
-        }
+                    var node = graph.Get(quest);
+                    if (node is null) continue;
 
-        public bool TryAddQuest(IQuest quest)
-        {
-            if (!quest.IsValid()) return false;
-
-            if (Has(quest)) return false;
-
-            _quests.Add(quest);
-            quest.Completed += OnQuestCompleted;
-            quest.KeyChanged += OnKeyChanged;
-            return true;
-        }
-
-        /// <summary>
-        /// Note if there are many dependencies <param name="autoChangeDependencies"/> is false, this method will not delete quest
-        /// </summary>
-        /// <param name="quest"></param>
-        /// <param name="autoChangeDependencies"></param>
-        /// <returns></returns>
-        public bool TryRemoveQuest(IQuest quest, bool autoChangeDependencies = true)
-        {
-            if (!quest.IsValid()) return false;
-
-            if (!Has(quest)) return false;
-
-            if (autoChangeDependencies)
-            {
-                var dependencies = _linker.GetQuestKeyDependencies(quest.Key);
-                var dependents = _linker.GetQuestKeyDependents(quest.Key);
-
-                if (dependencies.Count > 1)
-                {
-                    return false;
-                }
-
-                if (dependencies.Count > 0)
-                {
-                    var baseQuest = dependencies.ElementAt(0);
-                    _linker.TryRemoveDependence(quest.Key, baseQuest);
-
-                    foreach (var dep in dependents)
+                    if (node.Dependencies.Count == 0 && quest.Status is UnStarted)
                     {
-                        _linker.TryAddDependence(dep, baseQuest);
+                        quest.Start();
                     }
                 }
-
-                foreach (var dep in dependents)
-                {
-                    _linker.TryRemoveDependence(dep, quest.Key);
-                }
             }
-
-            quest.Completed -= OnQuestCompleted;
-            _quests.Remove(quest);
-            return true;
-        }
-
-        public bool TryAddDependence(IQuest quest, IQuest dependence)
-        {
-            if (!quest.IsValid()) return false;
-
-            if (!dependence.IsValid()) return false;
-
-            return _linker.TryAddDependence(quest.Key, dependence.Key);
-        }
-
-        public bool TryRemoveDependence(IQuest quest, IQuest dependence)
-        {
-            if (!quest.IsValid()) return false;
-
-            if (!dependence.IsValid()) return false;
-
-            return _linker.TryRemoveDependence(quest.Key, dependence.Key);
-        }
-
-        public bool TryReplaceQuest(IQuest quest1, IQuest quest2, bool keysAreEquel)
-        {
-            if (!quest1.IsValid()) return false;
-
-            if (!quest2.IsValid()) return false;
-
-            if (!keysAreEquel)
-            {
-                if (quest1.Equals(quest2)) return false;
-
-                if (Has(quest2)) return false;
-            }
-
-            if (!Has(quest1)) return false;
-
-            var dependencies = GetDependencies(quest1);
-            var dependents = GetDependents(quest1);
-
-            foreach (var dep in dependencies)
-            {
-                TryRemoveDependence(quest1, dep);
-                TryAddDependence(quest2, dep);
-            }
-
-            foreach (var dep in dependents)
-            {
-                TryRemoveDependence(dep, quest1);
-                TryAddDependence(dep, quest2);
-            }
-
-            TryRemoveQuest(quest1, false);
-            TryAddQuest(quest2);
-
-            return true;
-        }
-
-        public bool TryRemoveDependencies(IQuest quest)
-        {
-#if DEBUG
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-#endif
-
-            if (!Has(quest)) return false;
-
-            var dependencies = GetDependencies(quest);
-
-            foreach (var dep in dependencies)
-            {
-                if (!TryRemoveDependence(quest, dep)) return false;
-            }
-
-            return true;
-        }
-
-        public bool TryRemoveDependents(IQuest quest)
-        {
-#if DEBUG
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-#endif
-
-            if (!Has(quest)) return false;
-
-            var dependents = GetDependents(quest);
-
-            foreach (var dep in dependents)
-            {
-                if (!TryRemoveDependence(dep, quest)) return false;
-            }
-
-            return true;
-        }
-
-        public IQuestCollection GetDependencies(IQuest quest)
-        {
-#if DEBUG
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-#endif
-
-            var keys = _linker.GetQuestKeyDependencies(quest.Key);
-            var collection = new QuestCollection();
-            foreach (var dep in keys)
-            {
-                collection.Add(GetQuest(dep));
-            }
-            return collection;
-        }
-
-        public IQuestCollection GetDependents(IQuest quest)
-        {
-#if DEBUG
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-#endif
-
-            var collection = new QuestCollection();
-            var keys = _linker.GetQuestKeyDependents(quest.Key);
-            foreach (var dep in keys)
-            {
-                collection.Add(GetQuest(dep));
-            }
-            return collection;
-        }
-
-        public bool HasCollisions()
-        {
-            var keys = _quests.GroupBy(x => x.Key)
-                .Where(group => group.Count() > 1)
-                .Select(quest => quest.Key);
-
-            if (keys.Count() > 1)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool Has(IQuest quest)
-        {
-            return _quests.Has(quest);
         }
 
         public void ResetQuests()
@@ -236,12 +202,6 @@ namespace Karpik.Quests.QuestSample
             {
                 quest.Reset();
             }
-            Start();
-        }
-
-        public override string ToString()
-        {
-            return _quests.ToString() + '\n' + _linker;
         }
 
         public void Clear()
@@ -250,81 +210,92 @@ namespace Karpik.Quests.QuestSample
             {
                 quest.Clear();
             }
-
-            _linker.Clear();
+            
             _quests.Clear();
         }
 
+        public bool HasCollisions()
+        {
+            var ids = _quests.GroupBy(x => x.Id)
+                .Where(group => group.Any());
+
+            return ids.Count() > 1;
+        }
+        
+        public bool Equals(IQuestAggregator? other)
+        {
+            if (other is null) return false;
+
+            return GetHashCode() == other.GetHashCode();
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            foreach (var graph in _graphs)
+            {
+                foreach (var node in graph.Nodes)
+                {
+                    _quests.Add(node.Quest);
+                    Subscribe(node);
+                }
+            }
+        }
+        
         public override bool Equals(object? obj)
         {
-            return obj switch
-            {
-                null => false,
-                IQuestAggregator aggregator => Equals(this, aggregator),
-                _ => false
-            };
-        }
-
-        public bool Equals(IQuestAggregator? x, IQuestAggregator? y)
-        {
-            if (x is null && y is null) return true;
-
-            if (x is null || y is null) return false;
-
-            if (x.Quests.Count != y.Quests.Count) return false;
-
-            var quests1 = x.Quests.ToList();
-            var quests2 = y.Quests.ToList();
-
-            return !quests1.Where((t, i) => !t.Equals(quests2[i])).Any();
-        }
-
-        public int GetHashCode([DisallowNull] IQuestAggregator obj)
-        {
-            return obj.GetHashCode();
+            return obj is QuestAggregator agg && Equals(agg);
         }
 
         public override int GetHashCode()
         {
-            return Quests.GetHashCode();
+            return _quests.GetHashCode();
         }
 
-        private void OnQuestCompleted(IQuest quest)
+        private void Subscribe(IGraphNode node)
         {
-            quest.Completed -= OnQuestCompleted;
-            var dependents = GetDependents(quest);
-            foreach (var dependent in dependents)
-            {
-                dependent.Start();
-            }
+            if (node.Quest.IsFinished()) return;
+            
+            node.Started    += OnGraphNodeStarted;
+            node.Updated    += OnGraphNodeUpdated;
+            node.Completed  += OnGraphNodeCompleted;
+            node.Failed     += OnGraphNodeFailed;
+            node.KeyChanged += OnKeyChanged;
         }
 
-        /// <summary>
-        /// Subscribe on events
-        /// </summary>
-        /// <param name="context"></param>
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
+        private void UnSubscribe(IGraphNode node)
         {
-            foreach (var quest in _quests)
-            {
-                if (quest.Status is Completed)
-                {
-                    continue;
-                }
-
-                quest.Completed += OnQuestCompleted;
-            }
+            node.Started    -= OnGraphNodeStarted;
+            node.Updated    -= OnGraphNodeUpdated;
+            node.Completed  -= OnGraphNodeCompleted;
+            node.Failed     -= OnGraphNodeFailed;
+            node.KeyChanged -= OnKeyChanged;
         }
 
-        private void OnKeyChanged(string oldKey, string newKey)
+        private void OnGraphNodeStarted(IGraphNode node)
         {
-            _linker.TryReplace(oldKey, newKey);
+            
         }
-    
-        private IQuest GetQuest(string key)
+        
+        //TODO:
+        private void OnGraphNodeCompleted(IGraphNode node)
         {
-            return Quests.First(x => x.Key == key);
+            UnSubscribe(node);
+        }
+        
+        private void OnGraphNodeFailed(IGraphNode node)
+        {
+            UnSubscribe(node);
+        }
+        
+        private void OnGraphNodeUpdated(IGraphNode node, ITaskBundle bundle)
+        {
+            
+        }
+        
+        private void OnKeyChanged(string newKey, string oldKey)
+        {
+            
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using Karpik.Quests;
-using Karpik.Quests.Interfaces;
+﻿using Karpik.Quests.Interfaces;
 using Karpik.Quests.QuestSample;
 using System;
 using System.Linq;
+using Karpik.Quests.ID;
 using Task = Karpik.Quests.QuestSample.Task;
 
 namespace Karpik.Quests.Example
@@ -10,6 +10,7 @@ namespace Karpik.Quests.Example
     internal class BasicLinearQuestLine : IQuestLine
     {
         private readonly IQuestAggregator _aggregator = new QuestAggregator();
+        private readonly IGraph _graph = new QuestGraph();
 
         public IQuestAggregator Aggregator => _aggregator;
 
@@ -17,14 +18,14 @@ namespace Karpik.Quests.Example
         {
             ITaskBundle bundle = new TaskBundle();
 
-            ITask firstTask = new Task();
-            firstTask.Init("HelloTask", "Hi, you are so beautiful!", "Be like this always");
+            ITask firstTask = new Task(new Id("HelloTask"));
+            firstTask.Init("Hi, you are so beautiful!", "Be like this always");
 
-            ITask secondTask = new Task();
-            secondTask.Init("WriteWordTask", "Now write 'Hello'", "Yes, you should do this to continue");
+            ITask secondTask = new Task(new Id("WriteWordTask"));
+            secondTask.Init("Now write 'Hello'", "Yes, you should do this to continue");
 
-            ITask thirdTask = new Task();
-            thirdTask.Init("LastTask", "Goodbye!", "That was awesome");
+            ITask thirdTask = new Task(new Id("LastTask"));
+            thirdTask.Init("Goodbye!", "That was awesome");
 
             bundle.Add(firstTask);
             bundle.Add(secondTask);
@@ -33,7 +34,8 @@ namespace Karpik.Quests.Example
             QuestBuilder.Start<Quest>("BasicLinearQuest", "This quest shows basic usage of this library", processor: null, completionType: null)
                 .AddBundle(bundle)
                 .OnComplete(OnQuestComplete) // quest.Completed += OnQuestComplete
-                .AddToAggregatorOnCreate(_aggregator)
+                .SetAggregator(_aggregator)
+                .SetGraph(_graph)
                 .Create();
         }
 
@@ -42,17 +44,17 @@ namespace Karpik.Quests.Example
             _aggregator.Start();
             var quest = _aggregator.Quests[0];
 
-            var curTask = quest.TaskBundles[0].ElementAt(0);
+            var curTask = quest.TaskBundles.First().First();
 
             Console.WriteLine(curTask.Name);
             Console.WriteLine(curTask.Description);
             while (curTask.Status != ITask.TaskStatus.Completed)
             {
                 Console.ReadKey();
-                curTask.TryToComplete();
+                curTask.TryComplete();
             }
 
-            curTask = quest.TaskBundles[0].ElementAt(1);
+            curTask = quest.TaskBundles.First().ElementAt(1);
 
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
@@ -67,10 +69,10 @@ namespace Karpik.Quests.Example
                         break;
                     }
                 }
-                curTask.TryToComplete();
+                curTask.TryComplete();
             }
 
-            curTask = quest.TaskBundles[0].ElementAt(2);
+            curTask = quest.TaskBundles.First().ElementAt(2);
 
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
@@ -80,7 +82,7 @@ namespace Karpik.Quests.Example
             {
                 Console.ReadKey();
                 Console.WriteLine();
-                curTask.TryToComplete();
+                curTask.TryComplete();
             }
             Console.WriteLine("Post quest completed");
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.TaskProcessorTypes
@@ -12,7 +13,10 @@ namespace Karpik.Quests.TaskProcessorTypes
             foreach (var bundle in bundles)
             {
                 bundle.Setup();
-                bundle.StartFirst();
+                foreach (var task in bundle)
+                {
+                    task.Start();
+                }
             }
         }
 

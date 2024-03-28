@@ -1,123 +1,36 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
-using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.TaskProcessorTypes;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
     public sealed class TaskBundleCollection : ITaskBundleCollection
     {
-        public event Action<IReadOnlyTaskBundleCollection, ITaskBundle>? Updated;
-        public event Action<IReadOnlyTaskBundleCollection>? Completed;
-
-        [JsonIgnore]
-        public ICompletionType CompletionType
-        {
-            get => _completionType;
-            private set
-            {
-#if DEBUG
-                if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
-
-                _completionType = value;
-            }
-        }
-
-        [JsonIgnore]
-        public IProcessorType Processor
-        {
-            get => _processor;
-            private set
-            {
-#if DEBUG
-                if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
-
-                _processor = value;
-                _processor.Setup(_bundles);
-            }
-        }
-
-        [JsonProperty("CompletionType")]
-        private ICompletionType _completionType;
-
-        [JsonProperty("TaskProcessor")]
-        private IProcessorType _processor;
-
         [JsonProperty("Bundles")]
         private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
-
-        public TaskBundleCollection() : this(And.Instance, ProcessorTypesPool.Instance.Pull<Disorderly>())
-        {
-
-        }
-
-        public TaskBundleCollection(ICompletionType completionType, IProcessorType processor)
-        {
-            SetCompletionType(completionType);
-            SetProcessorType(processor);
-        }
-
-        public void SetCompletionType(ICompletionType completionType)
-        {
-            CompletionType = completionType;
-        }
-
-        public void SetProcessorType(IProcessorType processor)
-        {
-            Processor = processor;
-        }
-
+        
         #region list
+        
         [JsonIgnore]
         public int Count => _bundles.Count;
 
         [JsonIgnore]
         public bool IsReadOnly => false;
 
-        public ITaskBundle this[int index]
-        {
-            get => _bundles[index];
-            set => _bundles[index] = value;
-        }
-
         public void Add(ITaskBundle item)
         {
             if (Has(item)) return;
             
             _bundles.Add(item);
-            item.Updated += OnBundleUpdated;
-            item.Completed += OnBundleComplete;
         }
 
         public void Clear()
         {
-            foreach (var bundle in _bundles)
-            {
-                bundle.Completed -= OnBundleComplete;
-                bundle.Updated -= OnBundleUpdated;
-            }
-
             _bundles.Clear();
         }
-
-        public object Clone()
-        {
-            TaskBundleCollection another = new TaskBundleCollection();
-            foreach (var bundle in _bundles)
-            {
-                another.Add((ITaskBundle)bundle.Clone());
-            }
-            return another;
-        }
-
+        
         public bool Contains(ITaskBundle item)
         {
             return Has(item);
@@ -130,14 +43,14 @@ namespace Karpik.Quests.QuestSample
 
         public bool Has(ITaskBundle bundle)
         {
-            for (int i = 0; i < _bundles.Count; i++)
+            foreach (var anotherTaskBundle in _bundles)
             {
-                ITaskBundle? anotherTaskBundle = _bundles[i];
                 if (anotherTaskBundle.Equals(bundle))
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -145,26 +58,16 @@ namespace Karpik.Quests.QuestSample
         {
             _bundles.CopyTo(array, arrayIndex);
         }
-
-        public IEnumerator<ITaskBundle> GetEnumerator()
-        {
-            return _bundles.GetEnumerator();
-        }
-
+        
         public bool Remove(ITaskBundle item)
         {
             if (!Has(item)) return false;
+            
             var index = IndexOf(item);
             if (index < 0) return false;
             _bundles.RemoveAt(index);
-            item.Completed -= OnBundleComplete;
-            item.Updated -= OnBundleUpdated;
+            
             return true;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _bundles.GetEnumerator();
         }
         
         public int IndexOf(ITaskBundle item)
@@ -172,41 +75,65 @@ namespace Karpik.Quests.QuestSample
             return _bundles.FindIndex(x => x.Equals(item));
         }
 
-        public void Insert(int index, ITaskBundle item)
-        {
-            _bundles.Insert(index, item);
-        }
-
         public void RemoveAt(int index)
         {
             _bundles.RemoveAt(index);
         }
-#endregion
-
-        public bool IsCompleted()
+        
+        public IEnumerator<ITaskBundle> GetEnumerator()
         {
-            return CompletionType.CheckCompletion(this);
+            return _bundles.GetEnumerator();
+        }
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _bundles.GetEnumerator();
+        }
+        
+        #endregion
+
+        public object Clone()
+        {
+            var another = new TaskBundleCollection();
+            foreach (var bundle in _bundles)
+            {
+                another.Add((ITaskBundle)bundle.Clone());
+            }
+            return another;
         }
 
+        public void Setup(IProcessorType processor)
+        {
+            processor.Setup(this);
+        }
+
+        public void ResetAll()
+        {
+            foreach (var bundle in _bundles)
+            {
+                bundle.Reset();
+            }
+        }
+
+        public void ResetFirst()
+        {
+            if (!_bundles.Any()) return;
+
+            _bundles[0].Reset();
+        }
+        
         public override bool Equals(object? obj)
         {
-            if (!(obj is TaskBundleCollection collection))
-            {
-                return false;
-            }
-
-            return Equals(this, collection);
+            return obj is TaskBundleCollection collection && Equals(collection);
         }
 
-        public bool Equals(IReadOnlyTaskBundleCollection? x, IReadOnlyTaskBundleCollection? y)
+        public bool Equals(IReadOnlyTaskBundleCollection? collection)
         {
-            if (x is null && y is null) return true;
-
-            if (x is null || y is null) return false;
-
+            if (collection is null) return false;
+            
             for (int i = 0; i < Count; i++)
             {
-                if (!x[i].Equals(y[i]))
+                if (!this.ElementAt(i).Equals(collection.ElementAt(i)))
                 {
                     return false;
                 }
@@ -218,61 +145,6 @@ namespace Karpik.Quests.QuestSample
         public override int GetHashCode()
         {
             return _bundles.GetHashCode();
-        }
-
-        public int GetHashCode([DisallowNull] IReadOnlyTaskBundleCollection obj)
-        {
-            return obj.GetHashCode();
-        }
-
-        public void Setup()
-        {
-            Processor.Setup(this);
-        }
-
-        public void StartFirst()
-        {
-            if (!_bundles.Any()) return;
-
-            _bundles[0].StartFirst();
-        }
-
-        public void ResetAll()
-        {
-            foreach (var bundle in _bundles)
-            {
-                bundle.ResetAll();
-            }
-        }
-
-        public void ResetFirst()
-        {
-            if (!_bundles.Any()) return;
-
-            _bundles[0].ResetAll();
-        }
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            foreach (var bundle in _bundles)
-            {
-                bundle.Updated += OnBundleUpdated;
-                bundle.Completed += OnBundleComplete;
-            }
-        }
-
-        private void OnBundleUpdated(ITaskBundle bundle)
-        {
-            Updated?.Invoke(this, bundle);
-        }
-
-        private void OnBundleComplete(ITaskBundle bundle)
-        {
-            if (IsCompleted())
-            {
-                Completed?.Invoke(this);
-            }
         }
     }
 }

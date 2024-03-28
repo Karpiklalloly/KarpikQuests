@@ -10,7 +10,7 @@ namespace Karpik.Quests.QuestSample
         {
             if (!_tasks.Has(task)) return false;
 
-            return task.TryToComplete();
+            return task.TryComplete();
         }
 
         public ITaskCollection TryCompleteAll()
@@ -19,7 +19,7 @@ namespace Karpik.Quests.QuestSample
 
             foreach (var task in _tasks)
             {
-                if (!task.TryToComplete())
+                if (!task.TryComplete())
                 {
                     tasks.Add(task);
                 }

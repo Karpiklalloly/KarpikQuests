@@ -3,29 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.LinqPredicates;
+using Karpik.Quests.Statuses;
 
 namespace Karpik.Quests.CompletionTypes
 {
     [Serializable]
-    public class And : ICompletionType, ISingleton<And>
+    public class And : ICompletionType
     {
-        private static And _instance;
-        public static And Instance => _instance ??= new And();
-
-        private And()
+        public IStatus Check(IEnumerable<ITaskBundle> bundles)
         {
+            var unStarted = StatusPool.Instance.Pull<UnStarted>();
+            var started = StatusPool.Instance.Pull<Started>();
+            var completed = StatusPool.Instance.Pull<Completed>();
+            var failed = StatusPool.Instance.Pull<Failed>();
+
+            var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
+            if (!arr.Any()) return completed;
+            if (arr.Any(Predicates.BundleIsFailed)) return failed;
+            if (arr.All(Predicates.BundleIsCompleted)) return completed;
+            if (arr.Any(Predicates.BundleIsCompleted) ||
+                arr.Any(Predicates.BundleIsFailed)) return started;
             
-        }
-        
-        public bool CheckCompletion(IEnumerable<ITaskBundle> bundles)
-        {
-            var enumerable = bundles as ITaskBundle[] ?? bundles.ToArray();
-            return !enumerable.Any() || Array.TrueForAll(enumerable, Predicates.BundleIsCompleted);
+            return unStarted;
         }
 
-        public bool CheckCompletion(ITaskBundle bundle)
+        public IStatus Check(ITaskBundle bundle)
         {
-            return !bundle.Any() || bundle.All(Predicates.TaskIsCompleted);
+            var unStarted = StatusPool.Instance.Pull<UnStarted>();
+            var started = StatusPool.Instance.Pull<Started>();
+            var completed = StatusPool.Instance.Pull<Completed>();
+            var failed = StatusPool.Instance.Pull<Failed>();
+
+            var arr = bundle.ToArray();
+            if (!arr.Any()) return completed;
+            
+            if (arr.Any(Predicates.TaskIsFailed)) return failed;
+            if (arr.All(Predicates.TaskIsCompleted)) return completed;
+            if (arr.Any(Predicates.TaskIsCompleted) ||
+                arr.Any(Predicates.TaskIsFailed)) return started;
+            
+            return unStarted;
         }
     }
 }

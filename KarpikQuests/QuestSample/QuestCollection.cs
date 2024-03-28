@@ -123,15 +123,13 @@ namespace Karpik.Quests.QuestSample
             return _data.GetHashCode();
         }
 
-        public bool Equals(IReadOnlyQuestCollection? x, IReadOnlyQuestCollection? y)
+        public bool Equals(IReadOnlyQuestCollection? other)
         {
-            if (x is null && y is null) return true;
-
-            if (x is null || y is null) return false;
-
-            for (int i = 0; i < x.Count; i++)
+            if (other is null) return false;
+        
+            for (int i = 0; i < other.Count; i++)
             {
-                if (!x[i].Equals(y[i])) return false;
+                if (!this[i].Equals(other[i])) return false;
             }
 
             return true;

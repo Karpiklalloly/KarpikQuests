@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Interfaces
 {
-    public interface ITaskBundle : ICollection<ITask>, ICloneable, IEqualityComparer<ITaskBundle>
+    public interface ITaskBundle : ICollection<ITask>, ICloneable, IEquatable<ITaskBundle>
     {
         public event Action<ITaskBundle>? Updated;
         public event Action<ITaskBundle>? Completed;
+        public event Action<ITaskBundle>? Failed;
 
-        public bool IsCompleted { get; }
-        public IReadOnlyTaskCollection QuestTasks { get; }
+        public IStatus Status { get; }
+        public IReadOnlyTaskCollection Tasks { get; }
 
         public bool Has(ITask task);
-        public bool Has(string taskKey);
+        public bool Has(Id taskKey);
 
         public void Setup();
-        public void StartFirst();
 
-        public void ResetAll();
+        public void Reset();
         public void ResetFirst();
 
         public void ClearTasks();

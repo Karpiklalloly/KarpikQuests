@@ -18,7 +18,7 @@ namespace Karpik.Quests.Factories
         
         public ITaskBundle Create()
         {
-            return Create(And.Instance, ProcessorTypesPool.Instance.Pull<Disorderly>());
+            return Create(CompletionTypesPool.Instance.Pull<And>(), ProcessorTypesPool.Instance.Pull<Disorderly>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -30,16 +30,16 @@ namespace Karpik.Quests.Factories
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ITaskBundle Create(IProcessorType? processor)
         {
-            return Create(And.Instance, processor);
+            return Create(CompletionTypesPool.Instance.Pull<And>(), processor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ITaskBundle Create(ICompletionType? completionType, IProcessorType? processor)
         {
-            completionType ??= And.Instance;
+            completionType ??= CompletionTypesPool.Instance.Pull<And>();
             processor      ??= ProcessorTypesPool.Instance.Pull<Disorderly>();
 
-            TaskBundle collection = new TaskBundle(completionType, processor);
+            var collection = new TaskBundle(completionType, processor);
 
             return collection;
         }
