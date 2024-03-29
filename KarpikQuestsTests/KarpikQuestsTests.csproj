@@ -19,9 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="KarpikQuests">
-      <HintPath>KarpikQuests.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\KarpikQuests\KarpikQuests.csproj" />
   </ItemGroup>
-
 </Project>

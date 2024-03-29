@@ -40,6 +40,8 @@ namespace Karpik.Quests.QuestSample
         public Task(Id id)
         {
             _id = id;
+            _name = string.Empty;
+            _description = string.Empty;
         }
 
         public void Init()
@@ -49,8 +51,8 @@ namespace Karpik.Quests.QuestSample
 
         public void Init(string name, string description = "")
         {
-            _name = name;
-            _description = description;
+            _name = string.IsNullOrWhiteSpace(name) ? "Task" : name;
+            _description = description is null ? "Description" : description;
 
             _status = ITask.TaskStatus.UnStarted;
 
@@ -66,15 +68,16 @@ namespace Karpik.Quests.QuestSample
         public void Start()
         {
             _canBeCompleted = true;
-            _status = ITask.TaskStatus.UnStarted;
+            _status = ITask.TaskStatus.Started;
             Started?.Invoke(this);
         }
 
         public void Reset()
         {
-            _canBeCompleted = false;
-            _status = ITask.TaskStatus.UnStarted;
+            Setup();
+            Started = null;
             Completed = null;
+            Failed = null;
         }
 
         public bool TryComplete()

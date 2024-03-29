@@ -1,10 +1,9 @@
-﻿using KarpikQuests;
-using KarpikQuests.Interfaces;
-using KarpikQuests.CompletionTypes;
-using KarpikQuests.QuestSample;
-using KarpikQuests.TaskProcessorTypes;
+﻿using Karpik.Quests;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.QuestSample;
 
-namespace KarpikQuestsTests;
+
+namespace Karpik.Quests.Tests;
 
 internal class QuestBuilderTests
 {
@@ -21,7 +20,10 @@ internal class QuestBuilderTests
     {
         string desc = "desc";
 
-        var quest = QuestBuilder.Start<Quest>(name, desc, processor: null, completionType: null).Create();
+        var quest = QuestBuilder
+            .Start<Quest>(name, desc, processor: null, completionType: null)
+            .SetAggregator(_aggregator)
+            .Create();
 
         Assert.That(quest.Name, Is.EqualTo(name));
     }
@@ -31,8 +33,11 @@ internal class QuestBuilderTests
     {
         string name = "name";
 
-        var quest = QuestBuilder.Start<Quest>(name, desc, processor: null, completionType: null).Create();
-
+        var quest = QuestBuilder
+            .Start<Quest>(name, desc, processor: null, completionType: null)
+            .SetAggregator(_aggregator)
+            .Create();
+        
         Assert.That(quest.Description, Is.EqualTo(desc));
     }
 
@@ -42,8 +47,9 @@ internal class QuestBuilderTests
         string name = "name";
         string desc = "desc";
 
-        QuestBuilder.Start<Quest>(name, desc, processor: null, completionType: null)
-            .AddToAggregatorOnCreate(_aggregator)
+        QuestBuilder
+            .Start<Quest>(name, desc, processor: null, completionType: null)
+            .SetAggregator(_aggregator)
             .Create();
 
         Assert.That(_aggregator.Quests, Is.Not.Empty);

@@ -10,7 +10,7 @@ namespace Karpik.Quests.ID
     
         public Id(string value)
         {
-            Value = string.IsNullOrWhiteSpace(value) ? Empty.Value : value;
+            Value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
         }
 
         public static Id NewId() => new Id(IDGenerator.GenerateId());
