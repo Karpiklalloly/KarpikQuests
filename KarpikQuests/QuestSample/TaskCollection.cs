@@ -21,7 +21,7 @@ namespace Karpik.Quests.QuestSample
 
         public void Add(ITask item)
         {
-            if (Has(item)) return;
+            if (item is null) return;
             _tasks.Add(item);
         }
 
@@ -42,7 +42,14 @@ namespace Karpik.Quests.QuestSample
         
         public bool Has(ITask? task)
         {
-            return !(task is null) && _tasks.Contains(task);
+            if (task is null) return false;
+
+            foreach (var task1 in _tasks)
+            {
+                if (task.Equals(task1)) return true;
+            }
+
+            return false;
         }
 
         public bool Remove(ITask item)

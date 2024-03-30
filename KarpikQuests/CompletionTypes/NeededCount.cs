@@ -31,7 +31,7 @@ namespace Karpik.Quests.CompletionTypes
             var failedCount = arr.Sum(Predicates.BundleCountFailed);
             
             if (completedCount >= Count) return completed;
-            if (failedCount + completedCount == arr.Length) return failed;
+            if (arr.Length - failedCount < Count) return failed;
             if (completedCount > 0 || failedCount > 0) return started;
             
             return unStarted;
@@ -52,7 +52,7 @@ namespace Karpik.Quests.CompletionTypes
             var failedCount = arr.Count(Predicates.TaskIsFailed);
             
             if (completedCount >= Count) return completed;
-            if (failedCount + completedCount == arr.Length) return failed;
+            if (arr.Length - failedCount < Count) return failed;
             if (completedCount > 0 || failedCount > 0) return started;
             
             return unStarted;

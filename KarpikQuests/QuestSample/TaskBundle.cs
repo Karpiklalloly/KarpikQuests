@@ -19,14 +19,39 @@ namespace Karpik.Quests.QuestSample
         public event Action<ITaskBundle>? Failed;
 
         [JsonIgnore] public IReadOnlyTaskCollection Tasks => _tasks;
-        [JsonIgnore] public ICompletionType CompletionType => _completionType;
-        [JsonIgnore] public IProcessorType Processor => _processor;
+
+        [JsonIgnore] public ICompletionType CompletionType
+        {
+            get => _completionType;
+            private set
+            {
+#if DEBUG
+                if (value is null) throw new ArgumentNullException(nameof(value));
+#endif
+
+                _completionType = value;
+            }
+        }
+
+        [JsonIgnore] public IProcessorType ProcessorType
+        {
+            get => _processorType;
+            private set
+            {
+#if DEBUG
+                if (value is null) throw new ArgumentNullException(nameof(value));
+#endif
+
+                _processorType = value;
+                _processorType.Setup(this);
+            }
+        }
         [JsonIgnore] public IStatus Status => _status;
 
         [JsonProperty("Tasks")]
         private IReadOnlyTaskCollection _tasks = new TaskCollection();
         [JsonProperty("TaskProcessor")]
-        private IProcessorType _processor;
+        private IProcessorType _processorType;
         [JsonProperty("CompletionType")]
         private ICompletionType _completionType;
         [JsonProperty("Status")]
@@ -37,31 +62,12 @@ namespace Karpik.Quests.QuestSample
 
         }
 
-        public TaskBundle(ICompletionType completionType, IProcessorType questTaskProcessor)
+        public TaskBundle(ICompletionType completionType, IProcessorType processorType)
         {
-            SetCompletionType(completionType);
-            SetProcessorType(questTaskProcessor);
+            CompletionType = completionType is null ? CompletionTypesPool.Instance.Pull<And>() : completionType;
+            ProcessorType = processorType is null ? ProcessorTypesPool.Instance.Pull<Orderly>() : processorType;
 
             _status = new UnStarted();
-        }
-
-        public void SetCompletionType(ICompletionType completionType)
-        {
-#if DEBUG
-            if (completionType is null) throw new ArgumentNullException(nameof(completionType));
-#endif
-
-            _completionType = completionType;
-        }
-
-        public void SetProcessorType(IProcessorType processor)
-        {
-#if DEBUG
-            if (processor is null) throw new ArgumentNullException(nameof(processor));
-#endif
-
-            _processor = processor;
-            _processor.Setup(this);
         }
 
         public void ClearTasks()
@@ -76,7 +82,7 @@ namespace Karpik.Quests.QuestSample
 
         public void Setup()
         {
-            Processor.Setup(this);
+            ProcessorType.Setup(this);
         }
 
         public void Reset()
@@ -108,11 +114,10 @@ namespace Karpik.Quests.QuestSample
 
         public void Add(ITask item)
         {
+            if (Has(item)) return;
+            
             Tasks.Add(item);
-            if (Tasks.Has(item))
-            {
-                Subscribe(item);
-            }
+            Subscribe(item);
         }
 
         public void Clear()
@@ -165,7 +170,7 @@ namespace Karpik.Quests.QuestSample
             {
                 _tasks = (IReadOnlyTaskCollection)Tasks.Clone(),
                 _completionType = CompletionType,
-                _processor = Processor,
+                _processorType = ProcessorType,
                 Updated = (Action<ITaskBundle>?)Updated?.Clone(),
                 Completed = (Action<ITaskBundle>?)Completed?.Clone(),
                 Failed = (Action<ITaskBundle>?)Failed?.Clone() 
