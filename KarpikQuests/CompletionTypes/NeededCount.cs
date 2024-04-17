@@ -7,9 +7,15 @@ using Karpik.Quests.Statuses;
 
 namespace Karpik.Quests.CompletionTypes
 {
+    [Serializable]
     public class NeededCount : ICompletionType
     {
-        public int Count { get; }
+        public int Count { get; set; }
+
+        public NeededCount() : this(0)
+        {
+            
+        }
 
         public NeededCount(int count)
         {
@@ -18,10 +24,10 @@ namespace Karpik.Quests.CompletionTypes
 
         public IStatus Check(IEnumerable<ITaskBundle> bundles)
         {
-            var unStarted = StatusPool.Instance.Pull<UnStarted>();
-            var started = StatusPool.Instance.Pull<Started>();
-            var completed = StatusPool.Instance.Pull<Completed>();
-            var failed = StatusPool.Instance.Pull<Failed>();
+            var unStarted = new UnStarted();
+            var started = new Started();
+            var completed = new Completed();
+            var failed = new Failed();
             
             if (Count == 0) return completed;
 
@@ -39,10 +45,10 @@ namespace Karpik.Quests.CompletionTypes
 
         public IStatus Check(ITaskBundle bundle)
         {
-            var unStarted = StatusPool.Instance.Pull<UnStarted>();
-            var started = StatusPool.Instance.Pull<Started>();
-            var completed = StatusPool.Instance.Pull<Completed>();
-            var failed = StatusPool.Instance.Pull<Failed>();
+            var unStarted = new UnStarted();
+            var started = new Started();
+            var completed = new Completed();
+            var failed = new Failed();
             
             if (Count == 0) return completed;
 

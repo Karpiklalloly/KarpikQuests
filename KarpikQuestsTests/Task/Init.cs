@@ -4,7 +4,7 @@ using Task = Karpik.Quests.QuestSample.Task;
 
 namespace Karpik.Quests.Tests;
 
-public class InitTask
+public class Init
 {
     [Test]
     public void WhenInitTask_AndSetCorrectKeyNameDescription_ThenTheyAreEqualToTask(

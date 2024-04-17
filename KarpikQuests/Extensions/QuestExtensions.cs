@@ -51,30 +51,26 @@ namespace Karpik.Quests.Extensions
             {
                 bundle.Reset();
             }
-            StatusPool.Instance.Push(quest.Status);
-            quest.SetStatus(StatusPool.Instance.Pull<UnStarted>());
+            quest.SetStatus(new UnStarted());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Start(this IQuest quest)
         {
             quest.TaskBundles.Setup(quest.Processor);
-            StatusPool.Instance.Push(quest.Status);
-            quest.SetStatus(StatusPool.Instance.Pull<Started>());
+            quest.SetStatus(new Started());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Fail(this IQuest quest)
         {
-            StatusPool.Instance.Push(quest.Status);
-            quest.SetStatus(StatusPool.Instance.Pull<Failed>());
+            quest.SetStatus(new Failed());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Complete(this IQuest quest)
         {
-            StatusPool.Instance.Push(quest.Status);
-            quest.SetStatus(StatusPool.Instance.Pull<Completed>());
+            quest.SetStatus(new Completed());
         }
     }
 }

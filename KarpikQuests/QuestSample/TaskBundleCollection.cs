@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
 using Newtonsoft.Json;
 
@@ -13,11 +14,9 @@ namespace Karpik.Quests.QuestSample
         
         #region list
         
-        [JsonIgnore]
-        public int Count => _bundles.Count;
+        [JsonIgnore] public int Count => _bundles.Count;
 
-        [JsonIgnore]
-        public bool IsReadOnly => false;
+        [JsonIgnore] public bool IsReadOnly => false;
 
         public void Add(ITaskBundle item)
         {
@@ -75,19 +74,30 @@ namespace Karpik.Quests.QuestSample
             return _bundles.FindIndex(x => x.Equals(item));
         }
 
+        public void Insert(int index, ITaskBundle item)
+        {
+            _bundles.Insert(index, item);
+        }
+
         public void RemoveAt(int index)
         {
             _bundles.RemoveAt(index);
         }
-        
+
+        public ITaskBundle this[int index]
+        {
+            get => _bundles[index];
+            set => _bundles[index] = value;
+        }
+
         public IEnumerator<ITaskBundle> GetEnumerator()
         {
-            return _bundles.GetEnumerator();
+            return new TaskBundleCollectionEnumerator(this);
         }
         
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _bundles.GetEnumerator();
+            return new TaskBundleCollectionEnumerator(this);
         }
         
         #endregion

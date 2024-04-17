@@ -2,13 +2,13 @@
 
 namespace Karpik.Quests.Extensions
 {
-    public static class StringExtensions
+    public static partial class StringExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this string str)
         {
             if (str.IsNullOrEmpty()) return false;
-            if (str.IsNullOrWhiteSpaces()) return false;
+            if (str.IsNullOrWhiteSpace()) return false;
 
             return true;
         }
@@ -20,7 +20,7 @@ namespace Karpik.Quests.Extensions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrWhiteSpaces(this string str)
+        public static bool IsNullOrWhiteSpace(this string str)
         {
             return string.IsNullOrWhiteSpace(str);
         }

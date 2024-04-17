@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.QuestSample;
@@ -18,30 +17,28 @@ namespace Karpik.Quests.Factories
         
         public ITaskBundle Create()
         {
-            return Create(CompletionTypesPool.Instance.Pull<And>(), ProcessorTypesPool.Instance.Pull<Disorderly>());
+            return Create(
+                new And(),
+                new Disorderly());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITaskBundle Create(ICompletionType? completionType)
+        public ITaskBundle Create(ICompletionType completionType)
         {
-            return Create(completionType, ProcessorTypesPool.Instance.Pull<Disorderly>());
+            return Create(
+                completionType,
+                new Disorderly());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITaskBundle Create(IProcessorType? processor)
+        public ITaskBundle Create(IProcessorType processor)
         {
-            return Create(CompletionTypesPool.Instance.Pull<And>(), processor);
+            return Create(
+                new And(),
+                processor);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ITaskBundle Create(ICompletionType? completionType, IProcessorType? processor)
+        public ITaskBundle Create(ICompletionType completionType, IProcessorType processor)
         {
-            completionType ??= CompletionTypesPool.Instance.Pull<And>();
-            processor      ??= ProcessorTypesPool.Instance.Pull<Disorderly>();
-
-            var collection = new TaskBundle(completionType, processor);
-
-            return collection;
+            return new TaskBundle(completionType, processor);
         }
     }
 }

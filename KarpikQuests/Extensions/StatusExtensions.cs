@@ -4,7 +4,7 @@ using Karpik.Quests.Statuses;
 
 namespace Karpik.Quests.Extensions
 {
-    public static class StatusExtensions
+    public static partial class StatusExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCompleted(this IStatus status)

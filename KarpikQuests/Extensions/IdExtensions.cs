@@ -3,7 +3,7 @@ using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Extensions
 {
-    public static class IdExtensions
+    public static partial class IdExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this Id id)

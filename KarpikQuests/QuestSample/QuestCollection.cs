@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
 using Newtonsoft.Json;
 
@@ -13,11 +14,9 @@ namespace Karpik.Quests.QuestSample
         [JsonProperty("Data")]
         private readonly List<IQuest> _data = new List<IQuest>();
 
-        [JsonIgnore]
-        public int Count => _data.Count;
+        [JsonIgnore] public int Count => _data.Count;
 
-        [JsonIgnore]
-        public bool IsReadOnly => false;
+        [JsonIgnore] public bool IsReadOnly => false;
 
 #region list
         public IQuest this[int index]
@@ -49,7 +48,12 @@ namespace Karpik.Quests.QuestSample
 
         public IEnumerator<IQuest> GetEnumerator()
         {
-            return _data.GetEnumerator();
+            return new QuestCollectionEnumerator(this);
+        }
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new QuestCollectionEnumerator(this);
         }
 
         public bool Remove(IQuest item)
@@ -59,11 +63,6 @@ namespace Karpik.Quests.QuestSample
             if (index < 0) return false;
             _data.RemoveAt(index);
             return true;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _data.GetEnumerator();
         }
 
         public int IndexOf(IQuest item)

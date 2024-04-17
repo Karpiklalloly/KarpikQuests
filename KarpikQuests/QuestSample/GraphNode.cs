@@ -16,13 +16,10 @@ namespace Karpik.Quests.QuestSample
         public event Action<IGraphNode, ITaskBundle>? Updated;
         public event Action<IGraphNode>? Completed;
         public event Action<IGraphNode>? Failed;
-
-        [JsonIgnore]
-        public Id NodeId => _nodeId;
-        [JsonIgnore]
-        public IQuest Quest => _quest;
-        [JsonIgnore]
-        public IReadOnlyList<IGraphNode.Connection> Dependencies => _dependencies;
+        
+        [JsonIgnore] public Id NodeId => _nodeId;
+        [JsonIgnore] public IQuest Quest => _quest;
+        [JsonIgnore] public IReadOnlyList<IGraphNode.Connection> Dependencies => _dependencies;
 
         [JsonProperty("ID")]
         private readonly Id _nodeId;
@@ -32,21 +29,19 @@ namespace Karpik.Quests.QuestSample
         private List<IGraphNode.Connection> _dependencies = new List<IGraphNode.Connection>();
 
         private bool _disposed = false;
+        private readonly string _toString;
 
-        public GraphNode() : this(null)
-        {
-            
-        }
-        
         public GraphNode(IQuest quest) : this(Id.NewId(), quest)
         {
             
         }
         
-        public GraphNode(Id id, IQuest quest)
+        private GraphNode(Id id, IQuest quest)
         {
-            _nodeId = id.IsEmpty() ? Id.NewId() : id;
+            _nodeId = id;
             _quest = quest;
+
+            _toString = $"Node: {_nodeId}\nQuest: {_quest.Id}";
         }
 
         public bool TryAddDependency(IGraphNode.Connection connection)
@@ -122,10 +117,6 @@ namespace Karpik.Quests.QuestSample
 
         public void SetQuest(IQuest quest)
         {
-#if DEBUG
-            if (!quest.IsValid()) throw new ArgumentException(null, nameof(quest));
-#endif
-            
             _quest = quest;
         }
         
@@ -158,7 +149,7 @@ namespace Karpik.Quests.QuestSample
 
         public override string ToString()
         {
-            return $"Node: {_nodeId}\nQuest: {_quest.Id}";
+            return _toString;
         }
 
         ~GraphNode()

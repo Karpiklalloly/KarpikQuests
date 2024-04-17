@@ -33,7 +33,7 @@ public class CreateBundle
     [Test]
     public void WhenCreateBundle_AndSetAddType_ThenBundleHasAndType()
     {
-        var bundle = new QuestSample.TaskBundle(new And(), null);
+        var bundle = new TaskBundle(new And(), new Disorderly());
 
         Assert.That(bundle.CompletionType is And);
     }
@@ -41,7 +41,7 @@ public class CreateBundle
     [Test]
     public void WhenCreateBundle_AndSetOrType_ThenBundleHasOrType()
     {
-        var bundle = new QuestSample.TaskBundle(new Or(), null);
+        var bundle = new TaskBundle(new Or(), new Disorderly());
 
         Assert.That(bundle.CompletionType is Or);
     }

@@ -3,7 +3,7 @@ using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.Extensions
 {
-    public static class BundleExtensions
+    public static partial class BundleExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsUnStarted(this ITaskBundle bundle)

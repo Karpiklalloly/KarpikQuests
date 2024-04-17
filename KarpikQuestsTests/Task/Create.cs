@@ -3,7 +3,7 @@ using Task = Karpik.Quests.QuestSample.Task;
 
 namespace Karpik.Quests.Tests;
 
-public class CreateTask
+public class Create
 {
     [Test]
     public void WhenCreateTask_AndSetCorrectId_ThenTaskHasThisId(

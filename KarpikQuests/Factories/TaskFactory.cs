@@ -5,12 +5,12 @@ using Task = Karpik.Quests.QuestSample.Task;
 
 namespace Karpik.Quests.Factories
 {
-    public class QuestTaskFactory : IFactory<ITask>, ISingleton<QuestTaskFactory>
+    public class TaskFactory : IFactory<ITask>, ISingleton<TaskFactory>
     {
-        private static QuestTaskFactory _instance;
-        public static QuestTaskFactory Instance => _instance ??= new QuestTaskFactory();
+        private static TaskFactory _instance;
+        public static TaskFactory Instance => _instance ??= new TaskFactory();
 
-        private QuestTaskFactory()
+        private TaskFactory()
         {
             
         }

@@ -3,7 +3,7 @@ using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.Extensions
 {
-    public static class TaskExtensions
+    public static partial class TaskExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsUnStarted(this ITask task)

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.QuestSample
@@ -21,7 +22,6 @@ namespace Karpik.Quests.QuestSample
 
         public void Add(ITask item)
         {
-            if (item is null) return;
             _tasks.Add(item);
         }
 
@@ -63,12 +63,12 @@ namespace Karpik.Quests.QuestSample
 
         public IEnumerator<ITask> GetEnumerator()
         {
-            return _tasks.GetEnumerator();
+            return new TaskCollectionEnumerator(this);
         }
         
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _tasks.GetEnumerator();
+            return new TaskCollectionEnumerator(this);
         }
 #endregion
 
@@ -108,6 +108,27 @@ namespace Karpik.Quests.QuestSample
         public override int GetHashCode()
         {
             return _tasks.GetHashCode();
+        }
+
+        public int IndexOf(ITask item)
+        {
+            return _tasks.IndexOf(item);
+        }
+
+        public void Insert(int index, ITask item)
+        {
+            _tasks.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _tasks.RemoveAt(index);
+        }
+
+        public ITask this[int index]
+        {
+            get => _tasks[index];
+            set => _tasks[index] = value;
         }
     }
 }

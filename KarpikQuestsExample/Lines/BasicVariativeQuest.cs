@@ -1,7 +1,5 @@
-﻿using Karpik.Quests;
-using Karpik.Quests.Extensions;
+﻿using Karpik.Quests.Extensions;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.ID;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.QuestSample;
 using Karpik.Quests.TaskProcessorTypes;
@@ -42,8 +40,8 @@ namespace Karpik.Quests.Example
             foxLeather.Init("Fox Leather");
             _tasks.Add(foxLeather.Name.ToLower(), foxLeather);
 
-            ITaskBundle leatherBundle = new TaskBundle(CompletionTypesPool.Instance.Pull<Or>(), 
-                ProcessorTypesPool.Instance.Pull<Disorderly>())
+            ITaskBundle leatherBundle = new TaskBundle(new Or(), 
+                new Disorderly())
             {
                 bearLeather,
                 rabbitLeather,
@@ -68,8 +66,8 @@ namespace Karpik.Quests.Example
             stonesNecessary.Init("Stones");
             _tasks.Add(stonesNecessary.Name.ToLower(), stonesNecessary);
 
-            ITaskBundle necessaryBundle = new TaskBundle(CompletionTypesPool.Instance.Pull<And>(), 
-                ProcessorTypesPool.Instance.Pull<Disorderly>())
+            ITaskBundle necessaryBundle = new TaskBundle(new And(), 
+                new Disorderly())
             {
                 sticksNecessary,
                 leavesNecessary,
@@ -94,8 +92,8 @@ namespace Karpik.Quests.Example
             dirtyWater.Init("Dirty Water");
             _tasks.Add(dirtyWater.Name.ToLower(), dirtyWater);
 
-            TaskBundle waterBundle = new TaskBundle(CompletionTypesPool.Instance.Pull<Or>(), 
-                ProcessorTypesPool.Instance.Pull<Disorderly>())
+            TaskBundle waterBundle = new TaskBundle(new Or(), 
+                new Disorderly())
             {
                 purifiedWater,
                 saltWater,
@@ -111,8 +109,8 @@ namespace Karpik.Quests.Example
             QuestBuilder.Start<Quest>(
                     "VariativeQuest",
                     "Shows power of bundles",
-                    ProcessorTypesPool.Instance.Pull<Disorderly>(),
-                    CompletionTypesPool.Instance.Pull<And>())
+                    new Disorderly(),
+                    new And())
                 .AddBundle(leatherBundle)
                 .AddBundle(necessaryBundle)
                 .AddBundle(waterBundle)

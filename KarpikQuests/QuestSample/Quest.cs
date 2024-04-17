@@ -2,11 +2,10 @@
 using System.Text;
 using Karpik.Quests.Extensions;
 using System.Runtime.Serialization;
-using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.ID;
 using Karpik.Quests.Statuses;
-using Karpik.Quests.TaskProcessorTypes;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -54,7 +53,7 @@ namespace Karpik.Quests.QuestSample
             
         }
 
-        public Quest(Id id)
+        private Quest(Id id)
         {
             _id = id;
         }
@@ -63,16 +62,13 @@ namespace Karpik.Quests.QuestSample
         {
             Init("Quest", "Description",
                 new TaskBundleCollection(),
-                CompletionTypesPool.Instance.Pull<And>(),
-                ProcessorTypesPool.Instance.Pull<Orderly>());
+                CompletionTypesFactory.Instance.Create(),
+                ProcessorFactory.Instance.Create());
         }
 
         public void Init(string name, string description, ITaskBundleCollection bundles,
             ICompletionType completionType, IProcessorType processorType)
         {
-#if DEBUG
-            if (!bundles.IsValid()) throw new ArgumentNullException(nameof(bundles));
-#endif
             _name = name;
             _description = description;
             _bundles = bundles;
@@ -230,8 +226,8 @@ namespace Karpik.Quests.QuestSample
         {
             if (!_disposedValue)
             {
-                _bundles.Clear();
-
+                Clear();
+                
                 _inited = false;
 
                 _disposedValue = true;

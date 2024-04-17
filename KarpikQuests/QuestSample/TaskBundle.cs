@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.Enumerators;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
@@ -23,14 +24,7 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public ICompletionType CompletionType
         {
             get => _completionType;
-            private set
-            {
-#if DEBUG
-                if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
-
-                _completionType = value;
-            }
+            private set => _completionType = value;
         }
 
         [JsonIgnore] public IProcessorType ProcessorType
@@ -38,10 +32,6 @@ namespace Karpik.Quests.QuestSample
             get => _processorType;
             private set
             {
-#if DEBUG
-                if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
-
                 _processorType = value;
                 _processorType.Setup(this);
             }
@@ -57,15 +47,15 @@ namespace Karpik.Quests.QuestSample
         [JsonProperty("Status")]
         private IStatus _status;
 
-        public TaskBundle() : this(CompletionTypesPool.Instance.Pull<And>(), ProcessorTypesPool.Instance.Pull<Orderly>())
+        public TaskBundle() : this(new And(), new Orderly())
         {
 
         }
 
         public TaskBundle(ICompletionType completionType, IProcessorType processorType)
         {
-            CompletionType = completionType is null ? CompletionTypesPool.Instance.Pull<And>() : completionType;
-            ProcessorType = processorType is null ? ProcessorTypesPool.Instance.Pull<Orderly>() : processorType;
+            CompletionType = completionType;
+            ProcessorType = processorType;
 
             _status = new UnStarted();
         }
@@ -106,11 +96,9 @@ namespace Karpik.Quests.QuestSample
 
 #region collection
 
-        [JsonIgnore]
-        public int Count => Tasks.Count;
+        [JsonIgnore] public int Count => Tasks.Count;
 
-        [JsonIgnore]
-        public bool IsReadOnly => false;
+        [JsonIgnore] public bool IsReadOnly => false;
 
         public void Add(ITask item)
         {
@@ -154,12 +142,12 @@ namespace Karpik.Quests.QuestSample
 
         public IEnumerator<ITask> GetEnumerator()
         {
-            return Tasks.GetEnumerator();
+            return new TaskBundleEnumerator(this);
         }
         
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (Tasks as IEnumerable).GetEnumerator();
+            return new TaskBundleEnumerator(this);
         }
         
 #endregion
@@ -224,6 +212,27 @@ namespace Karpik.Quests.QuestSample
             }
             
             Updated?.Invoke(this);
+        }
+
+        public int IndexOf(ITask item)
+        {
+            return _tasks.IndexOf(item);
+        }
+
+        public void Insert(int index, ITask item)
+        {
+            _tasks.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _tasks.RemoveAt(index);
+        }
+
+        public ITask this[int index]
+        {
+            get => _tasks[index];
+            set => _tasks[index] = value;
         }
     }
 }

@@ -6,14 +6,10 @@ namespace Karpik.Quests.ID
     {
         public const string DefaultPrefix = "";
 
-        public static string GenerateId(string prefix = DefaultPrefix)
+        public static Id GenerateId(string prefix = DefaultPrefix)
         {
             var key = GenerateIdGuid().ToString();
-            if (prefix == DefaultPrefix)
-            {
-                return key;
-            }
-            return prefix + key;
+            return new Id(prefix + key);
         }
 
         public static Guid GenerateIdGuid()
@@ -21,9 +17,9 @@ namespace Karpik.Quests.ID
             return Guid.NewGuid();
         }
 
-        public static string[] GenerateIds(int count, string prefix = DefaultPrefix)
+        public static Id[] GenerateIds(int count, string prefix = DefaultPrefix)
         {
-            var keys = new string[count];
+            var keys = new Id[count];
             for (int i = 0; i < count; i++)
             {
                 keys[i] = GenerateId(prefix);

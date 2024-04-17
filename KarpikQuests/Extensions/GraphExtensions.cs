@@ -2,7 +2,7 @@ using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.Extensions
 {
-    public static class GraphExtensions
+    public static partial class GraphExtensions
     {
         public static bool IsValid(this IGraph graph)
         {

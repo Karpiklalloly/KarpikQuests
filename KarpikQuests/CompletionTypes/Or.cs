@@ -1,5 +1,4 @@
-﻿using Karpik.Quests.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.Interfaces;
@@ -13,10 +12,10 @@ namespace Karpik.Quests.CompletionTypes
     {
         public IStatus Check(IEnumerable<ITaskBundle> bundles)
         {
-            var unStarted = StatusPool.Instance.Pull<UnStarted>();
-            var started = StatusPool.Instance.Pull<Started>();
-            var completed = StatusPool.Instance.Pull<Completed>();
-            var failed = StatusPool.Instance.Pull<Failed>();
+            var unStarted = new UnStarted();
+            var started = new Started();
+            var completed = new Completed();
+            var failed = new Failed();
 
             var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
 
@@ -30,10 +29,10 @@ namespace Karpik.Quests.CompletionTypes
 
         public IStatus Check(ITaskBundle bundle)
         {
-            var unStarted = StatusPool.Instance.Pull<UnStarted>();
-            var started = StatusPool.Instance.Pull<Started>();
-            var completed = StatusPool.Instance.Pull<Completed>();
-            var failed = StatusPool.Instance.Pull<Failed>();
+            var unStarted = new UnStarted();
+            var started = new Started();
+            var completed = new Completed();
+            var failed = new Failed();
 
             var arr = bundle.ToArray();
 

@@ -7,13 +7,15 @@ namespace Karpik.Quests.ID
     {
         public static readonly Id Empty = new Id("-1");
         public string Value { get; }
+        private readonly string _toString;
     
         public Id(string value)
         {
             Value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
+            _toString = $"ID: {Value}";
         }
 
-        public static Id NewId() => new Id(IDGenerator.GenerateId());
+        public static Id NewId() => IDGenerator.GenerateId();
     
         public bool Equals(Id other) => Value == other.Value;
     
@@ -23,7 +25,7 @@ namespace Karpik.Quests.ID
 
         public override string ToString()
         {
-            return $"ID: {Value}";
+            return _toString;
         }
 
         public static bool operator ==(Id left, Id right)

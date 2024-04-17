@@ -3,7 +3,7 @@ using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.Extensions
 {
-    public static class DependencyTypeExtensions
+    public static partial class DependencyTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this IDependencyType type)

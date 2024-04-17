@@ -14,16 +14,14 @@ namespace Karpik.Quests
             return Start<T>(
                 name, 
                 description, 
-                ProcessorTypesPool.Instance.Pull<Disorderly>(), 
-                CompletionTypesPool.Instance.Pull<And>());
+                new Disorderly(), 
+                new And());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static QuestBuilderPart Start<T>(string name, string description,
             IProcessorType? processor, ICompletionType? completionType) where T : IQuest, new()
         {
-            processor ??= ProcessorTypesPool.Instance.Pull<Disorderly>();
-            completionType ??= CompletionTypesPool.Instance.Pull<And>();
             return Start<T>(name, description, new TaskBundleCollection(), processor, completionType);
         }
 
@@ -34,10 +32,6 @@ namespace Karpik.Quests
             ICompletionType? completionType) where T : IQuest, new()
         {
             var quest = new T();
-
-            bundles ??= new TaskBundleCollection();
-            processor ??= ProcessorTypesPool.Instance.Pull<Orderly>();
-            completionType ??= CompletionTypesPool.Instance.Pull<And>();
             
             quest.Init(name, description, bundles, completionType, processor);
 
@@ -123,15 +117,17 @@ namespace Karpik.Quests
             {
                 if (_quest is null) throw new InvalidOperationException("Quest is not setted");
 
-                if (!_questAggregator.TryAddGraph(_graph))
+                if (!(_questAggregator is null))
                 {
-                    _graph = new QuestGraph();
+                    _graph ??= new QuestGraph();
                     _questAggregator.TryAddGraph(_graph);
+                    _questAggregator.TryAddQuest(_graph, _quest);
                 }
-                _questAggregator.TryAddQuest(_graph, _quest);
 
                 var quest = _quest;
                 _quest = null;
+                _questAggregator = null;
+                _graph = null;
                 return quest;
             }
         }

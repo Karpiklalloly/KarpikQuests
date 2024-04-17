@@ -25,22 +25,26 @@ namespace Karpik.Quests.Interfaces
         public bool TryRemoveDependents(IQuest quest);
         
         public bool TryRemoveDependency(Id nodeId, Id dependencyNodeId);
-
-        public bool Has(Id nodeId);
-        public bool Has(IQuest quest);
         
-        public IGraphNode? Get(Id nodeId);
-        public IGraphNode? Get(IQuest quest);
         public IEnumerable<IGraphNode> GetDependenciesNodes(Id nodeId);
         public IEnumerable<IGraphNode> GetDependenciesNodes(IQuest quest);
         public IEnumerable<IGraphNode> GetDependentsNodes(Id nodeId);
         public IEnumerable<IGraphNode> GetDependentsNodes(IQuest quest);
-    
+
+        public bool IsCyclic();
+
+        public bool Has(Id nodeId);
+        public bool Has(IQuest quest);
+        
+        public IGraphNode? GetNode(Id nodeId);
+        public IGraphNode? GetNode(IQuest quest);
+        
         public enum DependencyType
         {
             Completion,
             Fail,
             Start,
+            Unneccesary,
         }
     }
 }

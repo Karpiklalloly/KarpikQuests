@@ -34,7 +34,7 @@ namespace Karpik.Quests.QuestSample
             if (!quest.IsValid()) return false;
             if (graph.Has(quest)) return false;
 
-            var node = GraphNodePool.Instance.Pull<GraphNode>(quest);
+            var node = new GraphNode(quest);
             var result = graph.TryAdd(node);
 
             if (!result) return false;
@@ -52,7 +52,7 @@ namespace Karpik.Quests.QuestSample
             if (!quest.IsValid()) return false;
             if (!graph.Has(quest)) return false;
             
-            var node = graph.Get(quest);
+            var node = graph.GetNode(quest);
             UnSubscribe(node);
             graph.TryRemove(node);
             _quests.Remove(quest);
@@ -70,8 +70,8 @@ namespace Karpik.Quests.QuestSample
             if (!graph.Has(quest)) return false;
             if (!graph.Has(dependence)) return false;
 
-            var node = graph.Get(quest);
-            var dependenceNode = graph.Get(dependence);
+            var node = graph.GetNode(quest);
+            var dependenceNode = graph.GetNode(dependence);
             return node.TryAddDependency(new IGraphNode.Connection(dependenceNode.NodeId, dependencyType));
         }
 
@@ -84,8 +84,8 @@ namespace Karpik.Quests.QuestSample
             if (!graph.Has(quest)) return false;
             if (!graph.Has(dependence)) return false;
             
-            var node = graph.Get(quest);
-            var dependenceNode = graph.Get(dependence);
+            var node = graph.GetNode(quest);
+            var dependenceNode = graph.GetNode(dependence);
             return node.TryRemoveDependency(dependenceNode.NodeId);
         }
 
@@ -96,7 +96,7 @@ namespace Karpik.Quests.QuestSample
             if (!quest.IsValid()) return false;
             if (!graph.Has(quest)) return false;
             
-            var node = graph.Get(quest);
+            var node = graph.GetNode(quest);
             return graph.TryRemoveDependencies(node.NodeId);
         }
 
@@ -107,7 +107,7 @@ namespace Karpik.Quests.QuestSample
             if (!quest.IsValid()) return false;
             if (!graph.Has(quest)) return false;
             
-            var node = graph.Get(quest);
+            var node = graph.GetNode(quest);
             return graph.TryRemoveDependents(node.NodeId);
         }
 
@@ -124,7 +124,7 @@ namespace Karpik.Quests.QuestSample
 
             foreach (var dependency in dependencies)
             {
-                var node = graph.Get(dependency.NodeId);
+                var node = graph.GetNode(dependency.NodeId);
                 var dep = _quests.FirstOrDefault(x => x.Equals(node.Quest));
                 if (!dep.IsValid()) continue;
                 
@@ -147,7 +147,7 @@ namespace Karpik.Quests.QuestSample
             
             foreach (var dependent in dependents)
             {
-                var node = graph.Get(dependent.NodeId);
+                var node = graph.GetNode(dependent.NodeId);
                 var dep = _quests.FirstOrDefault(x => x.Equals(node.Quest));
                 if (!dep.IsValid()) continue;
                 
@@ -185,7 +185,7 @@ namespace Karpik.Quests.QuestSample
             {
                 foreach (var graph in _graphs)
                 {
-                    var node = graph.Get(quest);
+                    var node = graph.GetNode(quest);
                     if (node is null) continue;
 
                     if (node.Dependencies.Count == 0 && quest.Status is UnStarted)
