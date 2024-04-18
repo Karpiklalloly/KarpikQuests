@@ -43,14 +43,14 @@ namespace Karpik.Quests.Factories
                 _bundleFactory.Create());
         }
         
-        public IQuest Create(string name, string description, ITaskBundleCollection? bundles)
+        public IQuest Create(string name, string description, ITaskBundleCollection bundles)
         {
             return Create(
                 name,
                 description,
                 bundles,
-                new And(),
-                new Orderly());
+                CompletionTypesFactory.Instance.Create(),
+                ProcessorFactory.Instance.Create());
         }
 
         public IQuest Create(string name, string description, ICompletionType completionType)
@@ -60,7 +60,7 @@ namespace Karpik.Quests.Factories
                 description, 
                 _bundleFactory.Create(), 
                 completionType, 
-                new Orderly());
+                ProcessorFactory.Instance.Create());
         }
         
         public IQuest Create(string name, string description, IProcessorType processorType)
@@ -69,19 +69,21 @@ namespace Karpik.Quests.Factories
                 name, 
                 description, 
                 _bundleFactory.Create(), 
-                new And(), 
+                CompletionTypesFactory.Instance.Create(), 
                 processorType);
         }
 
         public IQuest Create(string name,
             string description,
             ITaskBundleCollection? bundles,
-            ICompletionType completionType,
-            IProcessorType processorType)
+            ICompletionType? completionType,
+            IProcessorType? processorType)
         {
             var quest = new Quest();
-
+            
             bundles ??= TaskBundleCollectionFactory.Instance.Create();
+            completionType ??= CompletionTypesFactory.Instance.Create();
+            processorType ??= ProcessorFactory.Instance.Create();
 
             quest.Init(name, description, bundles, completionType, processorType);
 

@@ -5,6 +5,7 @@ using System.Linq;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Extensions;
+using Karpik.Quests.Factories;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Statuses;
@@ -47,7 +48,9 @@ namespace Karpik.Quests.QuestSample
         [JsonProperty("Status")]
         private IStatus _status;
 
-        public TaskBundle() : this(new And(), new Orderly())
+        public TaskBundle() : this(
+            CompletionTypesFactory.Instance.Create(),
+            ProcessorFactory.Instance.Create())
         {
 
         }

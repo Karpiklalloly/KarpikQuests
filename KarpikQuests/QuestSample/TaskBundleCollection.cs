@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.Enumerators;
+using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
 using Newtonsoft.Json;
 
@@ -104,7 +105,7 @@ namespace Karpik.Quests.QuestSample
 
         public object Clone()
         {
-            var another = new TaskBundleCollection();
+            var another = TaskBundleCollectionFactory.Instance.Create();
             foreach (var bundle in _bundles)
             {
                 another.Add((ITaskBundle)bundle.Clone());

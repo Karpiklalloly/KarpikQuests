@@ -61,7 +61,7 @@ namespace Karpik.Quests.QuestSample
         public void Init()
         {
             Init("Quest", "Description",
-                new TaskBundleCollection(),
+                TaskBundleCollectionFactory.Instance.Create(),
                 CompletionTypesFactory.Instance.Create(),
                 ProcessorFactory.Instance.Create());
         }

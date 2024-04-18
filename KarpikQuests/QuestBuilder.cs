@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.QuestSample;
-using Karpik.Quests.TaskProcessorTypes;
 
 namespace Karpik.Quests
 {
@@ -14,15 +13,20 @@ namespace Karpik.Quests
             return Start<T>(
                 name, 
                 description, 
-                new Disorderly(), 
-                new And());
+                ProcessorFactory.Instance.Create(), 
+                CompletionTypesFactory.Instance.Create());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static QuestBuilderPart Start<T>(string name, string description,
-            IProcessorType? processor, ICompletionType? completionType) where T : IQuest, new()
+            IProcessorType processor, ICompletionType completionType) where T : IQuest, new()
         {
-            return Start<T>(name, description, new TaskBundleCollection(), processor, completionType);
+            return Start<T>(
+                name,
+                description,
+                TaskBundleCollectionFactory.Instance.Create(),
+                processor,
+                completionType);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -32,6 +36,10 @@ namespace Karpik.Quests
             ICompletionType? completionType) where T : IQuest, new()
         {
             var quest = new T();
+
+            bundles ??= new TaskBundleCollection();
+            processor ??= ProcessorFactory.Instance.Create();
+            completionType ??= CompletionTypesFactory.Instance.Create();
             
             quest.Init(name, description, bundles, completionType, processor);
 
@@ -46,10 +54,6 @@ namespace Karpik.Quests
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static QuestBuilderPart Start(IQuest quest)
         {
-#if DEBUG
-            if (quest is null) throw new ArgumentNullException(nameof(quest));
-#endif
-
             return new QuestBuilderPart((IQuest)quest.Clone());
         }
         
@@ -61,10 +65,6 @@ namespace Karpik.Quests
 
             public QuestBuilderPart(IQuest quest)
             {
-#if DEBUG
-                if (quest is null) throw new ArgumentNullException(nameof(quest));
-#endif
-
                 _quest = quest;
                 _questAggregator = null;
                 _graph = null;
@@ -72,9 +72,6 @@ namespace Karpik.Quests
         
             public readonly QuestBuilderPart AddBundle(ITaskBundle bundle)
             {
-#if DEBUG
-                if (bundle is null) throw new ArgumentNullException(nameof(bundle));
-#endif
                 if (_quest.TaskBundles.Has(bundle)) throw new InvalidOperationException("Quest can't contain equel bundle");
 
                 _quest.AddBundle(bundle);
@@ -83,20 +80,12 @@ namespace Karpik.Quests
 
             public QuestBuilderPart SetAggregator(IQuestAggregator aggregator)
             {
-#if DEBUG
-                if (aggregator is null) throw new ArgumentNullException(nameof(aggregator));
-#endif
-
                 _questAggregator = aggregator;
                 return this;
             }
             
             public QuestBuilderPart SetGraph(IGraph graph)
             {
-#if DEBUG
-                if (graph is null) throw new ArgumentNullException(nameof(graph));
-#endif
-
                 _graph = graph;
                 return this;
             }

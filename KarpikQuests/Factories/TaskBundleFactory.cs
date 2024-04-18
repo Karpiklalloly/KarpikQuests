@@ -1,7 +1,5 @@
-using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.QuestSample;
-using Karpik.Quests.TaskProcessorTypes;
 
 namespace Karpik.Quests.Factories
 {
@@ -18,26 +16,29 @@ namespace Karpik.Quests.Factories
         public ITaskBundle Create()
         {
             return Create(
-                new And(),
-                new Disorderly());
+                CompletionTypesFactory.Instance.Create(),
+                ProcessorFactory.Instance.Create());
         }
 
         public ITaskBundle Create(ICompletionType completionType)
         {
             return Create(
                 completionType,
-                new Disorderly());
+                ProcessorFactory.Instance.Create());
         }
 
         public ITaskBundle Create(IProcessorType processor)
         {
             return Create(
-                new And(),
+                CompletionTypesFactory.Instance.Create(),
                 processor);
         }
 
         public ITaskBundle Create(ICompletionType completionType, IProcessorType processor)
         {
+            completionType ??= CompletionTypesFactory.Instance.Create();
+            processor ??= ProcessorFactory.Instance.Create();
+            
             return new TaskBundle(completionType, processor);
         }
     }
