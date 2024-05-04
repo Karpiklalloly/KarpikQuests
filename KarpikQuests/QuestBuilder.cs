@@ -31,9 +31,9 @@ namespace Karpik.Quests
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static QuestBuilderPart Start<T>(string name, string description,
-            ITaskBundleCollection? bundles,
-            IProcessorType? processor,
-            ICompletionType? completionType) where T : IQuest, new()
+            ITaskBundleCollection bundles,
+            IProcessorType processor,
+            ICompletionType completionType) where T : IQuest, new()
         {
             var quest = new T();
 

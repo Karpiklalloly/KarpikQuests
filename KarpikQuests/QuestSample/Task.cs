@@ -8,9 +8,9 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class Task : ITask
     {
-        public event Action<ITask>? Started;
-        public event Action<ITask>? Completed;
-        public event Action<ITask>? Failed;
+        public event Action<ITask> Started;
+        public event Action<ITask> Completed;
+        public event Action<ITask> Failed;
 
         [JsonIgnore] public Id Id => _id;
         [JsonIgnore] public string Name => _name;
@@ -120,17 +120,17 @@ namespace Karpik.Quests.QuestSample
                 _name = Name,
                 _status = Status,
                 _canBeCompleted = CanBeCompleted,
-                Completed = (Action<ITask>?)Completed?.Clone(),
-                Failed = (Action<ITask>?)Failed?.Clone()
+                Completed = (Action<ITask>)Completed?.Clone(),
+                Failed = (Action<ITask>)Failed?.Clone()
             };
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is Task task && Equals(this, task);
         }
         
-        public bool Equals(ITask? other)
+        public bool Equals(ITask other)
         {
             return !(other is null) && _id.Equals(other.Id);
         }

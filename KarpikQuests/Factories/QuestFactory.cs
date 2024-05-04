@@ -13,7 +13,7 @@ namespace Karpik.Quests.Factories
         
         private readonly IFactory<ITaskBundleCollection> _bundleFactory;
 
-        private QuestFactory(IFactory<ITaskBundleCollection>? bundleFactory = null)
+        private QuestFactory(IFactory<ITaskBundleCollection> bundleFactory = null)
         {
             _bundleFactory = bundleFactory ?? TaskBundleCollectionFactory.Instance;
         }
@@ -75,9 +75,9 @@ namespace Karpik.Quests.Factories
 
         public IQuest Create(string name,
             string description,
-            ITaskBundleCollection? bundles,
-            ICompletionType? completionType,
-            IProcessorType? processorType)
+            ITaskBundleCollection bundles,
+            ICompletionType completionType,
+            IProcessorType processorType)
         {
             var quest = new Quest();
             

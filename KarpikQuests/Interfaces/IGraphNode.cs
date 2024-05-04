@@ -56,7 +56,7 @@ namespace Karpik.Quests.Interfaces
                 return NodeId.Equals(other.NodeId);
             }
 
-            public override bool Equals(object? obj)
+            public override bool Equals(object obj)
             {
                 return obj is Connection other && Equals(other);
             }

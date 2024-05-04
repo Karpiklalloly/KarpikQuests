@@ -13,11 +13,11 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class Quest : IQuest
     {
-        public event Action<Id, Id>? KeyChanged;
-        public event Action<IQuest>? Started;
-        public event Action<IQuest, ITaskBundle>? Updated;
-        public event Action<IQuest>? Completed;
-        public event Action<IQuest>? Failed;
+        public event Action<Id, Id> KeyChanged;
+        public event Action<IQuest> Started;
+        public event Action<IQuest, ITaskBundle> Updated;
+        public event Action<IQuest> Completed;
+        public event Action<IQuest> Failed;
 
         [JsonIgnore] public Id Id => _id;
         [JsonIgnore] public string Name => _name;
@@ -96,7 +96,7 @@ namespace Karpik.Quests.QuestSample
         {
             if (!_bundles.Has(task)) return;
 
-            ITaskBundle? b = null;
+            ITaskBundle b = null;
             foreach (var bundle in _bundles)
             {
                 if (!bundle.Has(task)) continue;
@@ -176,11 +176,11 @@ namespace Karpik.Quests.QuestSample
                 _description = Description,
                 _bundles = (ITaskBundleCollection)_bundles.Clone(),
                 _status = Status,
-                KeyChanged = (Action<Id, Id>?)KeyChanged?.Clone(),
-                Started = (Action<IQuest>?)Started?.Clone(),
-                Updated = (Action<IQuest, ITaskBundle>?)Updated?.Clone(),
-                Completed = (Action<IQuest>?)Completed?.Clone(),
-                Failed = (Action<IQuest>?)Failed?.Clone(),
+                KeyChanged = (Action<Id, Id>)KeyChanged?.Clone(),
+                Started = (Action<IQuest>)Started?.Clone(),
+                Updated = (Action<IQuest, ITaskBundle>)Updated?.Clone(),
+                Completed = (Action<IQuest>)Completed?.Clone(),
+                Failed = (Action<IQuest>)Failed?.Clone(),
             };;
         }
 
@@ -210,12 +210,12 @@ namespace Karpik.Quests.QuestSample
             return str.ToString();
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is Quest quest && Equals(quest);
         }
 
-        public bool Equals(IQuest? other)
+        public bool Equals(IQuest other)
         {
             if (other is null) return false;
 

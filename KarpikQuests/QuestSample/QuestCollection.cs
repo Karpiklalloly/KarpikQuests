@@ -110,7 +110,7 @@ namespace Karpik.Quests.QuestSample
             return builder.ToString();
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (!(obj is QuestCollection collection)) return false;
 
@@ -122,7 +122,7 @@ namespace Karpik.Quests.QuestSample
             return _data.GetHashCode();
         }
 
-        public bool Equals(IReadOnlyQuestCollection? other)
+        public bool Equals(IReadOnlyQuestCollection other)
         {
             if (other is null) return false;
         

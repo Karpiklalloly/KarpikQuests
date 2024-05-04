@@ -36,8 +36,8 @@ namespace Karpik.Quests.Interfaces
         public bool Has(Id nodeId);
         public bool Has(IQuest quest);
         
-        public IGraphNode? GetNode(Id nodeId);
-        public IGraphNode? GetNode(IQuest quest);
+        public IGraphNode GetNode(Id nodeId);
+        public IGraphNode GetNode(IQuest quest);
         
         public enum DependencyType
         {

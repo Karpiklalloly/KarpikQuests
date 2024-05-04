@@ -133,12 +133,12 @@ namespace Karpik.Quests.QuestSample
             _bundles[0].Reset();
         }
         
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is TaskBundleCollection collection && Equals(collection);
         }
 
-        public bool Equals(IReadOnlyTaskBundleCollection? collection)
+        public bool Equals(IReadOnlyTaskBundleCollection collection)
         {
             if (collection is null) return false;
             

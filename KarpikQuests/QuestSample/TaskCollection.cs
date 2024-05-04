@@ -40,7 +40,7 @@ namespace Karpik.Quests.QuestSample
             _tasks.CopyTo(array, arrayIndex);
         }
         
-        public bool Has(ITask? task)
+        public bool Has(ITask task)
         {
             if (task is null) return false;
 
@@ -84,12 +84,12 @@ namespace Karpik.Quests.QuestSample
             return clone;
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is TaskCollection collection && Equals(collection);
         }
 
-        public bool Equals(IReadOnlyTaskCollection? other)
+        public bool Equals(IReadOnlyTaskCollection other)
         {
             if (other is null) return false;
             if (Count != other.Count) return false;

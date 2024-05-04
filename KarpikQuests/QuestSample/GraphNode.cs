@@ -11,11 +11,11 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class GraphNode : IGraphNode
     {
-        public event Action<string, string>? KeyChanged;
-        public event Action<IGraphNode>? Started;
-        public event Action<IGraphNode, ITaskBundle>? Updated;
-        public event Action<IGraphNode>? Completed;
-        public event Action<IGraphNode>? Failed;
+        public event Action<string, string> KeyChanged;
+        public event Action<IGraphNode> Started;
+        public event Action<IGraphNode, ITaskBundle> Updated;
+        public event Action<IGraphNode> Completed;
+        public event Action<IGraphNode> Failed;
         
         [JsonIgnore] public Id NodeId => _nodeId;
         [JsonIgnore] public IQuest Quest => _quest;
@@ -108,7 +108,7 @@ namespace Karpik.Quests.QuestSample
             return _dependencies.Any(dependency => dependency.Equals(connection));
         }
 
-        public bool Equals(IGraphNode? other)
+        public bool Equals(IGraphNode other)
         {
             if (other is null) return false;
 
@@ -137,7 +137,7 @@ namespace Karpik.Quests.QuestSample
             _disposed = true;
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is GraphNode node && Equals(this, node);
         }

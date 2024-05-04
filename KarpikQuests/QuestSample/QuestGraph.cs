@@ -231,12 +231,12 @@ namespace Karpik.Quests.QuestSample
             return Has(questNode.NodeId);
         }
 
-        public IGraphNode? GetNode(Id nodeId)
+        public IGraphNode GetNode(Id nodeId)
         {
             return _nodes.FirstOrDefault(x => x.NodeId == nodeId);
         }
 
-        public IGraphNode? GetNode(IQuest quest)
+        public IGraphNode GetNode(IQuest quest)
         {
             if (!quest.IsValid()) return null;
 

@@ -19,7 +19,7 @@ namespace Karpik.Quests.ID
     
         public bool Equals(Id other) => Value == other.Value;
     
-        public override bool Equals(object? obj) => obj is Id other && Equals(other);
+        public override bool Equals(object obj) => obj is Id other && Equals(other);
     
         public override int GetHashCode() => Value.GetHashCode();
 

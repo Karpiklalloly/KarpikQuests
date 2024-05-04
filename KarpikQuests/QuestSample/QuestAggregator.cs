@@ -222,7 +222,7 @@ namespace Karpik.Quests.QuestSample
             return ids.Count() > 1;
         }
         
-        public bool Equals(IQuestAggregator? other)
+        public bool Equals(IQuestAggregator other)
         {
             if (other is null) return false;
 
@@ -242,7 +242,7 @@ namespace Karpik.Quests.QuestSample
             }
         }
         
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is QuestAggregator agg && Equals(agg);
         }

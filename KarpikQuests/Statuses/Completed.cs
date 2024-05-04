@@ -8,12 +8,12 @@ namespace Karpik.Quests.Statuses
     {
         public string Status => nameof(Completed);
 
-        public bool Equals(IStatus? other)
+        public bool Equals(IStatus other)
         {
             return other is Completed;
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (!(obj is IStatus status)) return false;
 

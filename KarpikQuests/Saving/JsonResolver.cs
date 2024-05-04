@@ -5,7 +5,7 @@ namespace Karpik.Quests.Saving
 {
     public class JsonResolver : ISerializer<IQuestAggregator>
     {
-        public IQuestAggregator? Deserialize(string data)
+        public IQuestAggregator Deserialize(string data)
         {
             return JsonConvert.DeserializeObject(data, new JsonSerializerSettings
             {

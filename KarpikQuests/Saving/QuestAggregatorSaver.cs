@@ -27,7 +27,7 @@ namespace Karpik.Quests.Saving
             File.WriteAllText(path, str);
         }
 
-        public static IQuestAggregator? Load(string path)
+        public static IQuestAggregator Load(string path)
         {
             var data = File.ReadAllText(path);
             return Serializer.Deserialize(data);

@@ -16,9 +16,9 @@ namespace Karpik.Quests.QuestSample
 {
     public sealed class TaskBundle : ITaskBundle
     {
-        public event Action<ITaskBundle>? Updated;
-        public event Action<ITaskBundle>? Completed;
-        public event Action<ITaskBundle>? Failed;
+        public event Action<ITaskBundle> Updated;
+        public event Action<ITaskBundle> Completed;
+        public event Action<ITaskBundle> Failed;
 
         [JsonIgnore] public IReadOnlyTaskCollection Tasks => _tasks;
 
@@ -162,18 +162,18 @@ namespace Karpik.Quests.QuestSample
                 _tasks = (IReadOnlyTaskCollection)Tasks.Clone(),
                 _completionType = CompletionType,
                 _processorType = ProcessorType,
-                Updated = (Action<ITaskBundle>?)Updated?.Clone(),
-                Completed = (Action<ITaskBundle>?)Completed?.Clone(),
-                Failed = (Action<ITaskBundle>?)Failed?.Clone() 
+                Updated = (Action<ITaskBundle>)Updated?.Clone(),
+                Completed = (Action<ITaskBundle>)Completed?.Clone(),
+                Failed = (Action<ITaskBundle>)Failed?.Clone() 
             };
         }
 
-        public bool Equals(ITaskBundle? other)
+        public bool Equals(ITaskBundle other)
         {
             return !(other is null) && _tasks.Equals(other.Tasks);
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is TaskBundle bundle && Equals(bundle);
         }

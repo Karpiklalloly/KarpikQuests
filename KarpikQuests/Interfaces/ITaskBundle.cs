@@ -6,9 +6,9 @@ namespace Karpik.Quests.Interfaces
 {
     public interface ITaskBundle : IList<ITask>, ICloneable, IEquatable<ITaskBundle>
     {
-        public event Action<ITaskBundle>? Updated;
-        public event Action<ITaskBundle>? Completed;
-        public event Action<ITaskBundle>? Failed;
+        public event Action<ITaskBundle> Updated;
+        public event Action<ITaskBundle> Completed;
+        public event Action<ITaskBundle> Failed;
 
         public IStatus Status { get; }
         public IReadOnlyTaskCollection Tasks { get; }

@@ -117,7 +117,7 @@ namespace Karpik.Quests.QuestSample
             };
         }
     
-        public bool Equals(IGraphCollection? other)
+        public bool Equals(IGraphCollection other)
         {
             if (other is null) return false;
         
@@ -129,7 +129,7 @@ namespace Karpik.Quests.QuestSample
             return true;
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is IGraphCollection collection && Equals(collection);
         }

@@ -4,6 +4,6 @@
     {
         public string Serialize(T aggregator);
 
-        public T? Deserialize(string data);
+        public T Deserialize(string data);
     }
 }

@@ -37,7 +37,7 @@ namespace Karpik.Quests.Extensions
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsValid(this IQuest? quest)
+        public static bool IsValid(this IQuest quest)
         {
             if (quest is null) return false;
             
