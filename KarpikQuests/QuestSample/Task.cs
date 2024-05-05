@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Runtime.Serialization;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.ID;
 
@@ -53,8 +54,8 @@ namespace Karpik.Quests.QuestSample
         {
             _name = string.IsNullOrWhiteSpace(name) ? "Task" : name;
             _description = description is null ? "Description" : description;
-
-            _status = ITask.TaskStatus.UnStarted;
+            
+            Setup();
 
             _inited = true;
         }
@@ -143,6 +144,12 @@ namespace Karpik.Quests.QuestSample
         public override string ToString()
         {
             return $"{Id} {Name} ({Status})";
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            
         }
     }
 }

@@ -1,43 +1,45 @@
+using System;
 using System.Collections.Generic;
 using Karpik.Quests.ID;
+using Karpik.Quests.QuestSample;
+using Newtonsoft.Json;
 
 namespace Karpik.Quests.Interfaces
 {
     public interface IGraph
     {
         public IQuestCollection Quests { get; }
-        public IReadOnlyList<IGraphNode> Nodes { get; }
         
-        public bool TryAdd(IGraphNode node);
+        public bool TryAdd(IQuest quest);
 
-        public bool TryRemove(IGraphNode node);
         public bool TryRemove(IQuest quest);
-        public bool TryRemove(Id nodeId);
+        public bool TryRemove(Id questId);
 
-        public bool TrySetDependency(Id nodeId, Id dependencyNodeId, IDependencyType dependencyType);
-        public bool TrySetDependency(IQuest quest, IQuest dependencyQuest, IDependencyType dependencyType);
-        public bool TrySetDependency(Id nodeId, Id dependencyNodeId, DependencyType dependencyTypeType);
-        public bool TrySetDependency(IQuest quest, IQuest dependencyQuest, DependencyType dependencyTypeType);
+        public bool TryReplace(IQuest from, IQuest to);
+
+        public bool TryAddDependency(Id questId, Id dependencyNodeId, IDependencyType dependencyType);
+        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IDependencyType dependencyType);
+        public bool TryAddDependency(Id questId, Id dependencyNodeId, DependencyType dependencyTypeType);
+        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, DependencyType dependencyTypeType);
         
-        public bool TryRemoveDependencies(Id nodeId);
+        public bool TryRemoveDependencies(Id questId);
         public bool TryRemoveDependencies(IQuest quest);
-        public bool TryRemoveDependents(Id nodeId);
+        public bool TryRemoveDependents(Id questId);
         public bool TryRemoveDependents(IQuest quest);
         
-        public bool TryRemoveDependency(Id nodeId, Id dependencyNodeId);
+        public bool TryRemoveDependency(Id questId, Id dependencyQuestId);
         
-        public IEnumerable<IGraphNode> GetDependenciesNodes(Id nodeId);
-        public IEnumerable<IGraphNode> GetDependenciesNodes(IQuest quest);
-        public IEnumerable<IGraphNode> GetDependentsNodes(Id nodeId);
-        public IEnumerable<IGraphNode> GetDependentsNodes(IQuest quest);
+        public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(Id questId);
+        public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(IQuest quest);
+        public IEnumerable<ConnectionWithQuest> GetDependentsQuests(Id questId);
+        public IEnumerable<ConnectionWithQuest> GetDependentsQuests(IQuest quest);
 
         public bool IsCyclic();
 
-        public bool Has(Id nodeId);
+        public bool Has(Id questId);
         public bool Has(IQuest quest);
         
-        public IGraphNode GetNode(Id nodeId);
-        public IGraphNode GetNode(IQuest quest);
+        public IQuest GetQuest(Id questId);
         
         public enum DependencyType
         {
@@ -45,6 +47,52 @@ namespace Karpik.Quests.Interfaces
             Fail,
             Start,
             Unneccesary,
+        }
+        
+        [Serializable]
+        public readonly struct Connection : IEquatable<Connection>
+        {
+            [JsonProperty("ID")]
+            public readonly Id QuestId;
+            [JsonProperty("DependencyType")]
+            public readonly IDependencyType DependencyType;
+
+            public Connection(string id, IDependencyType dependencyType) :
+                this(id == Id.Empty.Value ? Id.Empty : new Id(id), dependencyType)
+            {
+            
+            }
+        
+            public Connection(Id questId, IDependencyType dependencyType)
+            {
+                QuestId = questId;
+                DependencyType = dependencyType;
+            }
+
+            public bool Equals(Connection other)
+            {
+                return QuestId.Equals(other.QuestId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Connection other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(QuestId, DependencyType);
+            }
+
+            public static bool operator ==(Connection left, Connection right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(Connection left, Connection right)
+            {
+                return !(left == right);
+            }
         }
     }
 }

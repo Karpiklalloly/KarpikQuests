@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
@@ -8,8 +10,10 @@ using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
+    [Serializable]
     public sealed class TaskBundleCollection : ITaskBundleCollection
     {
+        
         [JsonProperty("Bundles")]
         private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
         
@@ -156,6 +160,12 @@ namespace Karpik.Quests.QuestSample
         public override int GetHashCode()
         {
             return _bundles.GetHashCode();
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            
         }
     }
 }

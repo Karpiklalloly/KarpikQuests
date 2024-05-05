@@ -13,7 +13,6 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class Quest : IQuest
     {
-        public event Action<Id, Id> KeyChanged;
         public event Action<IQuest> Started;
         public event Action<IQuest, ITaskBundle> Updated;
         public event Action<IQuest> Completed;
@@ -176,12 +175,11 @@ namespace Karpik.Quests.QuestSample
                 _description = Description,
                 _bundles = (ITaskBundleCollection)_bundles.Clone(),
                 _status = Status,
-                KeyChanged = (Action<Id, Id>)KeyChanged?.Clone(),
                 Started = (Action<IQuest>)Started?.Clone(),
                 Updated = (Action<IQuest, ITaskBundle>)Updated?.Clone(),
                 Completed = (Action<IQuest>)Completed?.Clone(),
                 Failed = (Action<IQuest>)Failed?.Clone(),
-            };;
+            };
         }
 
         public void Dispose()

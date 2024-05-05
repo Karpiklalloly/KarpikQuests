@@ -10,26 +10,26 @@ public class SetDependency
     {
         //Action
         IGraph graph = new QuestGraph();
-        var node1 = new GraphNode(new Quest());
-        var node2 = new GraphNode(new Quest());
-        var node3 = new GraphNode(new Quest());
-        graph.TryAdd(node1);
-        graph.TryAdd(node2);
-        graph.TryAdd(node3);
+        var quest1 = new Quest();
+        var quest2 = new Quest();
+        var quest3 = new Quest();
+        graph.TryAdd(quest1);
+        graph.TryAdd(quest2);
+        graph.TryAdd(quest3);
 
         //Condition
-        graph.TrySetDependency(node1.NodeId, node2.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node1.NodeId, node3.NodeId, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest1, quest2, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest1, quest3, IGraph.DependencyType.Completion);
 
         //Result
-        var dependencies = graph.GetDependenciesNodes(node1.NodeId).ToList();
-        var d2 = graph.GetDependenciesNodes(node2.NodeId);
-        var d3 = graph.GetDependenciesNodes(node3.NodeId);
+        var dependencies = graph.GetDependenciesQuests(quest1).ToList();
+        var d2 = graph.GetDependenciesQuests(quest2);
+        var d3 = graph.GetDependenciesQuests(quest2);
         
         Assert.Multiple(() =>
         {
-            Assert.That(dependencies.Find(x => x.Equals(node2)), Is.Not.EqualTo(null));
-            Assert.That(dependencies.Find(x => x.Equals(node3)), Is.Not.EqualTo(null));
+            Assert.That(dependencies.Find(x => x.Equals(quest2)), Is.Not.EqualTo(null));
+            Assert.That(dependencies.Find(x => x.Equals(quest3)), Is.Not.EqualTo(null));
             Assert.That(!d2.Any());
             Assert.That(!d3.Any());
         });

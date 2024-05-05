@@ -2,14 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Karpik.Quests.CompletionTypes;
+using System.Runtime.Serialization;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.Factories;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Statuses;
-using Karpik.Quests.TaskProcessorTypes;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -102,6 +101,27 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public int Count => Tasks.Count;
 
         [JsonIgnore] public bool IsReadOnly => false;
+        
+        public int IndexOf(ITask item)
+        {
+            return _tasks.IndexOf(item);
+        }
+
+        public void Insert(int index, ITask item)
+        {
+            _tasks.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _tasks.RemoveAt(index);
+        }
+
+        public ITask this[int index]
+        {
+            get => _tasks[index];
+            set => _tasks[index] = value;
+        }
 
         public void Add(ITask item)
         {
@@ -182,9 +202,19 @@ namespace Karpik.Quests.QuestSample
         {
             return Tasks.GetHashCode();
         }
+        
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            foreach (var task in _tasks)
+            {
+                Subscribe(task);
+            }
+        }
 
         private void Subscribe(ITask task)
         {
+            task.Started += OnTaskUpdated;
             task.Completed += OnTaskUpdated;
             task.Failed    += OnTaskUpdated;
         }
@@ -194,7 +224,7 @@ namespace Karpik.Quests.QuestSample
             task.Completed -= OnTaskUpdated;
             task.Failed    -= OnTaskUpdated;
         }
-
+        
         private void OnTaskUpdated(ITask task)
         {
             var result = CompletionType.Check(this);
@@ -215,27 +245,6 @@ namespace Karpik.Quests.QuestSample
             }
             
             Updated?.Invoke(this);
-        }
-
-        public int IndexOf(ITask item)
-        {
-            return _tasks.IndexOf(item);
-        }
-
-        public void Insert(int index, ITask item)
-        {
-            _tasks.Insert(index, item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            _tasks.RemoveAt(index);
-        }
-
-        public ITask this[int index]
-        {
-            get => _tasks[index];
-            set => _tasks[index] = value;
         }
     }
 }

@@ -10,15 +10,15 @@ public class IsCyclic
     {
         //Action
         IGraph graph = new QuestGraph();
-        var node1 = new GraphNode(new Quest());
-        var node2 = new GraphNode(new Quest());
-        var node3 = new GraphNode(new Quest());
-        graph.TryAdd(node1);
-        graph.TryAdd(node2);
-        graph.TryAdd(node3);
-        graph.TrySetDependency(node1.NodeId, node2.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node2.NodeId, node3.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node3.NodeId, node1.NodeId, IGraph.DependencyType.Completion);
+        var quest1 = new Quest();
+        var quest2 = new Quest();
+        var quest3 = new Quest();
+        graph.TryAdd(quest1);
+        graph.TryAdd(quest2);
+        graph.TryAdd(quest3);
+        graph.TryAddDependency(quest1, quest2, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest2, quest3, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest3, quest1, IGraph.DependencyType.Completion);
 
         //Condition
         var result = graph.IsCyclic();
@@ -32,18 +32,18 @@ public class IsCyclic
     {
         //Action
         IGraph graph = new QuestGraph();
-        var node1 = new GraphNode(new Quest());
-        var node2 = new GraphNode(new Quest());
-        var node3 = new GraphNode(new Quest());
-        var node4 = new GraphNode(new Quest());
-        graph.TryAdd(node1);
-        graph.TryAdd(node2);
-        graph.TryAdd(node3);
-        graph.TryAdd(node4);
-        graph.TrySetDependency(node2.NodeId, node1.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node2.NodeId, node3.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node3.NodeId, node4.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node4.NodeId, node2.NodeId, IGraph.DependencyType.Completion);
+        var quest1 = new Quest();
+        var quest2 = new Quest();
+        var quest3 = new Quest();
+        var quest4 = new Quest();
+        graph.TryAdd(quest1);
+        graph.TryAdd(quest2);
+        graph.TryAdd(quest3);
+        graph.TryAdd(quest4);
+        graph.TryAddDependency(quest2, quest1, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest2, quest3, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest3, quest4, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest4, quest2, IGraph.DependencyType.Completion);
 
         //Condition
         var result = graph.IsCyclic();
@@ -57,17 +57,17 @@ public class IsCyclic
     {
         //Action
         IGraph graph = new QuestGraph();
-        var node1 = new GraphNode(new Quest());
-        var node2 = new GraphNode(new Quest());
-        var node3 = new GraphNode(new Quest());
-        var node4 = new GraphNode(new Quest());
-        graph.TryAdd(node1);
-        graph.TryAdd(node2);
-        graph.TryAdd(node3);
-        graph.TryAdd(node4);
-        graph.TrySetDependency(node2.NodeId, node3.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node3.NodeId, node4.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node4.NodeId, node2.NodeId, IGraph.DependencyType.Completion);
+        var quest1 = new Quest();
+        var quest2 = new Quest();
+        var quest3 = new Quest();
+        var quest4 = new Quest();
+        graph.TryAdd(quest1);
+        graph.TryAdd(quest2);
+        graph.TryAdd(quest3);
+        graph.TryAdd(quest4);
+        graph.TryAddDependency(quest2, quest3, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest3, quest4, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest4, quest2, IGraph.DependencyType.Completion);
 
         //Condition
         var result = graph.IsCyclic();

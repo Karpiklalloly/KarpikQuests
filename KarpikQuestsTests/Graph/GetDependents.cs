@@ -10,23 +10,23 @@ public class GetDependents
     {
         //Action
         IGraph graph = new QuestGraph();
-        var node1 = new GraphNode(new Quest());
-        var node2 = new GraphNode(new Quest());
-        var node3 = new GraphNode(new Quest());
-        graph.TryAdd(node1);
-        graph.TryAdd(node2);
-        graph.TryAdd(node3);
-        graph.TrySetDependency(node2.NodeId, node1.NodeId, IGraph.DependencyType.Completion);
-        graph.TrySetDependency(node3.NodeId, node1.NodeId, IGraph.DependencyType.Completion);
+        var quest1 = new Quest();
+        var quest2 = new Quest();
+        var quest3 = new Quest();
+        graph.TryAdd(quest1);
+        graph.TryAdd(quest2);
+        graph.TryAdd(quest3);
+        graph.TryAddDependency(quest2, quest1, IGraph.DependencyType.Completion);
+        graph.TryAddDependency(quest3, quest1, IGraph.DependencyType.Completion);
 
         //Condition
-        var dependents = graph.GetDependentsNodes(node1.NodeId).ToList();
+        var dependents = graph.GetDependentsQuests(quest1).ToList();
         
         //Result
         Assert.Multiple(() =>
         {
-            Assert.That(dependents.Find(x => x.Equals(node2)), Is.Not.EqualTo(null));
-            Assert.That(dependents.Find(x => x.Equals(node3)), Is.Not.EqualTo(null));
+            Assert.That(dependents.Find(x => x.Equals(quest2)), Is.Not.EqualTo(null));
+            Assert.That(dependents.Find(x => x.Equals(quest3)), Is.Not.EqualTo(null));
         });
     }
 }

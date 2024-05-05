@@ -10,6 +10,7 @@ namespace Karpik.Quests.Interfaces
         public bool TryAddGraph(IGraph graph); 
         public bool TryAddQuest(IGraph graph, IQuest quest);
         public bool TryRemoveQuest(IGraph graph, IQuest quest);
+        public bool TryReplace(IGraph graph, IQuest from, IQuest to);
 
         public bool TryAddDependence(IGraph graph, IQuest quest, IQuest dependence, IDependencyType dependencyType);
         public bool TryRemoveDependence(IGraph graph, IQuest quest, IQuest dependence);

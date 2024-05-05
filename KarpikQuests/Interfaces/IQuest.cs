@@ -5,7 +5,6 @@ namespace Karpik.Quests.Interfaces
 {
     public interface IQuest : IInitable, IEquatable<IQuest>, IDisposable, ICloneable
     {
-        public event Action<Id, Id> KeyChanged;
         public event Action<IQuest> Started;
         public event Action<IQuest, ITaskBundle> Updated;
         public event Action<IQuest> Completed;
