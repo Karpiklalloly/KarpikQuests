@@ -5,6 +5,11 @@ namespace Karpik.Quests.Interfaces
 {
     public interface IQuestAggregator : IEquatable<IQuestAggregator>
     {
+        public event Action<IQuest> QuestStarted; 
+        public event Action<IQuest> QuestUpdated; 
+        public event Action<IQuest> QuestFailed; 
+        public event Action<IQuest> QuestCompleted;
+        
         public IReadOnlyQuestCollection Quests { get; }
         
         public bool TryAddGraph(IGraph graph); 
@@ -29,6 +34,5 @@ namespace Karpik.Quests.Interfaces
         public void Start();
         public void ResetQuests();
         public void Clear();
-        public bool HasCollisions();
     }
 }

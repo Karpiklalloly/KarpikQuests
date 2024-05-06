@@ -42,7 +42,7 @@ namespace Karpik.Quests.Example
                 .AddBundle(bundle)
                 .OnComplete(OnQuestComplete) // quest.Completed += OnQuestComplete
                 .SetAggregator(_aggregator)
-                .Create();
+                .Build();
             
             QuestAggregatorSaver.Serializer = new JsonResolver<IQuestAggregator>();
             QuestAggregatorSaver.Save(_aggregator, _fileName);

@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.Statuses;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -12,6 +11,11 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class QuestAggregator : IQuestAggregator
     {
+        public event Action<IQuest> QuestStarted; 
+        public event Action<IQuest> QuestUpdated; 
+        public event Action<IQuest> QuestFailed; 
+        public event Action<IQuest> QuestCompleted;
+        
         [JsonIgnore] public IReadOnlyQuestCollection Quests => _quests;
         
         [JsonProperty("Graphs")]
@@ -144,7 +148,7 @@ namespace Karpik.Quests.QuestSample
             {
                 foreach (var graph in _graphs)
                 {
-                    if ( !graph.GetDependenciesQuests(quest).Any() && quest.Status is UnStarted)
+                    if (!graph.GetDependenciesQuests(quest).Any() && quest.IsUnStarted())
                     {
                         quest.Start();
                     }
@@ -168,14 +172,6 @@ namespace Karpik.Quests.QuestSample
             }
             
             _quests.Clear();
-        }
-
-        public bool HasCollisions()
-        {
-            var ids = _quests.GroupBy(x => x.Id)
-                .Where(group => group.Any());
-
-            return ids.Count() > 1;
         }
         
         public bool Equals(IQuestAggregator other)
@@ -224,20 +220,19 @@ namespace Karpik.Quests.QuestSample
             quest.Failed     -= OnQuestFailed;
         }
 
-        private void OnQuestStarted(IQuest node)
+        private void OnQuestStarted(IQuest quest)
         {
-            
+            QuestStarted?.Invoke(quest);
         }
-        
-        //TODO:
+
         private void OnQuestCompleted(IQuest quest)
         {
-
+            QuestCompleted?.Invoke(quest);
         }
         
         private void OnQuestFailed(IQuest quest)
         {
-            
+            QuestFailed?.Invoke(quest);
         }
         
         private void OnQuestUpdated(IQuest quest, ITaskBundle bundle)
@@ -252,6 +247,8 @@ namespace Karpik.Quests.QuestSample
                     }
                 }
             }
+            
+            QuestUpdated?.Invoke(quest);
         }
     }
 }

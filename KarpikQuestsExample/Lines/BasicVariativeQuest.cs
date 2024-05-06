@@ -116,7 +116,7 @@ namespace Karpik.Quests.Example
                 .AddBundle(waterBundle)
                 .OnComplete(OnQuestComplete)
                 .SetAggregator(Aggregator)
-                .Create();
+                .Build();
         }
 
         public void Start()

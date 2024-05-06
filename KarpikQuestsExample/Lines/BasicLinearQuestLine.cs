@@ -36,7 +36,7 @@ namespace Karpik.Quests.Example
                 .OnComplete(OnQuestComplete) // quest.Completed += OnQuestComplete
                 .SetAggregator(_aggregator)
                 .SetGraph(_graph)
-                .Create();
+                .Build();
         }
 
         public void Start()

@@ -40,6 +40,7 @@ namespace Karpik.Quests.QuestSample
             if (Has(quest)) return false;
             
             _dependencies.Add(quest, new List<IGraph.Connection>());
+            Subscribe(quest);
             
             return true;
         }
@@ -55,6 +56,7 @@ namespace Karpik.Quests.QuestSample
             {
                 pair.Value.RemoveAll(x => x.QuestId == quest.Id);
             }
+            Unsubscribe(quest);
 
             return true;
         }
@@ -82,7 +84,9 @@ namespace Karpik.Quests.QuestSample
             }
             
             _dependencies.Add(to, deps);
-
+            Unsubscribe(from);
+            Subscribe(to);
+            
             return true;
         }
 
@@ -269,7 +273,7 @@ namespace Karpik.Quests.QuestSample
         {
 
         }
-        
+
         private bool IsCyclicUtil(IQuest quest, Dictionary<IQuest, bool> visited, Dictionary<IQuest, bool> recStack)
         {
             if (recStack[quest]) return true;
@@ -288,6 +292,49 @@ namespace Karpik.Quests.QuestSample
             recStack[quest] = false;
 
             return false;
+        }
+
+        private void Subscribe(IQuest quest)
+        {
+            quest.Started += OnQuestStarted;
+            quest.Updated += OnQuestUpdated;
+            quest.Failed += OnQuestFailed;
+            quest.Completed += OnQuestCompleted;
+        }
+        
+        private void Unsubscribe(IQuest quest)
+        {
+            quest.Started -= OnQuestStarted;
+            quest.Updated -= OnQuestUpdated;
+            quest.Failed -= OnQuestFailed;
+            quest.Completed -= OnQuestCompleted;
+        }
+        
+        private void OnQuestStarted(IQuest quest)
+        {
+            
+        }
+        
+        private void OnQuestUpdated(IQuest quest, ITaskBundle bundle)
+        {
+            var dependents = GetDependentsQuests(quest);
+
+            foreach (var connection in dependents)
+            {
+                if (!connection.Dependency.IsOk(quest)) continue;
+                
+                connection.DependentQuest.Start();
+            }
+        }
+        
+        private void OnQuestFailed(IQuest quest)
+        {
+            
+        }
+
+        private void OnQuestCompleted(IQuest quest)
+        {
+            
         }
     }
 }

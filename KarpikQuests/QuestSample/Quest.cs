@@ -152,6 +152,8 @@ namespace Karpik.Quests.QuestSample
                     moreStatusesSetting?.Invoke(this, status);
                     break;
             }
+            
+            Updated?.Invoke(this, null);
         }
 
         public void Reset()

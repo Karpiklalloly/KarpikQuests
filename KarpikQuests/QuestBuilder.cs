@@ -58,10 +58,18 @@ namespace Karpik.Quests
                 _questAggregator = null;
                 _graph = null;
             }
+
+            public readonly QuestBuilderPart AddTask(ITask task)
+            {
+                if (_quest.Has(task)) throw new InvalidOperationException("Quest can't contain equal bundle");
+                
+                _quest.Add(task);
+                return this;
+            }
         
             public readonly QuestBuilderPart AddBundle(ITaskBundle bundle)
             {
-                if (_quest.TaskBundles.Has(bundle)) throw new InvalidOperationException("Quest can't contain equel bundle");
+                if (_quest.TaskBundles.Has(bundle)) throw new InvalidOperationException("Quest can't contain equal bundle");
 
                 _quest.Add(bundle);
                 return this;
@@ -91,7 +99,7 @@ namespace Karpik.Quests
                 return this;
             }
 
-            public IQuest Create()
+            public IQuest Build()
             {
                 if (_quest is null) throw new InvalidOperationException("Quest is not setted");
 

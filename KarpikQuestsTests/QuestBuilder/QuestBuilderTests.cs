@@ -20,7 +20,7 @@ internal class QuestBuilderTests
         QuestBuilder
             .Start<QuestSample.Quest>("", "")
             .SetAggregator(_aggregator)
-            .Create();
+            .Build();
 
         Assert.That(_aggregator.Quests, Is.Not.Empty);
     }

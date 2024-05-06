@@ -21,7 +21,7 @@ public class QuestCreate
         var quest = QuestBuilder
             .Start<QuestSample.Quest>(name, "")
             .SetAggregator(_aggregator)
-            .Create();
+            .Build();
 
         Assert.That(quest.Name, Is.EqualTo(name));
     }
@@ -33,7 +33,7 @@ public class QuestCreate
         var quest = QuestBuilder
             .Start<QuestSample.Quest>("", desc)
             .SetAggregator(_aggregator)
-            .Create();
+            .Build();
         
         Assert.That(quest.Description, Is.EqualTo(desc));
     }
@@ -46,7 +46,7 @@ public class QuestCreate
         var quest = QuestBuilder
             .Start<QuestSample.Quest>("", "", null, type)
             .SetAggregator(_aggregator)
-            .Create();
+            .Build();
         
         Assert.That(quest.CompletionType, Is.EqualTo(type));
     }
@@ -59,7 +59,7 @@ public class QuestCreate
         var quest = QuestBuilder
             .Start<QuestSample.Quest>("", "", null, type)
             .SetAggregator(_aggregator)
-            .Create();
+            .Build();
         
         Assert.That(quest.CompletionType, Is.EqualTo(type));
     }
@@ -72,7 +72,7 @@ public class QuestCreate
         var quest = QuestBuilder
             .Start<QuestSample.Quest>("", "", null, type)
             .SetAggregator(_aggregator)
-            .Create();
+            .Build();
         
         Assert.That(quest.CompletionType, Is.EqualTo(type));
     }
