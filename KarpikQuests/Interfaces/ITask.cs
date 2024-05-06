@@ -3,7 +3,7 @@ using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Interfaces
 {
-    public interface ITask : IInitable, IEquatable<ITask>, ICloneable
+    public interface ITask : IInitable, IEquatable<ITask>
     {
         public event Action<ITask> Started;
         public event Action<ITask> Completed;

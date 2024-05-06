@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Karpik.Quests.Interfaces
 {
-    public interface IReadOnlyTaskBundleCollection : IList<ITaskBundle>, ICloneable, IEquatable<IReadOnlyTaskBundleCollection>
+    public interface IReadOnlyTaskBundleCollection : IList<ITaskBundle>, IEquatable<IReadOnlyTaskBundleCollection>
     {
         public bool Has(ITask task);
         public bool Has(ITaskBundle bundle);

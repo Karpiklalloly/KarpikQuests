@@ -41,7 +41,7 @@ namespace Karpik.Quests.CompletionTypes
             if (arr.All(Predicates.TaskIsCompleted)) return completed;
             if (arr.Any(Predicates.TaskIsCompleted) ||
                 arr.Any(Predicates.TaskIsFailed)) return started;
-            
+            //task is started
             return unStarted;
         }
     }

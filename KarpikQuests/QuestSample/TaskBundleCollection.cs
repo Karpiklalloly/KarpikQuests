@@ -42,11 +42,14 @@ namespace Karpik.Quests.QuestSample
 
         public bool Has(ITask task)
         {
+            if (task is null) return false;
             return _bundles.Exists((bundle) =>  bundle.Has(task));
         }
 
         public bool Has(ITaskBundle bundle)
         {
+            if (bundle is null) return false;
+            
             foreach (var anotherTaskBundle in _bundles)
             {
                 if (anotherTaskBundle.Equals(bundle))
@@ -106,16 +109,6 @@ namespace Karpik.Quests.QuestSample
         }
         
         #endregion
-
-        public object Clone()
-        {
-            var another = TaskBundleCollectionFactory.Instance.Create();
-            foreach (var bundle in _bundles)
-            {
-                another.Add((ITaskBundle)bundle.Clone());
-            }
-            return another;
-        }
 
         public void Setup(IProcessorType processor)
         {

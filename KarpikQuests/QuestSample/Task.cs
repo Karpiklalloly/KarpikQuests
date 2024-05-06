@@ -21,7 +21,7 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public bool Inited => _inited;
 
         [JsonProperty("Key")]
-        private Id _id;
+        private readonly Id _id;
         [JsonProperty("Name")]
         private string _name;
         [JsonProperty("Description")]
@@ -112,20 +112,7 @@ namespace Karpik.Quests.QuestSample
             _status = ITask.TaskStatus.Failed;
             Failed?.Invoke(this);
         }
-
-        public object Clone()
-        {
-            return new Task
-            {
-                _id = Id,
-                _name = Name,
-                _status = Status,
-                _canBeCompleted = CanBeCompleted,
-                Completed = (Action<ITask>)Completed?.Clone(),
-                Failed = (Action<ITask>)Failed?.Clone()
-            };
-        }
-
+        
         public override bool Equals(object obj)
         {
             return obj is Task task && Equals(this, task);
@@ -138,12 +125,12 @@ namespace Karpik.Quests.QuestSample
         
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return _id.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{Id} {Name} ({Status})";
+            return $"{_id} {Name} ({Status})";
         }
 
         [OnDeserialized]

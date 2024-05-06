@@ -44,7 +44,7 @@ namespace Karpik.Quests.Example
                 .SetAggregator(_aggregator)
                 .Create();
             
-            QuestAggregatorSaver.Serializer = new JsonResolver();
+            QuestAggregatorSaver.Serializer = new JsonResolver<IQuestAggregator>();
             QuestAggregatorSaver.Save(_aggregator, _fileName);
             _aggregator = null;
         }

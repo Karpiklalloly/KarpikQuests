@@ -52,7 +52,7 @@ namespace Karpik.Quests.QuestSample
             
         }
 
-        private Quest(Id id)
+        public Quest(Id id)
         {
             _id = id;
         }
@@ -77,10 +77,10 @@ namespace Karpik.Quests.QuestSample
 
             _inited = true;
             
-            Subscribe(TaskBundles);
+            Subscribe(_bundles);
         }
 
-        public void AddTask(ITask task)
+        public void Add(ITask task)
         {
             if (_bundles.Has(task)) return;
 
@@ -88,10 +88,17 @@ namespace Karpik.Quests.QuestSample
             {
                 task
             };
-            _bundles.Add(bundle);
+            Add(bundle);
+            Add(bundle, task);
         }
 
-        public void RemoveTask(ITask task)
+        public void Add(ITaskBundle bundle, ITask task)
+        {
+            if (_bundles.Has(task)) return;
+            bundle.Add(task);
+        }
+
+        public void Remove(ITask task)
         {
             if (!_bundles.Has(task)) return;
 
@@ -111,14 +118,14 @@ namespace Karpik.Quests.QuestSample
             }
         }
 
-        public void AddBundle(ITaskBundle bundle)
+        public void Add(ITaskBundle bundle)
         {
             if (_bundles.Has(bundle)) return;
             _bundles.Add(bundle);
             Subscribe(bundle);
         }
 
-        public void RemoveBundle(ITaskBundle bundle)
+        public void Remove(ITaskBundle bundle)
         {
             if (!_bundles.Has(bundle)) return;
             _bundles.Remove(bundle);
@@ -149,15 +156,26 @@ namespace Karpik.Quests.QuestSample
 
         public void Reset()
         {
-            this.UnStart();
+            foreach (var bundle in _bundles)
+            {
+                bundle.Reset();
+                Subscribe(bundle);
+            }
+
+            Started = null;
+            Updated = null;
+            Completed = null;
+            Failed = null;
+            
+            SetStatus(new UnStarted(), null);
         }
 
         public void Clear()
         {
             foreach (var bundle in _bundles)
             {
-                bundle.ClearTasks();
                 bundle.Clear();
+                bundle.Reset();
             }
             _bundles.Clear();
 
@@ -167,19 +185,16 @@ namespace Karpik.Quests.QuestSample
             Failed = null;
         }
 
-        public object Clone()
+        public bool Has(ITaskBundle bundle)
         {
-            return new Quest(_id)
-            {
-                _name = Name,
-                _description = Description,
-                _bundles = (ITaskBundleCollection)_bundles.Clone(),
-                _status = Status,
-                Started = (Action<IQuest>)Started?.Clone(),
-                Updated = (Action<IQuest, ITaskBundle>)Updated?.Clone(),
-                Completed = (Action<IQuest>)Completed?.Clone(),
-                Failed = (Action<IQuest>)Failed?.Clone(),
-            };
+            if (bundle is null) return false;
+            return TaskBundles.Has(bundle);
+        }
+
+        public bool Has(ITask task)
+        {
+            if (task is null) return false;
+            return TaskBundles.Count > 0 && TaskBundles.Has(task);
         }
 
         public void Dispose()
@@ -230,6 +245,19 @@ namespace Karpik.Quests.QuestSample
 
                 _disposedValue = true;
             }
+
+            Started = null;
+            Updated = null;
+            Completed = null;
+            Failed = null;
+
+            _bundles = null;
+            _processor = null;
+            _completionType = null;
+            _status = null;
+            _inited = false;
+            _name = null;
+            _description = null;
         }
 
         [OnDeserialized]
@@ -270,11 +298,6 @@ namespace Karpik.Quests.QuestSample
 
         private void OnBundleUpdated(ITaskBundle bundle)
         {
-            if (Status is UnStarted)
-            {
-                this.Start();
-            }
-
             Updated?.Invoke(this, bundle);
         }
 

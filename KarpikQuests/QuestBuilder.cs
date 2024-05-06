@@ -45,17 +45,6 @@ namespace Karpik.Quests
 
             return new QuestBuilderPart(quest);
         }
-
-        /// <summary>
-        /// Clone quest
-        /// </summary>
-        /// <param name="quest"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static QuestBuilderPart Start(IQuest quest)
-        {
-            return new QuestBuilderPart((IQuest)quest.Clone());
-        }
         
         public struct QuestBuilderPart
         {
@@ -74,7 +63,7 @@ namespace Karpik.Quests
             {
                 if (_quest.TaskBundles.Has(bundle)) throw new InvalidOperationException("Quest can't contain equel bundle");
 
-                _quest.AddBundle(bundle);
+                _quest.Add(bundle);
                 return this;
             }
 

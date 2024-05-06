@@ -47,10 +47,7 @@ namespace Karpik.Quests.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void UnStart(this IQuest quest)
         {
-            foreach (var bundle in quest.TaskBundles)
-            {
-                bundle.Reset();
-            }
+            quest.Reset();
             quest.SetStatus(new UnStarted());
         }
 

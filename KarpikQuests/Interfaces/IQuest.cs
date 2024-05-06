@@ -3,7 +3,7 @@ using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Interfaces
 {
-    public interface IQuest : IInitable, IEquatable<IQuest>, IDisposable, ICloneable
+    public interface IQuest : IInitable, IEquatable<IQuest>, IDisposable
     {
         public event Action<IQuest> Started;
         public event Action<IQuest, ITaskBundle> Updated;
@@ -27,7 +27,13 @@ namespace Karpik.Quests.Interfaces
 
         public void Init(string name, string description,
             ITaskBundleCollection bundles, ICompletionType completionType, IProcessorType processorType);
-        public void AddBundle(ITaskBundle bundle);
-        public void RemoveBundle(ITaskBundle bundle);
+        public void Add(ITaskBundle bundle);
+        public void Add(ITaskBundle bundle, ITask task);
+        public void Add(ITask task);
+        public void Remove(ITaskBundle bundle);
+        public void Remove(ITask task);
+
+        public bool Has(ITaskBundle bundle);
+        public bool Has(ITask task);
     }
 }

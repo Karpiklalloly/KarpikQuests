@@ -88,17 +88,6 @@ namespace Karpik.Quests.QuestSample
         }
 #endregion
 
-        public object Clone()
-        {
-            QuestCollection quests = new QuestCollection();
-            foreach (var quest in _data)
-            {
-                quests.Add((IQuest)quest.Clone());
-            }
-
-            return quests;
-        }
-
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();

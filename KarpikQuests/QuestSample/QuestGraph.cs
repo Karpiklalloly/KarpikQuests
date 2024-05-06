@@ -269,8 +269,7 @@ namespace Karpik.Quests.QuestSample
         {
 
         }
-
-
+        
         private bool IsCyclicUtil(IQuest quest, Dictionary<IQuest, bool> visited, Dictionary<IQuest, bool> recStack)
         {
             if (recStack[quest]) return true;

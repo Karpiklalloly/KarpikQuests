@@ -4,7 +4,7 @@ using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Interfaces
 {
-    public interface ITaskBundle : IList<ITask>, ICloneable, IEquatable<ITaskBundle>
+    public interface ITaskBundle : IList<ITask>, IEquatable<ITaskBundle>
     {
         public event Action<ITaskBundle> Updated;
         public event Action<ITaskBundle> Completed;

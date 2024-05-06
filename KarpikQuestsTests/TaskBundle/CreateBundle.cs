@@ -10,7 +10,7 @@ public class CreateBundle
     [Test]
     public void WhenCreateBundle_ThenBundleIsEmpty()
     {
-        var bundle = new QuestSample.TaskBundle();
+        var bundle = new TaskBundle();
         
         Assert.That(!bundle.Any());
     }
@@ -18,7 +18,7 @@ public class CreateBundle
     [Test]
     public void WhenCreateBundle_AndAddTasks_ThenBundleHasAllOfThem([Values(1, 10, 100)]int count)
     {
-        var bundle = new QuestSample.TaskBundle();
+        var bundle = new TaskBundle();
         
         for (int i = 0; i < count; i++)
         {
@@ -49,7 +49,7 @@ public class CreateBundle
     [Test]
     public void WhenCreateBundle_AndSetOrderlyType_ThenBundleHasOrderlyType()
     {
-        var bundle = new QuestSample.TaskBundle(null, new Orderly());
+        var bundle = new TaskBundle(null, new Orderly());
 
         Assert.That(bundle.ProcessorType is Orderly);
     }
@@ -57,7 +57,7 @@ public class CreateBundle
     [Test]
     public void WhenCreateBundle_AndSetDisorderlyType_ThenBundleHasDisorderlyType()
     {
-        var bundle = new QuestSample.TaskBundle(null, new Disorderly());
+        var bundle = new TaskBundle(null, new Disorderly());
 
         Assert.That(bundle.ProcessorType is Disorderly);
     }

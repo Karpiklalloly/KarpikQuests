@@ -7,7 +7,7 @@ namespace Karpik.Quests.Saving
 {
     public static class QuestAggregatorSaver
     {
-        private static ISerializer<IQuestAggregator> _serializer = new JsonResolver();
+        private static ISerializer<IQuestAggregator> _serializer = new JsonResolver<IQuestAggregator>();
 
         public static ISerializer<IQuestAggregator> Serializer
         {

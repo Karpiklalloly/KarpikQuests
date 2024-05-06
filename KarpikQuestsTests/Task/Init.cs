@@ -85,4 +85,17 @@ public class Init
         
         Assert.That(task.Status, Is.EqualTo(ITask.TaskStatus.UnStarted));
     }
+
+    [Test]
+    public void WhenInitTask_ThenTaskIsInitter()
+    {
+        //Action
+        var task = new Task();
+        
+        //Condition
+        task.Init();
+        
+        //Result
+        Assert.That(task.Inited);
+    }
 }

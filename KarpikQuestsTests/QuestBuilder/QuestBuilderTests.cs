@@ -2,7 +2,7 @@
 using Karpik.Quests.QuestSample;
 
 
-namespace Karpik.Quests.Tests;
+namespace Karpik.Quests.Tests.Builder;
 
 internal class QuestBuilderTests
 {
@@ -18,7 +18,7 @@ internal class QuestBuilderTests
     public void WhenBuilderCreatesQuest_AndAddAggregatorOnCreate_ThenThereIsQuest()
     {
         QuestBuilder
-            .Start<Quest>("", "")
+            .Start<QuestSample.Quest>("", "")
             .SetAggregator(_aggregator)
             .Create();
 

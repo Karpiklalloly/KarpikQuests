@@ -72,18 +72,6 @@ namespace Karpik.Quests.QuestSample
         }
 #endregion
 
-        public object Clone()
-        {
-            var clone = new TaskCollection();
-            
-            foreach (var item in _tasks)
-            {
-                clone.Add((ITask)item.Clone());
-            }
-
-            return clone;
-        }
-
         public override bool Equals(object obj)
         {
             return obj is TaskCollection collection && Equals(collection);

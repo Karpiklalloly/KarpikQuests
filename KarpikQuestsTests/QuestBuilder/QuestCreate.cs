@@ -2,7 +2,7 @@ using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.QuestSample;
 
-namespace Karpik.Quests.Tests;
+namespace Karpik.Quests.Tests.Builder;
 
 public class QuestCreate
 {
@@ -19,7 +19,7 @@ public class QuestCreate
         [Values("name", "quest", "NAME")] string name)
     {
         var quest = QuestBuilder
-            .Start<Quest>(name, "")
+            .Start<QuestSample.Quest>(name, "")
             .SetAggregator(_aggregator)
             .Create();
 
@@ -31,7 +31,7 @@ public class QuestCreate
         [Values("desc", "quest", "DESC")] string desc)
     {
         var quest = QuestBuilder
-            .Start<Quest>("", desc)
+            .Start<QuestSample.Quest>("", desc)
             .SetAggregator(_aggregator)
             .Create();
         
@@ -44,7 +44,7 @@ public class QuestCreate
         ICompletionType type = new And();
         
         var quest = QuestBuilder
-            .Start<Quest>("", "", null, type)
+            .Start<QuestSample.Quest>("", "", null, type)
             .SetAggregator(_aggregator)
             .Create();
         
@@ -57,7 +57,7 @@ public class QuestCreate
         ICompletionType type = new Or();
         
         var quest = QuestBuilder
-            .Start<Quest>("", "", null, type)
+            .Start<QuestSample.Quest>("", "", null, type)
             .SetAggregator(_aggregator)
             .Create();
         
@@ -70,7 +70,7 @@ public class QuestCreate
         ICompletionType type = new NeededCount(1);
         
         var quest = QuestBuilder
-            .Start<Quest>("", "", null, type)
+            .Start<QuestSample.Quest>("", "", null, type)
             .SetAggregator(_aggregator)
             .Create();
         

@@ -13,10 +13,6 @@ namespace Karpik.Quests.TaskProcessorTypes
             foreach (var bundle in bundles)
             {
                 bundle.Setup();
-                foreach (var task in bundle)
-                {
-                    task.Start();
-                }
             }
         }
 

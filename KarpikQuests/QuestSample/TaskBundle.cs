@@ -67,9 +67,8 @@ namespace Karpik.Quests.QuestSample
             foreach (var task in Tasks)
             {
                 task.Reset();
+                Subscribe(task);
             }
-            Updated = null;
-            Completed = null;
         }
 
         public void Setup()
@@ -84,6 +83,10 @@ namespace Karpik.Quests.QuestSample
                 task.Reset();
                 Subscribe(task);
             }
+
+            Updated = null;
+            Completed = null;
+            Failed = null;
 
             _status = new UnStarted();
         }
@@ -133,6 +136,10 @@ namespace Karpik.Quests.QuestSample
 
         public void Clear()
         {
+            foreach (var task in Tasks)
+            {
+                task.Reset();
+            }
             Tasks.Clear();
         }
 
@@ -154,11 +161,13 @@ namespace Karpik.Quests.QuestSample
         
         public bool Has(ITask task)
         {
+            if (task is null) return false;
             return Tasks.Has(task);
         }
         
         public bool Has(Id taskKey)
         {
+            if (taskKey.IsEmpty()) return false;
             var task = Tasks.First(x => x.Id.Equals(taskKey));
             return Tasks.Has(task);
         }
@@ -174,19 +183,6 @@ namespace Karpik.Quests.QuestSample
         }
         
 #endregion
-
-        public object Clone()
-        {
-            return new TaskBundle
-            {
-                _tasks = (IReadOnlyTaskCollection)Tasks.Clone(),
-                _completionType = CompletionType,
-                _processorType = ProcessorType,
-                Updated = (Action<ITaskBundle>)Updated?.Clone(),
-                Completed = (Action<ITaskBundle>)Completed?.Clone(),
-                Failed = (Action<ITaskBundle>)Failed?.Clone() 
-            };
-        }
 
         public bool Equals(ITaskBundle other)
         {

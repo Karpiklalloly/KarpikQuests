@@ -21,8 +21,4 @@
   <ItemGroup>
     <ProjectReference Include="..\KarpikQuests\KarpikQuests.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pools\" />
-  </ItemGroup>
 </Project>
