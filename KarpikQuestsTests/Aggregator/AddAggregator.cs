@@ -1,4 +1,4 @@
-﻿using Karpik.Quests;
+﻿using Karpik.Quests.Factories;
 using Karpik.Quests.QuestSample;
 
 namespace KarpikQuestsTests.Aggregator;
@@ -11,8 +11,7 @@ public class AddAggregator
         //Action
         var aggregator = new QuestAggregator();
         var graph = new QuestGraph();
-        var quest = QuestBuilder.Start<Quest>("name", "desc")
-            .Build();
+        var quest = QuestFactory.Instance.Create("name");
 
         //Condition
         aggregator.TryAddGraph(graph);

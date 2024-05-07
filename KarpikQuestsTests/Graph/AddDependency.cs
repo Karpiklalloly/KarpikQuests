@@ -12,8 +12,7 @@ public class AddDependency
     public void WhenAddCompletedDependency_AndDependencyIsOk_ThenQuestIsStarted([Values(
         IGraph.DependencyType.Completion,
         IGraph.DependencyType.Start,
-        IGraph.DependencyType.Fail,
-        IGraph.DependencyType.Unneccesary)] IGraph.DependencyType dependency)
+        IGraph.DependencyType.Fail)] IGraph.DependencyType dependency)
     {
         //Action
         var graph = new QuestGraph();
@@ -46,8 +45,6 @@ public class AddDependency
                 break;
             case IGraph.DependencyType.Start:
                 quest1.Start();
-                break;
-            case IGraph.DependencyType.Unneccesary:
                 break;
         }
         task1.ForceComplete();

@@ -90,9 +90,12 @@ namespace Karpik.Quests.QuestSample
             return true;
         }
 
-        public bool TryAddDependency(Id questId, Id dependencyNodeId, IDependencyType dependencyType)
+        public bool TryAddDependency(Id questId, Id dependencyQuestId, IDependencyType dependencyType)
         {
-            return TryAddDependency(GetQuest(questId), GetQuest(dependencyNodeId), dependencyType);
+            if (!questId.IsValid() || !dependencyQuestId.IsValid()) return false;
+            if (!Has(questId) || !Has(dependencyQuestId)) return false;
+            
+            return TryAddDependency(GetQuest(questId), GetQuest(dependencyQuestId), dependencyType);
         }
 
         public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IDependencyType dependencyType)
@@ -105,25 +108,26 @@ namespace Karpik.Quests.QuestSample
             return true;
         }
 
-        public bool TryAddDependency(Id questId, Id dependencyNodeId, IGraph.DependencyType dependencyTypeType)
+        public bool TryAddDependency(Id questId, Id dependencyQuestId, IGraph.DependencyType dependencyType)
         {
-            return dependencyTypeType switch
-            {
-                IGraph.DependencyType.Completion => TryAddDependency(
-                    questId, dependencyNodeId, new Completion()),
-                IGraph.DependencyType.Fail => TryAddDependency(
-                    questId, dependencyNodeId, new Fail()),
-                IGraph.DependencyType.Start => TryAddDependency(
-                    questId, dependencyNodeId, new Start()),
-                IGraph.DependencyType.Unneccesary => TryAddDependency(
-                    questId, dependencyNodeId, new Unneccesary()),
-                _ => false
-            };
+            if (!questId.IsValid()) return false;
+            if (!Has(questId)) return false;
+            
+            return TryAddDependency(GetQuest(questId), GetQuest(dependencyQuestId), dependencyType);
         }
 
-        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IGraph.DependencyType dependencyTypeType)
+        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IGraph.DependencyType dependencyType)
         {
-            return TryAddDependency(quest.Id, dependencyQuest.Id, dependencyTypeType);
+            return dependencyType switch
+            {
+                IGraph.DependencyType.Completion => TryAddDependency(
+                    quest, dependencyQuest, new Completion()),
+                IGraph.DependencyType.Fail => TryAddDependency(
+                    quest, dependencyQuest, new Fail()),
+                IGraph.DependencyType.Start => TryAddDependency(
+                    quest, dependencyQuest, new Start()),
+                _ => false
+            };
         }
 
         public bool TryRemoveDependencies(Id questId)
@@ -131,16 +135,18 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return false;
             if (!Has(questId)) return false;
             
-            var node = GetQuest(questId);
-            
-            _dependencies[node].Clear();
-
-            return true;
+            return TryRemoveDependencies(GetQuest(questId));
         }
 
         public bool TryRemoveDependencies(IQuest quest)
         {
-            return TryRemoveDependencies(quest.Id);
+            if (!quest.IsValid()) return false;
+            if (!Has(quest)) return false;
+            
+            
+            _dependencies[quest].Clear();
+
+            return true;
         }
 
         public bool TryRemoveDependents(Id questId)
@@ -148,20 +154,21 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return false;
             if (!Has(questId)) return false;
             
-            var quest = GetQuest(questId);
-
-            var dependents = GetDependentsQuests(quest);
-            foreach (var dependent in dependents)
-            {
-                TryRemoveDependency(dependent.DependentQuest.Id, questId);
-            }
-
-            return true;
+            return TryRemoveDependents(GetQuest(questId));
         }
 
         public bool TryRemoveDependents(IQuest quest)
         {
-            return TryRemoveDependents(quest.Id);
+            if (!quest.IsValid()) return false;
+            if (!Has(quest)) return false;
+
+            var dependents = GetDependentsQuests(quest);
+            foreach (var dependent in dependents)
+            {
+                TryRemoveDependency(dependent.DependentQuest.Id, quest.Id);
+            }
+
+            return true;
         }
 
         public bool TryRemoveDependency(Id questId, Id dependencyQuestId)
@@ -169,9 +176,15 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid() || !dependencyQuestId.IsValid()) return false;
             if (!Has(questId) || !Has(dependencyQuestId)) return false;
             
-            var quest = GetQuest(questId);
+            return TryRemoveDependency(GetQuest(questId), GetQuest(dependencyQuestId));
+        }
+
+        public bool TryRemoveDependency(IQuest quest, IQuest dependencyQuest)
+        {
+            if (!quest.IsValid() || !dependencyQuest.IsValid()) return false;
+            if (!Has(quest) || !Has(dependencyQuest)) return false;
             
-            var index = _dependencies[quest].FindIndex(x => x.QuestId == dependencyQuestId);
+            var index = _dependencies[quest].FindIndex(x => x.QuestId == dependencyQuest.Id);
             if (index < 0) return false;
             
             _dependencies[quest].RemoveAt(index);
@@ -218,12 +231,19 @@ namespace Karpik.Quests.QuestSample
 
         public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(Id questId)
         {
-            var list = new List<ConnectionWithQuest>();
-            if (!questId.IsValid()) return list;
-            if (!Has(questId)) return list;
-            
-            var quest = GetQuest(questId);
+            if (!questId.IsValid()) return new List<ConnectionWithQuest>();
+            if (!Has(questId)) return new List<ConnectionWithQuest>();
 
+            return GetDependenciesQuests(GetQuest(questId));
+        }
+
+        public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(IQuest quest)
+        {
+            var list = new List<ConnectionWithQuest>();
+            
+            if (!quest.IsValid()) return new List<ConnectionWithQuest>();
+            if (!Has(quest)) return new List<ConnectionWithQuest>();
+            
             foreach (var connection in _dependencies[quest])
             {
                 list.Add( new ConnectionWithQuest(
@@ -235,24 +255,24 @@ namespace Karpik.Quests.QuestSample
             return list;
         }
 
-        public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(IQuest quest)
-        {
-            if (!quest.IsValid()) return new List<ConnectionWithQuest>();
-            if (!Has(quest)) return new List<ConnectionWithQuest>();
-
-            return GetDependenciesQuests(quest.Id);
-        }
-
         public IEnumerable<ConnectionWithQuest> GetDependentsQuests(Id questId)
         {
-            var list = new List<ConnectionWithQuest>();
+            if (!questId.IsValid()) return new List<ConnectionWithQuest>();
+            if (!Has(questId)) return new List<ConnectionWithQuest>();
+            
+            return GetDependentsQuests(GetQuest(questId));
+        }
 
-            if (!questId.IsValid()) return list;
-            if (!Has(questId)) return list;
+        public IEnumerable<ConnectionWithQuest> GetDependentsQuests(IQuest quest)
+        {
+            var list = new List<ConnectionWithQuest>();
+            
+            if (!quest.IsValid()) return list;
+            if (!Has(quest)) return list;
             
             foreach (var pair in _dependencies)
             {
-                var index = pair.Value.FindIndex(x => x.QuestId == questId);
+                var index = pair.Value.FindIndex(x => x.QuestId == quest.Id);
                 if (index < 0) continue;
                 list.Add(new ConnectionWithQuest(
                     dependentQuest: pair.Key,
@@ -261,11 +281,6 @@ namespace Karpik.Quests.QuestSample
             }
             
             return list;
-        }
-
-        public IEnumerable<ConnectionWithQuest> GetDependentsQuests(IQuest quest)
-        {
-            return GetDependentsQuests(quest.Id);
         }
         
         [OnDeserialized]

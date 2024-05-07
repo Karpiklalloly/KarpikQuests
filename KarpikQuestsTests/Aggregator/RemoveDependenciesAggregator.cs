@@ -1,5 +1,5 @@
-﻿using Karpik.Quests;
-using Karpik.Quests.DependencyTypes;
+﻿using Karpik.Quests.DependencyTypes;
+using Karpik.Quests.Factories;
 using Karpik.Quests.QuestSample;
 
 namespace KarpikQuestsTests.Aggregator;
@@ -12,10 +12,8 @@ public class RemoveDependenciesAggregator
         //Action
         var aggregator = new QuestAggregator();
         var graph = new QuestGraph();
-        var quest1 = QuestBuilder.Start<Quest>("name1", "desc1")
-            .Build();
-        var quest2 = QuestBuilder.Start<Quest>("name2", "desc2")
-            .Build();
+        var quest1 = QuestFactory.Instance.Create("name1");
+        var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
         aggregator.TryAddQuest(graph, quest1);
         aggregator.TryAddQuest(graph, quest2);
@@ -35,10 +33,8 @@ public class RemoveDependenciesAggregator
         //Action
         var aggregator = new QuestAggregator();
         var graph = new QuestGraph();
-        var quest1 = QuestBuilder.Start<Quest>("name1", "desc1")
-            .Build();
-        var quest2 = QuestBuilder.Start<Quest>("name2", "desc2")
-            .Build();
+        var quest1 = QuestFactory.Instance.Create("name1");
+        var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
         aggregator.TryAddQuest(graph, quest1);
         aggregator.TryAddQuest(graph, quest2);
@@ -58,10 +54,8 @@ public class RemoveDependenciesAggregator
         //Action
         var aggregator = new QuestAggregator();
         var graph = new QuestGraph();
-        var quest1 = QuestBuilder.Start<Quest>("name1", "desc1")
-            .Build();
-        var quest2 = QuestBuilder.Start<Quest>("name2", "desc2")
-            .Build();
+        var quest1 = QuestFactory.Instance.Create("name1");
+        var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
         aggregator.TryAddQuest(graph, quest1);
         aggregator.TryAddQuest(graph, quest2);
@@ -81,10 +75,8 @@ public class RemoveDependenciesAggregator
         //Action
         var aggregator = new QuestAggregator();
         var graph = new QuestGraph();
-        var quest1 = QuestBuilder.Start<Quest>("name1", "desc1")
-            .Build();
-        var quest2 = QuestBuilder.Start<Quest>("name2", "desc2")
-            .Build();
+        var quest1 = QuestFactory.Instance.Create("name1");
+        var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
         aggregator.TryAddQuest(graph, quest1);
         aggregator.TryAddQuest(graph, quest2);

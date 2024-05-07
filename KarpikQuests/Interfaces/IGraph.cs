@@ -17,10 +17,10 @@ namespace Karpik.Quests.Interfaces
 
         public bool TryReplace(IQuest from, IQuest to);
 
-        public bool TryAddDependency(Id questId, Id dependencyNodeId, IDependencyType dependencyType);
+        public bool TryAddDependency(Id questId, Id dependencyQuestId, IDependencyType dependencyType);
         public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IDependencyType dependencyType);
-        public bool TryAddDependency(Id questId, Id dependencyNodeId, DependencyType dependencyTypeType);
-        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, DependencyType dependencyTypeType);
+        public bool TryAddDependency(Id questId, Id dependencyQuestId, DependencyType dependencyType);
+        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, DependencyType dependencyType);
         
         public bool TryRemoveDependencies(Id questId);
         public bool TryRemoveDependencies(IQuest quest);
@@ -28,6 +28,7 @@ namespace Karpik.Quests.Interfaces
         public bool TryRemoveDependents(IQuest quest);
         
         public bool TryRemoveDependency(Id questId, Id dependencyQuestId);
+        public bool TryRemoveDependency(IQuest quest, IQuest dependencyQuest);
         
         public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(Id questId);
         public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(IQuest quest);
@@ -45,8 +46,7 @@ namespace Karpik.Quests.Interfaces
         {
             Completion,
             Fail,
-            Start,
-            Unneccesary,
+            Start
         }
         
         [Serializable]
