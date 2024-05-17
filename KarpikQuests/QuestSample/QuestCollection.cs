@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
 using Newtonsoft.Json;
@@ -14,11 +15,24 @@ namespace Karpik.Quests.QuestSample
         [JsonProperty("Data")]
         private readonly List<IQuest> _data = new List<IQuest>();
 
-        [JsonIgnore] public int Count => _data.Count;
+        public QuestCollection() {}
 
-        [JsonIgnore] public bool IsReadOnly => false;
+        public QuestCollection(IEnumerable<IQuest> quests)
+        {
+            foreach (var quest in quests)
+            {
+                _data.Add(quest);
+            }
+        }
 
 #region list
+
+        [JsonIgnore]
+        public int Count => _data.Count;
+
+        [JsonIgnore]
+        public bool IsReadOnly => false;
+
         public IQuest this[int index]
         {
             get => _data[index];
@@ -115,9 +129,9 @@ namespace Karpik.Quests.QuestSample
         {
             if (other is null) return false;
         
-            for (int i = 0; i < other.Count; i++)
+            for (int i = 0; i < other.Count(); i++)
             {
-                if (!this[i].Equals(other[i])) return false;
+                if (!this[i].Equals(other.ElementAt(i))) return false;
             }
 
             return true;

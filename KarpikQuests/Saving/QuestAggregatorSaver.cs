@@ -37,10 +37,13 @@ namespace Karpik.Quests.Saving
         public sealed class SaveData
         {
             [JsonProperty("Version")]
+            [SerializeThis("Version")]
             public Version Version { get; set; }
             [JsonProperty("Aggregator")]
+            [SerializeThis("Aggregator")]
             public IQuestAggregator Aggregator { get; set; }
             [JsonProperty("AggregatorType")]
+            [SerializeThis("AggregatorType")]
             public Type AggregatorType { get; set; }
         }
     }

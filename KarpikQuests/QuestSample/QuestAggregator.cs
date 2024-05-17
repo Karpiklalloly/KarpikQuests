@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -16,11 +17,11 @@ namespace Karpik.Quests.QuestSample
         public event Action<IQuest> QuestFailed; 
         public event Action<IQuest> QuestCompleted;
         
-        [JsonIgnore] public IReadOnlyQuestCollection Quests => _quests;
+        [JsonIgnore] public IReadOnlyQuestCollection Quests => new QuestCollection(_graphs.SelectMany(graph => graph.Quests).ToList());
         
         [JsonProperty("Graphs")]
+        [SerializeThis("Graphs")]
         private IGraphCollection _graphs = new GraphCollection();
-        private IQuestCollection _quests = new QuestCollection();
 
         public bool TryAddGraph(IGraph graph)
         {
@@ -42,7 +43,6 @@ namespace Karpik.Quests.QuestSample
 
             if (!result) return false;
             
-            _quests.Add(quest);
             Subscribe(quest);
 
             return true;
@@ -57,7 +57,6 @@ namespace Karpik.Quests.QuestSample
             
             UnSubscribe(quest);
             graph.TryRemove(quest);
-            _quests.Remove(quest);
             
             return true;
         }
@@ -66,9 +65,6 @@ namespace Karpik.Quests.QuestSample
         {
             var result = graph.TryReplace(from, to);
             if (!result) return false;
-
-            _quests.Remove(from);
-            _quests.Add(to);
             
             return true;
         }
@@ -139,14 +135,14 @@ namespace Karpik.Quests.QuestSample
 
         public IQuest Get(Id id)
         {
-            return _quests.First(x => x.Id.Equals(id));
+            return Quests.First(x => x.Id.Equals(id));
         }
 
         public void Start()
         {
-            foreach (var quest in _quests)
+            foreach (var graph in _graphs)
             {
-                foreach (var graph in _graphs)
+                foreach (var quest in graph.Quests)
                 {
                     if (!graph.GetDependenciesQuests(quest).Any() && quest.IsUnStarted())
                     {
@@ -158,7 +154,7 @@ namespace Karpik.Quests.QuestSample
 
         public void ResetQuests()
         {
-            foreach (var quest in _quests)
+            foreach (var quest in Quests)
             {
                 quest.Reset();
             }
@@ -166,12 +162,10 @@ namespace Karpik.Quests.QuestSample
 
         public void Clear()
         {
-            foreach (var quest in _quests)
+            foreach (var graph in _graphs)
             {
-                quest.Clear();
+                graph.Clear();
             }
-            
-            _quests.Clear();
         }
         
         public bool Equals(IQuestAggregator other)
@@ -188,19 +182,15 @@ namespace Karpik.Quests.QuestSample
 
         public override int GetHashCode()
         {
-            return _quests.GetHashCode();
+            return _graphs.GetHashCode();
         }
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            foreach (var graph in _graphs)
+            foreach (var quest in Quests)
             {
-                foreach (var quest in graph.Quests)
-                {
-                    _quests.Add(quest);
-                    Subscribe(quest);
-                }
+                Subscribe(quest);
             }
         }
 

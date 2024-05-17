@@ -42,9 +42,9 @@ namespace Karpik.Quests.Example
         public void Start()
         {
             _aggregator.Start();
-            var quest = _aggregator.Quests[0];
+            var quest = _aggregator.Quests.ElementAt(0);
 
-            var curTask = quest.TaskBundles.First().First();
+            var curTask = quest.TaskBundles.First().Tasks.First();
 
             Console.WriteLine(curTask.Name);
             Console.WriteLine(curTask.Description);
@@ -54,7 +54,7 @@ namespace Karpik.Quests.Example
                 curTask.TryComplete();
             }
 
-            curTask = quest.TaskBundles.First().ElementAt(1);
+            curTask = quest.TaskBundles.First().Tasks.ElementAt(1);
 
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
@@ -72,7 +72,7 @@ namespace Karpik.Quests.Example
                 curTask.TryComplete();
             }
 
-            curTask = quest.TaskBundles.First().ElementAt(2);
+            curTask = quest.TaskBundles.First().Tasks.ElementAt(2);
 
             Console.WriteLine();
             Console.WriteLine(curTask.Name);

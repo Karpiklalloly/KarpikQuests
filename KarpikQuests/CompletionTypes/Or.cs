@@ -34,7 +34,7 @@ namespace Karpik.Quests.CompletionTypes
             var completed = new Completed();
             var failed = new Failed();
 
-            var arr = bundle.ToArray();
+            var arr = bundle.Tasks.ToArray();
 
             if (!arr.Any()) return completed;
             if (arr.Any(Predicates.TaskIsCompleted)) return completed;

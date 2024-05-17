@@ -14,12 +14,10 @@ public class ResetQuest
         var task1 = new Task();
         var task2 = new Task();
         var task3 = new Task();
-        var bundle = new TaskBundle()
-        {
-            task1,
-            task2,
-            task3
-        };
+        var bundle = new TaskBundle();
+        bundle.Add(task1);
+        bundle.Add(task2);
+        bundle.Add(task3);
         quest.Init();
         quest.Add(bundle);
         quest.Start();
@@ -46,12 +44,10 @@ public class ResetQuest
         var task1 = new Task();
         var task2 = new Task();
         var task3 = new Task();
-        var bundle = new TaskBundle()
-        {
-            task1,
-            task2,
-            task3
-        };
+        var bundle = new TaskBundle();
+        bundle.Add(task1);
+        bundle.Add(task2);
+        bundle.Add(task3);
         quest.Init();
         quest.Add(bundle);
         quest.Start();

@@ -18,7 +18,7 @@ namespace Karpik.Quests.QuestSample
 
         public bool Equals(ConnectionWithQuest other)
         {
-            return Equals(DependencyQuest, other.DependencyQuest) && Equals(DependentQuest, other.DependentQuest) && Equals(Dependency, other.Dependency);
+            return Equals(DependencyQuest, other.DependencyQuest) && Equals(DependentQuest, other.DependentQuest) && Dependency.GetType() == other.Dependency.GetType();
         }
 
         public override bool Equals(object obj)

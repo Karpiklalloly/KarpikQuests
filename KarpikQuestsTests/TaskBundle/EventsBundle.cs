@@ -12,11 +12,9 @@ public class EventsBundle
     public void WhenCompleteTask_ThenBundleUpdated()
     {
         //Action
-        var bundle = new TaskBundle
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle();
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bool updated = false;
         bundle.Updated += bundle => updated = true;
 
@@ -31,11 +29,9 @@ public class EventsBundle
     public void WhenBundleHasAnd_AndAllTasksAreCompleted_ThenBundleCompleted()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Disorderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Disorderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bool completed = false;
         bundle.Completed += bundle => completed = true;
 
@@ -53,11 +49,9 @@ public class EventsBundle
     public void WhenBundleHasAnd_AndOneTaskIsFailed_ThenBundleFailed()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Disorderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Disorderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bool failed = false;
         bundle.Failed += bundle => failed = true;
 
@@ -73,11 +67,9 @@ public class EventsBundle
     public void WhenBundleHasOr_AndOneOfTheTasksIsCompleted_ThenBundleCompleted()
     {
         //Action
-        var bundle = new TaskBundle(new Or(), new Disorderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new Or(), new Disorderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bool completed = false;
         bundle.Completed += bundle => completed = true;
 
@@ -92,11 +84,9 @@ public class EventsBundle
     public void WhenBundleHasOr_AndAllTasksAreFailed_ThenBundleFailed()
     {
         //Action
-        var bundle = new TaskBundle(new Or(), new Disorderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new Or(), new Disorderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bool failed = false;
         bundle.Failed += bundle => failed = true;
 
@@ -114,11 +104,9 @@ public class EventsBundle
     public void WhenBundleHasOrderly_AndAllTasksAreCompletedByOrder_ThenBundleCompleted()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Orderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Orderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bundle.Setup();
 
         //Condition
@@ -135,11 +123,9 @@ public class EventsBundle
     public void WhenBundleHasOrderly_AndTasksAreCompletedByDisorder_ThenBundleStarted()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Orderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Orderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         bundle.Setup();
 
         //Condition

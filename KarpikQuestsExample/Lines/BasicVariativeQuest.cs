@@ -6,6 +6,7 @@ using Karpik.Quests.TaskProcessorTypes;
 using Task = Karpik.Quests.QuestSample.Task;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Karpik.Quests.Example
 {
@@ -40,13 +41,11 @@ namespace Karpik.Quests.Example
             foxLeather.Init("Fox Leather");
             _tasks.Add(foxLeather.Name.ToLower(), foxLeather);
 
-            ITaskBundle leatherBundle = new TaskBundle(new Or(), 
-                new Disorderly())
-            {
-                bearLeather,
-                rabbitLeather,
-                foxLeather
-            };
+            ITaskBundle leatherBundle = new TaskBundle(new Or(),
+                new Disorderly());
+            leatherBundle.Add(bearLeather);
+            leatherBundle.Add(rabbitLeather);
+            leatherBundle.Add(foxLeather);
             leatherBundle.Completed += OnBundleComplete;
             foreach (var item in leatherBundle)
             {
@@ -66,13 +65,11 @@ namespace Karpik.Quests.Example
             stonesNecessary.Init("Stones");
             _tasks.Add(stonesNecessary.Name.ToLower(), stonesNecessary);
 
-            ITaskBundle necessaryBundle = new TaskBundle(new And(), 
-                new Disorderly())
-            {
-                sticksNecessary,
-                leavesNecessary,
-                stonesNecessary
-            };
+            ITaskBundle necessaryBundle = new TaskBundle(new And(),
+                new Disorderly());
+            necessaryBundle.Add(sticksNecessary);
+            necessaryBundle.Add(leavesNecessary);
+            necessaryBundle.Add(stonesNecessary);
             necessaryBundle.Completed += OnBundleComplete;
             foreach (var item in necessaryBundle)
             {
@@ -92,13 +89,11 @@ namespace Karpik.Quests.Example
             dirtyWater.Init("Dirty Water");
             _tasks.Add(dirtyWater.Name.ToLower(), dirtyWater);
 
-            TaskBundle waterBundle = new TaskBundle(new Or(), 
-                new Disorderly())
-            {
-                purifiedWater,
-                saltWater,
-                dirtyWater
-            };
+            ITaskBundle waterBundle = new TaskBundle(new Or(),
+                new Disorderly());
+            waterBundle.Add(purifiedWater);
+            waterBundle.Add(saltWater);
+            waterBundle.Add(dirtyWater);
             waterBundle.Completed += OnBundleComplete;
 
             foreach (var item in waterBundle)
@@ -122,7 +117,7 @@ namespace Karpik.Quests.Example
         public void Start()
         {
             Aggregator.Start();
-            var quest = Aggregator.Quests[0];
+            var quest = Aggregator.Quests.ElementAt(0);
 
             Console.WriteLine("You can give:");
             foreach (var item in _tasks)

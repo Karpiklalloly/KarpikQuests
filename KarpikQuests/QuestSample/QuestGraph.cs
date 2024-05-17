@@ -6,6 +6,7 @@ using Karpik.Quests.DependencyTypes;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -13,25 +14,18 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class QuestGraph : IGraph
     {
-        [JsonIgnore] public IQuestCollection Quests
-        {
-            get
-            {
-                var quests = new QuestCollection();
+        [JsonIgnore]
+        public IReadOnlyQuestCollection Quests => _quests;
 
-                foreach (var pair in _dependencies)
-                {
-                    quests.Add(pair.Key);
-                }
-                
-                return quests;
-            }
-        }
-
-        private List<IQuest> StartNodes => (from pair in _dependencies where pair.Value.Count == 0 select pair.Key).ToList();
+        [JsonIgnore]
+        public IReadOnlyQuestCollection StartQuests => new QuestCollection((_dependencies.Where(pair => pair.Value.Count == 0).Select(pair => GetQuest(pair.Key))).ToList());
         
-        [JsonProperty("Quest matrix")]
-        private Dictionary<IQuest, List<IGraph.Connection>> _dependencies = new();
+        [JsonProperty("Quest_matrix")]
+        [SerializeThis("Quest_matrix")]
+        private Dictionary<Id, List<IGraph.Connection>> _dependencies = new();
+        [JsonProperty("Quests")]
+        [SerializeThis("Quests")]
+        private IQuestCollection _quests = new QuestCollection();
 
         public bool TryAdd(IQuest quest)
         {
@@ -39,7 +33,8 @@ namespace Karpik.Quests.QuestSample
             
             if (Has(quest)) return false;
             
-            _dependencies.Add(quest, new List<IGraph.Connection>());
+            _dependencies.Add(quest.Id, new List<IGraph.Connection>());
+            _quests.Add(quest);
             Subscribe(quest);
             
             return true;
@@ -50,7 +45,8 @@ namespace Karpik.Quests.QuestSample
             if (!quest.IsValid()) return false;
             if (!Has(quest)) return false;
 
-            _dependencies.Remove(quest);
+            _dependencies.Remove(quest.Id);
+            _quests.Remove(quest);
 
             foreach (var pair in _dependencies)
             {
@@ -71,8 +67,9 @@ namespace Karpik.Quests.QuestSample
             if (!from.IsValid() || !to.IsValid()) return false;
             if (!Has(from) || Has(to)) return false;
 
-            var deps = _dependencies[from];
-            _dependencies.Remove(from);
+            var deps = _dependencies[from.Id];
+            _dependencies.Remove(from.Id);
+            _quests.Remove(from);
 
             foreach (var pair in _dependencies)
             {
@@ -83,29 +80,36 @@ namespace Karpik.Quests.QuestSample
                 pair.Value.Add(new IGraph.Connection(to.Id, connection.DependencyType));
             }
             
-            _dependencies.Add(to, deps);
+            _dependencies.Add(to.Id, deps);
+            _quests.Add(to);
             Unsubscribe(from);
             Subscribe(to);
             
             return true;
         }
 
+        public void Clear()
+        {
+            foreach (var quest in _quests)
+            {
+                quest.Clear();
+            }
+            _quests.Clear();
+        }
+        
         public bool TryAddDependency(Id questId, Id dependencyQuestId, IDependencyType dependencyType)
         {
             if (!questId.IsValid() || !dependencyQuestId.IsValid()) return false;
             if (!Has(questId) || !Has(dependencyQuestId)) return false;
             
-            return TryAddDependency(GetQuest(questId), GetQuest(dependencyQuestId), dependencyType);
+            _dependencies[questId].Add(new IGraph.Connection(dependencyQuestId, dependencyType));
+            
+            return true;
         }
 
         public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IDependencyType dependencyType)
         {
-            if (!quest.IsValid() || !dependencyQuest.IsValid()) return false;
-            if (!Has(quest) || !Has(dependencyQuest)) return false;
-            
-            _dependencies[quest].Add(new IGraph.Connection(dependencyQuest.Id, dependencyType));
-            
-            return true;
+            return TryAddDependency(quest.Id, dependencyQuest.Id, dependencyType);
         }
 
         public bool TryAddDependency(Id questId, Id dependencyQuestId, IGraph.DependencyType dependencyType)
@@ -113,21 +117,21 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return false;
             if (!Has(questId)) return false;
             
-            return TryAddDependency(GetQuest(questId), GetQuest(dependencyQuestId), dependencyType);
-        }
-
-        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IGraph.DependencyType dependencyType)
-        {
             return dependencyType switch
             {
                 IGraph.DependencyType.Completion => TryAddDependency(
-                    quest, dependencyQuest, new Completion()),
+                    questId, dependencyQuestId, new Completion()),
                 IGraph.DependencyType.Fail => TryAddDependency(
-                    quest, dependencyQuest, new Fail()),
+                    questId, dependencyQuestId, new Fail()),
                 IGraph.DependencyType.Start => TryAddDependency(
-                    quest, dependencyQuest, new Start()),
+                    questId, dependencyQuestId, new Start()),
                 _ => false
             };
+        }
+
+        public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IGraph.DependencyType dependencyType = IGraph.DependencyType.Completion)
+        {
+            return TryAddDependency(quest.Id, dependencyQuest.Id, dependencyType);
         }
 
         public bool TryRemoveDependencies(Id questId)
@@ -135,18 +139,13 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return false;
             if (!Has(questId)) return false;
             
-            return TryRemoveDependencies(GetQuest(questId));
+            _dependencies[questId].Clear();
+            return true;
         }
 
         public bool TryRemoveDependencies(IQuest quest)
         {
-            if (!quest.IsValid()) return false;
-            if (!Has(quest)) return false;
-            
-            
-            _dependencies[quest].Clear();
-
-            return true;
+            return TryRemoveDependencies(quest.Id);
         }
 
         public bool TryRemoveDependents(Id questId)
@@ -154,21 +153,18 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return false;
             if (!Has(questId)) return false;
             
-            return TryRemoveDependents(GetQuest(questId));
+            var dependents = GetDependentsQuests(questId);
+            foreach (var dependent in dependents)
+            {
+                TryRemoveDependency(dependent.DependentQuest.Id, questId);
+            }
+            
+            return true;
         }
 
         public bool TryRemoveDependents(IQuest quest)
         {
-            if (!quest.IsValid()) return false;
-            if (!Has(quest)) return false;
-
-            var dependents = GetDependentsQuests(quest);
-            foreach (var dependent in dependents)
-            {
-                TryRemoveDependency(dependent.DependentQuest.Id, quest.Id);
-            }
-
-            return true;
+            return TryRemoveDependents(quest.Id);
         }
 
         public bool TryRemoveDependency(Id questId, Id dependencyQuestId)
@@ -176,25 +172,23 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid() || !dependencyQuestId.IsValid()) return false;
             if (!Has(questId) || !Has(dependencyQuestId)) return false;
             
-            return TryRemoveDependency(GetQuest(questId), GetQuest(dependencyQuestId));
-        }
-
-        public bool TryRemoveDependency(IQuest quest, IQuest dependencyQuest)
-        {
-            if (!quest.IsValid() || !dependencyQuest.IsValid()) return false;
-            if (!Has(quest) || !Has(dependencyQuest)) return false;
-            
-            var index = _dependencies[quest].FindIndex(x => x.QuestId == dependencyQuest.Id);
+            var index = _dependencies[questId].FindIndex(x => x.QuestId == dependencyQuestId);
             if (index < 0) return false;
             
-            _dependencies[quest].RemoveAt(index);
+            _dependencies[questId].RemoveAt(index);
             
             return true;
         }
 
+        public bool TryRemoveDependency(IQuest quest, IQuest dependencyQuest)
+        {
+            return TryRemoveDependency(quest.Id, dependencyQuest.Id);
+        }
+
         public bool IsCyclic()
         {
-            if (StartNodes.Count == 0) return true;
+            var startQuests = StartQuests;
+            if (!startQuests.Any()) return true;
             
             var visited = new Dictionary<IQuest, bool>();
             var recStack = new Dictionary<IQuest, bool>();
@@ -204,7 +198,7 @@ namespace Karpik.Quests.QuestSample
                 recStack.Add(quest, false);
             }
             
-            foreach (var node in StartNodes)
+            foreach (var node in startQuests)
             {
                 if (IsCyclicUtil(node, visited, recStack)) return true;
             }
@@ -231,28 +225,25 @@ namespace Karpik.Quests.QuestSample
 
         public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(Id questId)
         {
-            if (!questId.IsValid()) return new List<ConnectionWithQuest>();
-            if (!Has(questId)) return new List<ConnectionWithQuest>();
-
-            return GetDependenciesQuests(GetQuest(questId));
-        }
-
-        public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(IQuest quest)
-        {
             var list = new List<ConnectionWithQuest>();
             
-            if (!quest.IsValid()) return new List<ConnectionWithQuest>();
-            if (!Has(quest)) return new List<ConnectionWithQuest>();
+            if (!questId.IsValid()) return list;
+            if (!Has(questId)) return list;
             
-            foreach (var connection in _dependencies[quest])
+            foreach (var connection in _dependencies[questId])
             {
                 list.Add( new ConnectionWithQuest(
-                    dependentQuest: quest,
+                    dependentQuest: GetQuest(questId),
                     dependencyQuest: GetQuest(connection.QuestId),
                     dependency: connection.DependencyType));
             }
 
             return list;
+        }
+
+        public IEnumerable<ConnectionWithQuest> GetDependenciesQuests(IQuest quest)
+        {
+            return GetDependenciesQuests(quest.Id);
         }
 
         public IEnumerable<ConnectionWithQuest> GetDependentsQuests(Id questId)
@@ -275,7 +266,7 @@ namespace Karpik.Quests.QuestSample
                 var index = pair.Value.FindIndex(x => x.QuestId == quest.Id);
                 if (index < 0) continue;
                 list.Add(new ConnectionWithQuest(
-                    dependentQuest: pair.Key,
+                    dependentQuest: GetQuest(pair.Key),
                     dependencyQuest: GetQuest(pair.Value[index].QuestId),
                     dependency: pair.Value[index].DependencyType));
             }
@@ -286,7 +277,10 @@ namespace Karpik.Quests.QuestSample
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-
+            foreach (var quest in _quests)
+            {
+                Subscribe(quest);
+            }
         }
 
         private bool IsCyclicUtil(IQuest quest, Dictionary<IQuest, bool> visited, Dictionary<IQuest, bool> recStack)

@@ -28,12 +28,12 @@ namespace Karpik.Quests.LinqPredicates
 
         public static int BundleCountCompleted(ITaskBundle bundle)
         {
-            return bundle.Count(TaskIsCompleted);
+            return bundle.Tasks.Count(TaskIsCompleted);
         }
         
         public static int BundleCountFailed(ITaskBundle bundle)
         {
-            return bundle.Count(TaskIsFailed);
+            return bundle.Tasks.Count(TaskIsFailed);
         }
     }
 }

@@ -11,11 +11,9 @@ public class SetupBundle
     public void WhenCreateBundle_AndDontSetup_ThenFirstQuestCantBeCompleted()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Orderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Orderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         
         //Condition
 
@@ -27,11 +25,9 @@ public class SetupBundle
     public void WhenCreateBundleWithOrderly_AndSetup_ThenFirstQuestCanBeCompleted()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Orderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Orderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         
         //Condition
         bundle.Setup();
@@ -44,11 +40,9 @@ public class SetupBundle
     public void WhenCreateBundleWithDisorderly_AndSetup_ThenLastQuestCanBeCompleted()
     {
         //Action
-        var bundle = new TaskBundle(new And(), new Disorderly())
-        {
-            new Task(),
-            new Task()
-        };
+        var bundle = new TaskBundle(new And(), new Disorderly());
+        bundle.Add(new Task());
+        bundle.Add(new Task());
         
         //Condition
         bundle.Setup();

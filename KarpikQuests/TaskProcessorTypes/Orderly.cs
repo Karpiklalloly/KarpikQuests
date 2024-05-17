@@ -21,7 +21,7 @@ namespace Karpik.Quests.TaskProcessorTypes
 
             if (!arr.Any()) return;
 
-            arr[0].First().Start();
+            arr[0].Tasks.First().Start();
         }
 
         public void Setup(ITaskBundle bundle)
@@ -34,7 +34,7 @@ namespace Karpik.Quests.TaskProcessorTypes
                 task.Completed += (t) => OnTaskCompleted(bundle, t);
             }
 
-            bundle.First().Start();
+            bundle.Tasks.First().Start();
         }
 
         private void OnTaskCompleted(ITaskBundle bundle, ITask task)
@@ -44,7 +44,7 @@ namespace Karpik.Quests.TaskProcessorTypes
             
             do
             {
-                if (bundle.Tasks.Count == index + 1)
+                if (bundle.Tasks.Count() == index + 1)
                 {
                     return;
                 }

@@ -80,7 +80,7 @@ namespace Karpik.Quests.QuestSample
         public bool Equals(IReadOnlyTaskCollection other)
         {
             if (other is null) return false;
-            if (Count != other.Count) return false;
+            if (Count != other.Count()) return false;
             
             for (var i = 0; i < Count; i++)
             {

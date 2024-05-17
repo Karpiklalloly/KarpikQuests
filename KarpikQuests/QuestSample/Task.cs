@@ -3,6 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.ID;
+using Karpik.Quests.Saving;
 
 namespace Karpik.Quests.QuestSample
 {
@@ -21,16 +22,22 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public bool Inited => _inited;
 
         [JsonProperty("Key")]
+        [SerializeThis("Key")]
         private readonly Id _id;
         [JsonProperty("Name")]
+        [SerializeThis("Name")]
         private string _name;
         [JsonProperty("Description")]
+        [SerializeThis("Description")]
         private string _description;
         [JsonProperty("Status")]
+        [SerializeThis("Status")]
         private ITask.TaskStatus _status;
         [JsonProperty("CanBeCompleted")]
+        [SerializeThis("CanBeCompleted")]
         private bool _canBeCompleted;
         [JsonProperty("Inited")]
+        [SerializeThis("Inited")]
         private bool _inited;
 
         public Task() : this(Id.NewId())

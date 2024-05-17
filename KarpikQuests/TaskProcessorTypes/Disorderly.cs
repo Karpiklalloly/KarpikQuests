@@ -18,7 +18,7 @@ namespace Karpik.Quests.TaskProcessorTypes
 
         public void Setup(ITaskBundle bundle)
         {
-            foreach (var task in bundle)
+            foreach (ITask task in bundle)
             {
                 task.Setup();
                 task.Start();

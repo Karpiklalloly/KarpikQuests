@@ -8,7 +8,8 @@ namespace Karpik.Quests.Interfaces
 {
     public interface IGraph
     {
-        public IQuestCollection Quests { get; }
+        public IReadOnlyQuestCollection Quests { get; }
+        public IReadOnlyQuestCollection StartQuests { get; }
         
         public bool TryAdd(IQuest quest);
 
@@ -16,6 +17,7 @@ namespace Karpik.Quests.Interfaces
         public bool TryRemove(Id questId);
 
         public bool TryReplace(IQuest from, IQuest to);
+        public void Clear();
 
         public bool TryAddDependency(Id questId, Id dependencyQuestId, IDependencyType dependencyType);
         public bool TryAddDependency(IQuest quest, IQuest dependencyQuest, IDependencyType dependencyType);

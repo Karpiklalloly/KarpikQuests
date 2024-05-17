@@ -12,7 +12,7 @@ public class CreateBundle
     {
         var bundle = new TaskBundle();
         
-        Assert.That(!bundle.Any());
+        Assert.That(!bundle.Tasks.Any());
     }
     
     [Test]

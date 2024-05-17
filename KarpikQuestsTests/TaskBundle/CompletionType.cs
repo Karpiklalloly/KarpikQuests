@@ -24,7 +24,11 @@ public class CompletionType
             task.ForceComplete();
         }
         
-        Assert.That(bundle.IsCompleted());
+        Assert.Multiple(() =>
+        {
+            Assert.That(bundle, Has.Count.EqualTo(count));
+            Assert.That(bundle.IsCompleted());
+        });
     }
     
     [Test]
@@ -60,7 +64,7 @@ public class CompletionType
         }
         bundle.Setup();
         
-        bundle.First().ForceFail();
+        bundle.Tasks.First().ForceFail();
         
         Assert.That(bundle.IsFailed());
     }
@@ -76,7 +80,7 @@ public class CompletionType
         }
         bundle.Setup();
 
-        bundle.First().TryFail();
+        bundle.Tasks.First().TryFail();
         foreach (var task in bundle)
         {
             task.TryComplete();

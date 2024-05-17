@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Karpik.Quests.Enumerators;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.Factories;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 using Karpik.Quests.Statuses;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
+    [Serializable]
     public sealed class TaskBundle : ITaskBundle
     {
         public event Action<ITaskBundle> Updated;
@@ -39,12 +40,16 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public IStatus Status => _status;
 
         [JsonProperty("Tasks")]
-        private IReadOnlyTaskCollection _tasks = new TaskCollection();
+        [SerializeThis("Tasks")]
+        private ITaskCollection _tasks = new TaskCollection();
         [JsonProperty("TaskProcessor")]
+        [SerializeThis("TaskProcessor")]
         private IProcessorType _processorType;
         [JsonProperty("CompletionType")]
+        [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
         [JsonProperty("Status")]
+        [SerializeThis("Status")]
         private IStatus _status;
 
         public TaskBundle() : this(
@@ -78,7 +83,7 @@ namespace Karpik.Quests.QuestSample
 
         public void Reset()
         {
-            foreach (var task in Tasks)
+            foreach (var task in _tasks)
             {
                 task.Reset();
                 Subscribe(task);
@@ -93,17 +98,15 @@ namespace Karpik.Quests.QuestSample
 
         public void ResetFirst()
         {
-            if (!Tasks.Any()) return;
+            if (!_tasks.Any()) return;
 
-            Tasks.First().Reset();
-            Subscribe(Tasks.First());
+            _tasks.First().Reset();
+            Subscribe(_tasks.First());
         }
 
 #region collection
 
-        [JsonIgnore] public int Count => Tasks.Count;
-
-        [JsonIgnore] public bool IsReadOnly => false;
+        [JsonIgnore] public int Count => _tasks.Count;
         
         public int IndexOf(ITask item)
         {
@@ -130,17 +133,17 @@ namespace Karpik.Quests.QuestSample
         {
             if (Has(item)) return;
             
-            Tasks.Add(item);
+            _tasks.Add(item);
             Subscribe(item);
         }
 
         public void Clear()
         {
-            foreach (var task in Tasks)
+            foreach (var task in _tasks)
             {
                 task.Reset();
             }
-            Tasks.Clear();
+            _tasks.Clear();
         }
 
         public bool Contains(ITask item)
@@ -150,13 +153,13 @@ namespace Karpik.Quests.QuestSample
 
         public void CopyTo(ITask[] array, int arrayIndex)
         {
-            Tasks.CopyTo(array, arrayIndex);
+            _tasks.CopyTo(array, arrayIndex);
         }
         
         public bool Remove(ITask item)
         {
             UnSubscribe(item);
-            return Tasks.Remove(item);
+            return _tasks.Remove(item);
         }
         
         public bool Has(ITask task)
@@ -168,18 +171,13 @@ namespace Karpik.Quests.QuestSample
         public bool Has(Id taskKey)
         {
             if (taskKey.IsEmpty()) return false;
-            var task = Tasks.First(x => x.Id.Equals(taskKey));
+            var task = _tasks.First(x => x.Id.Equals(taskKey));
             return Tasks.Has(task);
         }
 
         public IEnumerator<ITask> GetEnumerator()
         {
-            return new TaskBundleEnumerator(this);
-        }
-        
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new TaskBundleEnumerator(this);
+            return _tasks.GetEnumerator();
         }
         
 #endregion
@@ -198,7 +196,7 @@ namespace Karpik.Quests.QuestSample
         {
             return Tasks.GetHashCode();
         }
-        
+
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {

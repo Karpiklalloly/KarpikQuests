@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.ID;
+using Karpik.Quests.Saving;
 using Karpik.Quests.Statuses;
 using Newtonsoft.Json;
 
@@ -28,21 +29,29 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public IStatus Status => _status;
         
         [JsonProperty("Id")]
+        [SerializeThis("Id")]
         private readonly Id _id;
         [JsonProperty("Name")]
+        [SerializeThis("Name")]
         private string _name;
         [JsonProperty("Description")]
+        [SerializeThis("Description")]
         private string _description;
         [JsonProperty("Inited")]
+        [SerializeThis("Inited")]
         private bool _inited;
 
         [JsonProperty("CompletionType")]
+        [SerializeThis("CompletionType", IsReference = true)]
         private ICompletionType _completionType;
         [JsonProperty("Processor")]
+        [SerializeThis("Processor", IsReference = true)]
         private IProcessorType _processor;
         [JsonProperty("Status")]
+        [SerializeThis("Status", IsReference = true)]
         private IStatus _status;
         [JsonProperty("Tasks")]
+        [SerializeThis("Tasks")]
         private ITaskBundleCollection _bundles;
 
         private bool _disposedValue;
@@ -84,10 +93,8 @@ namespace Karpik.Quests.QuestSample
         {
             if (_bundles.Has(task)) return;
 
-            var bundle = new TaskBundle
-            {
-                task
-            };
+            var bundle = new TaskBundle();
+            bundle.Add(task);
             Add(bundle);
             Add(bundle, task);
         }
@@ -112,7 +119,7 @@ namespace Karpik.Quests.QuestSample
                 break;
             }
 
-            if (b?.Tasks.Count == 0)
+            if (b?.Count == 0)
             {
                 _bundles.Remove(b);
             }

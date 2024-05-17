@@ -40,10 +40,10 @@ public class ProcessorType
         
         foreach (var task in bundle)
         {
-            if (task.Equals(bundle.First())) continue;
+            if (task.Equals(bundle.Tasks.First())) continue;
             task.TryComplete();
         }
-        bundle.First().TryComplete();
+        bundle.Tasks.First().TryComplete();
         
         Assert.That(bundle.IsStarted());
     }
@@ -80,10 +80,10 @@ public class ProcessorType
         
         foreach (var task in bundle)
         {
-            if (task.Equals(bundle.First())) continue;
+            if (task.Equals(bundle.Tasks.First())) continue;
             task.TryComplete();
         }
-        bundle.First().TryComplete();
+        bundle.Tasks.First().TryComplete();
         
         Assert.That(bundle.IsCompleted());
     }

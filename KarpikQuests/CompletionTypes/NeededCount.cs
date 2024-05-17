@@ -52,7 +52,7 @@ namespace Karpik.Quests.CompletionTypes
             
             if (Count == 0) return completed;
 
-            var arr = bundle.ToArray();
+            var arr = bundle.Tasks.ToArray();
             
             var completedCount = arr.Count(Predicates.TaskIsCompleted);
             var failedCount = arr.Count(Predicates.TaskIsFailed);

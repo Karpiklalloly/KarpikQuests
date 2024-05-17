@@ -1,12 +1,14 @@
 using System;
+using System.ComponentModel;
+using Karpik.Quests.Saving;
 
 namespace Karpik.Quests.ID
 {
-    [Serializable]
+    [Serializable][TypeConverter(typeof(IdConverter))]
     public readonly struct Id : IEquatable<Id>
     {
         public static readonly Id Empty = new Id("-1");
-        public string Value { get; }
+        public readonly string Value;
         private readonly string _toString;
     
         public Id(string value)
