@@ -10,8 +10,8 @@ public class RemoveDependenciesAggregator
     public void WhenSetDependencies_AndRemoveDependencies_ThenNoDependencies()
     {
         //Action
-        var aggregator = new QuestAggregator();
-        var graph = new QuestGraph();
+        var aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = QuestFactory.Instance.Create("name1");
         var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
@@ -31,8 +31,8 @@ public class RemoveDependenciesAggregator
     public void WhenSetDependencies_AndRemoveDependencies_ThenNoDependents()
     {
         //Action
-        var aggregator = new QuestAggregator();
-        var graph = new QuestGraph();
+        var aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = QuestFactory.Instance.Create("name1");
         var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
@@ -52,8 +52,8 @@ public class RemoveDependenciesAggregator
     public void WhenSetDependency_AndRemoveDependency_ThenNoDependencies()
     {
         //Action
-        var aggregator = new QuestAggregator();
-        var graph = new QuestGraph();
+        var aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = QuestFactory.Instance.Create("name1");
         var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);
@@ -73,8 +73,8 @@ public class RemoveDependenciesAggregator
     public void WhenSetDependency_AndRemoveDependency_ThenNoDependents()
     {
         //Action
-        var aggregator = new QuestAggregator();
-        var graph = new QuestGraph();
+        var aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = QuestFactory.Instance.Create("name1");
         var quest2 = QuestFactory.Instance.Create("name2");
         aggregator.TryAddGraph(graph);

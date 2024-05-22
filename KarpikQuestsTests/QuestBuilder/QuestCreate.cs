@@ -6,12 +6,12 @@ namespace Karpik.Quests.Tests.Builder;
 
 public class QuestCreate
 {
-    private IQuestAggregator _aggregator;
+    private IAggregator _aggregator;
 
     [SetUp]
     public void Setup()
     {
-        _aggregator = new QuestAggregator();
+        _aggregator = new Aggregator();
     }
     
     [Test]

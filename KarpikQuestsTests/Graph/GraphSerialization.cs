@@ -13,7 +13,7 @@ public class GraphSerialization
     public void WhenSerializeGraph_AndDeserialize_ThenTheyAreEqual()
     {
         //Action
-        IGraph graph = new QuestGraph();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = CreateQuest();
         var quest2 = CreateQuest();
         graph.TryAdd(quest1);

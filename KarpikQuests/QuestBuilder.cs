@@ -49,13 +49,13 @@ namespace Karpik.Quests
         public struct QuestBuilderPart
         {
             private IQuest _quest;
-            private IQuestAggregator _questAggregator;
+            private IAggregator _aggregator;
             private IGraph _graph;
 
             public QuestBuilderPart(IQuest quest)
             {
                 _quest = quest;
-                _questAggregator = null;
+                _aggregator = null;
                 _graph = null;
             }
 
@@ -75,9 +75,9 @@ namespace Karpik.Quests
                 return this;
             }
 
-            public QuestBuilderPart SetAggregator(IQuestAggregator aggregator)
+            public QuestBuilderPart SetAggregator(IAggregator aggregator)
             {
-                _questAggregator = aggregator;
+                _aggregator = aggregator;
                 return this;
             }
             
@@ -103,16 +103,16 @@ namespace Karpik.Quests
             {
                 if (_quest is null) throw new InvalidOperationException("Quest is not setted");
 
-                if (!(_questAggregator is null))
+                if (!(_aggregator is null))
                 {
-                    _graph ??= new QuestGraph();
-                    _questAggregator.TryAddGraph(_graph);
-                    _questAggregator.TryAddQuest(_graph, _quest);
+                    _graph ??= new Graph();
+                    _aggregator.TryAddGraph(_graph);
+                    _aggregator.TryAddQuest(_graph, _quest);
                 }
 
                 var quest = _quest;
                 _quest = null;
-                _questAggregator = null;
+                _aggregator = null;
                 _graph = null;
                 return quest;
             }

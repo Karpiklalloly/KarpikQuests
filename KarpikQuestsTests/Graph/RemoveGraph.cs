@@ -8,7 +8,7 @@ public class RemoveGraph
     public void WhenAddQuests_AndRemoveThem_ThenGraphDoesNotHaveThem()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         graph.TryAdd(quest1);
@@ -30,7 +30,7 @@ public class RemoveGraph
     public void WhenAddQuests_AndRemoveThemId_ThenGraphDoesNotHaveThem()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         graph.TryAdd(quest1);
@@ -52,7 +52,7 @@ public class RemoveGraph
     public void WhenAddQuests_AndRemoveThem_ThenGraphDoesNotHaveThemId()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         graph.TryAdd(quest1);
@@ -74,7 +74,7 @@ public class RemoveGraph
     public void WhenAddQuests_AndRemoveThemId_ThenGraphDoesNotHaveThemId()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         graph.TryAdd(quest1);

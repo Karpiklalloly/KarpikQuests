@@ -14,8 +14,8 @@ public class AggregatorSerialization
     public void WhenSerializeGraph_AndDeserialize_ThenTheyAreEqual()
     {
         //Action
-        IQuestAggregator aggregator = new QuestAggregator();
-        IGraph graph = new QuestGraph();
+        IAggregator aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = CreateQuest();
         var quest2 = CreateQuest();
         aggregator.TryAddGraph(graph);
@@ -23,7 +23,7 @@ public class AggregatorSerialization
         aggregator.TryAddQuest(graph, quest2);
         aggregator.TryAddDependence(graph, quest2, quest1, new Completion());
         
-        var serializer = new JsonResolver<IQuestAggregator>();
+        var serializer = new JsonResolver<IAggregator>();
         var json = serializer.Serialize(aggregator);
 
         //Condition
@@ -54,8 +54,8 @@ public class AggregatorSerialization
     public void WhenSerializeGraph_AndDeserialize_ThenCompletionWork()
     {
         //Action
-        IQuestAggregator aggregator = new QuestAggregator();
-        IGraph graph = new QuestGraph();
+        IAggregator aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = CreateQuest();
         var quest2 = CreateQuest();
         aggregator.TryAddGraph(graph);
@@ -64,7 +64,7 @@ public class AggregatorSerialization
         aggregator.TryAddDependence(graph, quest2, quest1, new Completion());
         bool flag = false;
         
-        var serializer = new JsonResolver<IQuestAggregator>();
+        var serializer = new JsonResolver<IAggregator>();
         var json = serializer.Serialize(aggregator);
 
         //Condition
@@ -89,8 +89,8 @@ public class AggregatorSerialization
     public void WhenSerializeGraph_AndDeserialize_ThenFailedWork()
     {
         //Action
-        IQuestAggregator aggregator = new QuestAggregator();
-        IGraph graph = new QuestGraph();
+        IAggregator aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = CreateQuest();
         var quest2 = CreateQuest();
         aggregator.TryAddGraph(graph);
@@ -99,7 +99,7 @@ public class AggregatorSerialization
         aggregator.TryAddDependence(graph, quest2, quest1, new Completion());
         bool flag = false;
         
-        var serializer = new JsonResolver<IQuestAggregator>();
+        var serializer = new JsonResolver<IAggregator>();
         var json = serializer.Serialize(aggregator);
 
         //Condition
@@ -124,8 +124,8 @@ public class AggregatorSerialization
     public void WhenSerializeGraph_AndDeserialize_ThenUpdatedWork()
     {
         //Action
-        IQuestAggregator aggregator = new QuestAggregator();
-        IGraph graph = new QuestGraph();
+        IAggregator aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = CreateQuest();
         var quest2 = CreateQuest();
         aggregator.TryAddGraph(graph);
@@ -134,7 +134,7 @@ public class AggregatorSerialization
         aggregator.TryAddDependence(graph, quest2, quest1, new Completion());
         bool flag = false;
         
-        var serializer = new JsonResolver<IQuestAggregator>();
+        var serializer = new JsonResolver<IAggregator>();
         var json = serializer.Serialize(aggregator);
 
         //Condition
@@ -150,8 +150,8 @@ public class AggregatorSerialization
     public void WhenSerializeGraph_AndDeserialize_ThenStartedWork()
     {
         //Action
-        IQuestAggregator aggregator = new QuestAggregator();
-        IGraph graph = new QuestGraph();
+        IAggregator aggregator = new Karpik.Quests.QuestSample.Aggregator();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = CreateQuest();
         var quest2 = CreateQuest();
         aggregator.TryAddGraph(graph);
@@ -160,7 +160,7 @@ public class AggregatorSerialization
         aggregator.TryAddDependence(graph, quest2, quest1, new Completion());
         bool flag = false;
         
-        var serializer = new JsonResolver<IQuestAggregator>();
+        var serializer = new JsonResolver<IAggregator>();
         var json = serializer.Serialize(aggregator);
 
         //Condition
@@ -172,7 +172,7 @@ public class AggregatorSerialization
         Assert.That(flag);
     }
     
-    public static void AssertFullEqual(IQuestAggregator aggregator, IQuestAggregator clone)
+    public static void AssertFullEqual(IAggregator aggregator, IAggregator clone)
     {
         
     }

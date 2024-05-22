@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -28,13 +27,13 @@ namespace Karpik.Quests.QuestSample
             private set => _completionType = value;
         }
 
-        [JsonIgnore] public IProcessorType ProcessorType
+        [JsonIgnore] public IProcessorType Processor
         {
-            get => _processorType;
+            get => _processor;
             private set
             {
-                _processorType = value;
-                _processorType.Setup(this);
+                _processor = value;
+                _processor.Setup(this);
             }
         }
         [JsonIgnore] public IStatus Status => _status;
@@ -42,9 +41,9 @@ namespace Karpik.Quests.QuestSample
         [JsonProperty("Tasks")]
         [SerializeThis("Tasks")]
         private ITaskCollection _tasks = new TaskCollection();
-        [JsonProperty("TaskProcessor")]
-        [SerializeThis("TaskProcessor")]
-        private IProcessorType _processorType;
+        [JsonProperty("Processor")]
+        [SerializeThis("Processor")]
+        private IProcessorType _processor;
         [JsonProperty("CompletionType")]
         [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
@@ -59,35 +58,31 @@ namespace Karpik.Quests.QuestSample
 
         }
 
-        public TaskBundle(ICompletionType completionType, IProcessorType processorType)
+        public TaskBundle(ICompletionType completionType, IProcessorType processor)
         {
             CompletionType = completionType;
-            ProcessorType = processorType;
+            Processor = processor;
 
             _status = new UnStarted();
         }
-
-        public void ClearTasks()
-        {
-            foreach (var task in Tasks)
-            {
-                task.Reset();
-                Subscribe(task);
-            }
-        }
-
+        
         public void Setup()
         {
-            ProcessorType.Setup(this);
+            _processor.Setup(this);
         }
 
-        public void Reset()
+        public void ResetTasks()
         {
             foreach (var task in _tasks)
             {
                 task.Reset();
                 Subscribe(task);
             }
+        }
+
+        public void Reset()
+        {
+            ResetTasks();
 
             Updated = null;
             Completed = null;
@@ -99,9 +94,10 @@ namespace Karpik.Quests.QuestSample
         public void ResetFirst()
         {
             if (!_tasks.Any()) return;
-
-            _tasks.First().Reset();
-            Subscribe(_tasks.First());
+            
+            var first = _tasks.First();
+            first.Reset();
+            Subscribe(first);
         }
 
 #region collection
@@ -110,17 +106,7 @@ namespace Karpik.Quests.QuestSample
         
         public int IndexOf(ITask item)
         {
-            return _tasks.IndexOf(item);
-        }
-
-        public void Insert(int index, ITask item)
-        {
-            _tasks.Insert(index, item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            _tasks.RemoveAt(index);
+            return _tasks.IndexOf(item2 => item2.Equals(item));
         }
 
         public ITask this[int index]
@@ -145,16 +131,6 @@ namespace Karpik.Quests.QuestSample
             }
             _tasks.Clear();
         }
-
-        public bool Contains(ITask item)
-        {
-            return Tasks.Has(item);
-        }
-
-        public void CopyTo(ITask[] array, int arrayIndex)
-        {
-            _tasks.CopyTo(array, arrayIndex);
-        }
         
         public bool Remove(ITask item)
         {
@@ -165,14 +141,14 @@ namespace Karpik.Quests.QuestSample
         public bool Has(ITask task)
         {
             if (task is null) return false;
-            return Tasks.Has(task);
+            return _tasks.Has(task);
         }
         
         public bool Has(Id taskKey)
         {
             if (taskKey.IsEmpty()) return false;
             var task = _tasks.First(x => x.Id.Equals(taskKey));
-            return Tasks.Has(task);
+            return _tasks.Has(task);
         }
 
         public IEnumerator<ITask> GetEnumerator()
@@ -194,7 +170,7 @@ namespace Karpik.Quests.QuestSample
         
         public override int GetHashCode()
         {
-            return Tasks.GetHashCode();
+            return _tasks.GetHashCode();
         }
 
         [OnDeserialized]
@@ -221,7 +197,7 @@ namespace Karpik.Quests.QuestSample
         
         private void OnTaskUpdated(ITask task)
         {
-            var result = CompletionType.Check(this);
+            var result = _completionType.Check(this);
             if (_status.IsUnStarted())
             {
                 _status = new Started();

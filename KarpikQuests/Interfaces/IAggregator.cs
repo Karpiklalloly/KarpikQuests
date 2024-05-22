@@ -3,7 +3,7 @@ using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Interfaces
 {
-    public interface IQuestAggregator : IEquatable<IQuestAggregator>
+    public interface IAggregator : IEquatable<IAggregator>
     {
         public event Action<IQuest> QuestStarted; 
         public event Action<IQuest> QuestUpdated; 

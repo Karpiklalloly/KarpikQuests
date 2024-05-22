@@ -30,7 +30,7 @@ public class BundleSerialization
     {
         Assert.That(bundle, Has.Count.EqualTo(clone.Count));
         Assert.That(bundle.CompletionType.GetType(), Is.EqualTo(clone.CompletionType.GetType()));
-        Assert.That(bundle.ProcessorType.GetType(), Is.EqualTo(clone.ProcessorType.GetType()));
+        Assert.That(bundle.Processor.GetType(), Is.EqualTo(clone.Processor.GetType()));
         Assert.That(bundle.Status.GetType(), Is.EqualTo(clone.Status.GetType()));
         for (int i = 0; i < bundle.Count; i++)
         {

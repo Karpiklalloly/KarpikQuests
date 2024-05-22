@@ -9,10 +9,10 @@ namespace Karpik.Quests.Example
 {
     internal class BasicLinearQuestLine : IQuestLine
     {
-        private readonly IQuestAggregator _aggregator = new QuestAggregator();
-        private readonly IGraph _graph = new QuestGraph();
+        private readonly IAggregator _aggregator = new Aggregator();
+        private readonly IGraph _graph = new Graph();
 
-        public IQuestAggregator Aggregator => _aggregator;
+        public IAggregator Aggregator => _aggregator;
 
         public void Init()
         {

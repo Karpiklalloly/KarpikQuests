@@ -51,7 +51,7 @@ public class CreateBundle
     {
         var bundle = new TaskBundle(null, new Orderly());
 
-        Assert.That(bundle.ProcessorType is Orderly);
+        Assert.That(bundle.Processor is Orderly);
     }
     
     [Test]
@@ -59,6 +59,6 @@ public class CreateBundle
     {
         var bundle = new TaskBundle(null, new Disorderly());
 
-        Assert.That(bundle.ProcessorType is Disorderly);
+        Assert.That(bundle.Processor is Disorderly);
     }
 }

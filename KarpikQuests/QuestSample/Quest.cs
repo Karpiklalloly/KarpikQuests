@@ -50,8 +50,8 @@ namespace Karpik.Quests.QuestSample
         [JsonProperty("Status")]
         [SerializeThis("Status", IsReference = true)]
         private IStatus _status;
-        [JsonProperty("Tasks")]
-        [SerializeThis("Tasks")]
+        [JsonProperty("Bundles")]
+        [SerializeThis("Bundles")]
         private ITaskBundleCollection _bundles;
 
         private bool _disposedValue;
@@ -96,13 +96,13 @@ namespace Karpik.Quests.QuestSample
             var bundle = new TaskBundle();
             bundle.Add(task);
             Add(bundle);
-            Add(bundle, task);
         }
-
-        public void Add(ITaskBundle bundle, ITask task)
+        
+        public void Add(ITaskBundle bundle)
         {
-            if (_bundles.Has(task)) return;
-            bundle.Add(task);
+            if (_bundles.Has(bundle)) return;
+            _bundles.Add(bundle);
+            Subscribe(bundle);
         }
 
         public void Remove(ITask task)
@@ -119,17 +119,8 @@ namespace Karpik.Quests.QuestSample
                 break;
             }
 
-            if (b?.Count == 0)
-            {
-                _bundles.Remove(b);
-            }
-        }
-
-        public void Add(ITaskBundle bundle)
-        {
-            if (_bundles.Has(bundle)) return;
-            _bundles.Add(bundle);
-            Subscribe(bundle);
+            if (b?.Count != 0) return;
+            Remove(b);
         }
 
         public void Remove(ITaskBundle bundle)
@@ -139,7 +130,7 @@ namespace Karpik.Quests.QuestSample
             UnSubscribe(bundle);
         }
 
-        public void SetStatus(IStatus status, Action<IQuest, IStatus> moreStatusesSetting)
+        public void SetStatus(IStatus status)
         {
             _status = status ?? throw new NullReferenceException();
             switch (_status)
@@ -154,9 +145,6 @@ namespace Karpik.Quests.QuestSample
                     break;
                 case Statuses.Failed:
                     Failed?.Invoke(this);
-                    break; 
-                default:
-                    moreStatusesSetting?.Invoke(this, status);
                     break;
             }
             
@@ -176,7 +164,7 @@ namespace Karpik.Quests.QuestSample
             Completed = null;
             Failed = null;
             
-            SetStatus(new UnStarted(), null);
+            SetStatus(new UnStarted());
         }
 
         public void Clear()

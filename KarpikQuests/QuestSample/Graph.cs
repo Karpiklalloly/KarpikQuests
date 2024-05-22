@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace Karpik.Quests.QuestSample
 {
     [Serializable]
-    public class QuestGraph : IGraph
+    public class Graph : IGraph
     {
         [JsonIgnore]
         public IReadOnlyQuestCollection Quests => _quests;

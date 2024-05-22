@@ -49,6 +49,22 @@ public class ProcessorType
     }
     
     [Test]
+    public void WhenSetOrderlyType_AndMiddleQuestForCompleted_ThenNextQuestIsNotStarted(
+        [Values(3, 10, 100)] int count)
+    {
+        TaskBundle bundle = new TaskBundle(new And(), new Orderly());
+        for (int i = 0; i < count; i++)
+        {
+            bundle.Add(new Task());
+        }
+        bundle.Setup();
+
+        bundle.Tasks.ElementAt(bundle.Count / 2 + 1).ForceComplete();
+        
+        Assert.That(!bundle.Tasks.ElementAt(bundle.Count / 2).IsStarted());
+    }
+    
+    [Test]
     public void WhenSetDisorderlyType_AndQuestsCompletesByOrder_ThenBundleIsCompleted(
         [Values(2, 10, 100)] int count)
     {

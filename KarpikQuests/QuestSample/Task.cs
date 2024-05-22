@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
+using Karpik.Quests.Extensions;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.ID;
 using Karpik.Quests.Saving;
@@ -59,8 +60,8 @@ namespace Karpik.Quests.QuestSample
 
         public void Init(string name, string description = "")
         {
-            _name = string.IsNullOrWhiteSpace(name) ? "Task" : name;
-            _description = description is null ? "Description" : description;
+            _name = !name.IsValid() ? "Task" : name;
+            _description = description ?? "Description";
             
             Setup();
 
@@ -90,7 +91,7 @@ namespace Karpik.Quests.QuestSample
 
         public bool TryComplete()
         {
-            if (!CanBeCompleted) return false;
+            if (!_canBeCompleted || Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
 
             ForceComplete();
 
@@ -106,7 +107,7 @@ namespace Karpik.Quests.QuestSample
 
         public bool TryFail()
         {
-            if (Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
+            if (!_canBeCompleted || Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
             
             ForceFail();
 

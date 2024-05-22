@@ -10,11 +10,11 @@ using Newtonsoft.Json;
 namespace Karpik.Quests.QuestSample
 {
     [Serializable]
-    public class QuestAggregator : IQuestAggregator
+    public class Aggregator : IAggregator
     {
-        public event Action<IQuest> QuestStarted; 
+        public event Action<IQuest> QuestStarted;
         public event Action<IQuest> QuestUpdated; 
-        public event Action<IQuest> QuestFailed; 
+        public event Action<IQuest> QuestFailed;
         public event Action<IQuest> QuestCompleted;
         
         [JsonIgnore] public IReadOnlyQuestCollection Quests => new QuestCollection(_graphs.SelectMany(graph => graph.Quests).ToList());
@@ -29,6 +29,11 @@ namespace Karpik.Quests.QuestSample
             if (Has(graph)) return false;
             
             _graphs.Add(graph);
+            foreach (var quest in graph.Quests)
+            {
+                Subscribe(quest);
+            }
+            
             return true;
         }
         
@@ -168,7 +173,7 @@ namespace Karpik.Quests.QuestSample
             }
         }
         
-        public bool Equals(IQuestAggregator other)
+        public bool Equals(IAggregator other)
         {
             if (other is null) return false;
 
@@ -177,7 +182,7 @@ namespace Karpik.Quests.QuestSample
         
         public override bool Equals(object obj)
         {
-            return obj is QuestAggregator agg && Equals(agg);
+            return obj is Aggregator agg && Equals(agg);
         }
 
         public override int GetHashCode()

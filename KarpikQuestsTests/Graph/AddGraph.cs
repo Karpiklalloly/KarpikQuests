@@ -8,7 +8,7 @@ public class AddGraph
     public void WhenCreateGraph_AndAddQuests_ThenGraphHasThem()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
 
@@ -28,7 +28,7 @@ public class AddGraph
     public void WhenCreateGraph_AndAddQuests_ThenGraphHasThemId()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
 

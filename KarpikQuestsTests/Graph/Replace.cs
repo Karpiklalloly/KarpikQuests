@@ -9,7 +9,7 @@ public class Replace
     public void WhenAddQuest_AndReplaceWithAnother_ThenItIsReplaced()
     {
         //Action
-        IGraph graph = new QuestGraph();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();

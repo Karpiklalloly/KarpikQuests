@@ -27,6 +27,6 @@ namespace Karpik.Quests.Interfaces
         public void Reset();
         public void ResetFirst();
 
-        public void ClearTasks();
+        public void ResetTasks();
     }
 }

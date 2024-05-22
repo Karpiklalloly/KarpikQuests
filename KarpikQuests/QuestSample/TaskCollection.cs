@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Karpik.Quests.Enumerators;
+using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 
 namespace Karpik.Quests.QuestSample
@@ -47,6 +48,16 @@ namespace Karpik.Quests.QuestSample
             foreach (var task1 in _tasks)
             {
                 if (task.Equals(task1)) return true;
+            }
+
+            return false;
+        }
+        
+        public bool Has(Id task)
+        {
+            foreach (var task1 in _tasks)
+            {
+                if (task.Equals(task1.Id)) return true;
             }
 
             return false;

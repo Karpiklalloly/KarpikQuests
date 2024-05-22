@@ -11,11 +11,11 @@ namespace Karpik.Quests.Example
 {
     internal class SerializeLine : IQuestLine
     {
-        private IQuestAggregator _aggregator = new QuestAggregator();
+        private IAggregator _aggregator = new Aggregator();
 
         private string _fileName = "Serialize.json";
 
-        public IQuestAggregator Aggregator => _aggregator;
+        public IAggregator Aggregator => _aggregator;
 
         public void Init()
         {
@@ -44,7 +44,7 @@ namespace Karpik.Quests.Example
                 .SetAggregator(_aggregator)
                 .Build();
             
-            QuestAggregatorSaver.Serializer = new JsonResolver<IQuestAggregator>();
+            QuestAggregatorSaver.Serializer = new JsonResolver<IAggregator>();
             QuestAggregatorSaver.Save(_aggregator, _fileName);
             _aggregator = null;
         }

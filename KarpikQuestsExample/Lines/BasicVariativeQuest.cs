@@ -12,14 +12,14 @@ namespace Karpik.Quests.Example
 {
     internal class BasicVariativeQuest : IQuestLine
     {
-        public IQuestAggregator Aggregator { get; private set; }
+        public IAggregator Aggregator { get; private set; }
 
         private readonly Dictionary<string, ITask> _tasks = new Dictionary<string, ITask>();
         private readonly Dictionary<string, ITaskBundle> _bundles = new Dictionary<string, ITaskBundle>();
 
         public BasicVariativeQuest()
         {
-            Aggregator = new QuestAggregator();
+            Aggregator = new Aggregator();
         }
 
         public void DeInit()

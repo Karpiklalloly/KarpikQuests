@@ -20,7 +20,7 @@ namespace Karpik.Quests.Interfaces
 
         public IStatus Status { get; }
 
-        public void SetStatus(IStatus status, Action<IQuest, IStatus> moreStatusesSetting = null);
+        public void SetStatus(IStatus status);
         
         public void Clear();
         public void Reset();
@@ -28,7 +28,6 @@ namespace Karpik.Quests.Interfaces
         public void Init(string name, string description,
             ITaskBundleCollection bundles, ICompletionType completionType, IProcessorType processorType);
         public void Add(ITaskBundle bundle);
-        public void Add(ITaskBundle bundle, ITask task);
         public void Add(ITask task);
         public void Remove(ITaskBundle bundle);
         public void Remove(ITask task);

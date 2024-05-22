@@ -7,9 +7,9 @@ namespace Karpik.Quests.Saving
 {
     public static class QuestAggregatorSaver
     {
-        private static ISerializer<IQuestAggregator> _serializer = new JsonResolver<IQuestAggregator>();
+        private static ISerializer<IAggregator> _serializer = new JsonResolver<IAggregator>();
 
-        public static ISerializer<IQuestAggregator> Serializer
+        public static ISerializer<IAggregator> Serializer
         {
             get
             {
@@ -21,13 +21,13 @@ namespace Karpik.Quests.Saving
             }
         }
 
-        public static void Save(IQuestAggregator aggregator, string path, bool readable = false)
+        public static void Save(IAggregator aggregator, string path, bool readable = false)
         {
             var str = Serializer.Serialize(aggregator);
             File.WriteAllText(path, str);
         }
 
-        public static IQuestAggregator Load(string path)
+        public static IAggregator Load(string path)
         {
             var data = File.ReadAllText(path);
             return Serializer.Deserialize(data);
@@ -41,7 +41,7 @@ namespace Karpik.Quests.Saving
             public Version Version { get; set; }
             [JsonProperty("Aggregator")]
             [SerializeThis("Aggregator")]
-            public IQuestAggregator Aggregator { get; set; }
+            public IAggregator Aggregator { get; set; }
             [JsonProperty("AggregatorType")]
             [SerializeThis("AggregatorType")]
             public Type AggregatorType { get; set; }

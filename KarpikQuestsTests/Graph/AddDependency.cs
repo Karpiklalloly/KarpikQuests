@@ -15,7 +15,7 @@ public class AddDependency
         IGraph.DependencyType.Fail)] IGraph.DependencyType dependency)
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var task1 = new Task();
         var task2 = new Task();
         var quest1 = QuestBuilder.Start<Quest>("name1", "description1")

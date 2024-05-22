@@ -39,8 +39,14 @@ namespace Karpik.Quests.TaskProcessorTypes
 
         private void OnTaskCompleted(ITaskBundle bundle, ITask task)
         {
-            var index = bundle.Tasks.ToList().IndexOf(task);
+            var index = bundle.Tasks.IndexOf(x => x.Equals(task));
             if (index == -1) return;
+            
+            for (int i = 0; i < index; i++)
+            {
+                var t = bundle.Tasks.ElementAt(i);
+                if (!t.IsCompleted() && !t.IsFailed()) return;
+            }
             
             do
             {
@@ -63,8 +69,14 @@ namespace Karpik.Quests.TaskProcessorTypes
         private void OnBundleCompleted(IEnumerable<ITaskBundle> bundles, ITaskBundle bundle)
         {
             var arr = bundles as ITaskBundle[] ?? bundles.ToArray();
-            var index = arr.ToList().IndexOf(bundle);
+            var index = arr.IndexOf(x => x.Equals(bundle));
             if (index == -1) return;
+            
+            for (int i = 0; i < index; i++)
+            {
+                var t = arr[i];
+                if (!t.IsCompleted() && !t.IsFailed()) return;
+            }
 
             do
             {

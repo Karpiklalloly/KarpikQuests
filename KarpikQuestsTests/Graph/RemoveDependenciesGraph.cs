@@ -9,7 +9,7 @@ public class RemoveDependenciesGraph
     public void WhenAddDependencies_AndTryRemoveThem_ThenThereAreNoDependencies()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();
@@ -30,7 +30,7 @@ public class RemoveDependenciesGraph
     public void WhenAddDependency_AndTryRemoveIt_ThenThereIsNoDependency()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         graph.TryAdd(quest1);
@@ -48,7 +48,7 @@ public class RemoveDependenciesGraph
     public void WhenAddDependencies_AndTryRemoveThem_ThenThereAreNoDependents()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();
@@ -73,7 +73,7 @@ public class RemoveDependenciesGraph
     public void WhenAddDependency_AndTryRemoveIt_ThenThereIsNoDependent()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         graph.TryAdd(quest1);
@@ -91,7 +91,7 @@ public class RemoveDependenciesGraph
     public void WhenAddDependencies_AndTryRemoveDependents_ThenThereAreNoDependents()
     {
         //Action
-        var graph = new QuestGraph();
+        var graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();

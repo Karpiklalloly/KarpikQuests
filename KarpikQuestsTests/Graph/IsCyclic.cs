@@ -9,7 +9,7 @@ public class IsCyclic
     public void WhenCreateCyclic_AndCallIsCyclic_ThenTrue()
     {
         //Action
-        IGraph graph = new QuestGraph();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();
@@ -31,7 +31,7 @@ public class IsCyclic
     public void WhenCreateCyclic_AndCallIsCyclic_ThenTrue2()
     {
         //Action
-        IGraph graph = new QuestGraph();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();
@@ -56,7 +56,7 @@ public class IsCyclic
     public void WhenCreateCyclic_AndCallIsCyclic_ThenTrue3()
     {
         //Action
-        IGraph graph = new QuestGraph();
+        IGraph graph = new Karpik.Quests.QuestSample.Graph();
         var quest1 = new Quest();
         var quest2 = new Quest();
         var quest3 = new Quest();
