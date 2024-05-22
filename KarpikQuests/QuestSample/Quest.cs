@@ -295,25 +295,32 @@ namespace Karpik.Quests.QuestSample
 
         private void OnBundleUpdated(ITaskBundle bundle)
         {
+            var result = _completionType.Check(TaskBundles);
+            if (this.IsUnStarted())
+            {
+                this.Start();
+            }
+            
+            if (result.IsCompleted())
+            {
+                this.Complete();
+            }
+            else if (result.IsFailed())
+            {
+                this.Fail();
+            }
+            
             Updated?.Invoke(this, bundle);
         }
 
         private void OnBundleCompleted(ITaskBundle bundle)
         {
-            var result = _completionType.Check(TaskBundles);
-            if (result.IsCompleted())
-            {
-                this.Complete();
-            }
+            
         }
 
         private void OnBundleFailed(ITaskBundle bundle)
         {
-            var result = _completionType.Check(TaskBundles);
-            if (result.IsFailed())
-            {
-                this.Fail();
-            }
+            
         }
     }
 }

@@ -1,24 +1,18 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.QuestSample;
-using Karpik.Quests.Saving;
-using System;
-using System.Linq;
 using Karpik.Quests.ID;
 using Task = Karpik.Quests.QuestSample.Task;
 
-namespace Karpik.Quests.Example
+namespace HowToUse._2._LinearQuest
 {
-    internal class SerializeLine : IQuestLine
+    public class SimpleQuest : IProgram
     {
-        private IAggregator _aggregator = new Aggregator();
-
-        private string _fileName = "Serialize.json";
-
-        public IAggregator Aggregator => _aggregator;
-
-        public void Init()
+        public void Run()
         {
+            IAggregator aggregator = new Aggregator();
+            IGraph graph = new Graph();
+            
             ITaskBundle bundle = new TaskBundle();
 
             ITask firstTask = new Task(new Id("HelloTask"));
@@ -34,37 +28,17 @@ namespace Karpik.Quests.Example
             bundle.Add(secondTask);
             bundle.Add(thirdTask);
 
-            QuestBuilder.Start<Quest>(
-                    "BasicLinearQuest",
-                    "This quest shows basic usage of this library",
-                    processor: null,
-                    completionType: null)
+            QuestBuilder.Start<Quest>("Simple Quest", "This quest shows basic usage of this library")
                 .AddBundle(bundle)
-                .OnComplete(OnQuestComplete) // quest.Completed += OnQuestComplete
-                .SetAggregator(_aggregator)
+                .OnComplete(OnQuestComplete)
+                .SetAggregator(aggregator)
+                .SetGraph(graph)
                 .Build();
             
-            QuestAggregatorSaver.Serializer = new JsonResolver<IAggregator>();
-            QuestAggregatorSaver.Save(_aggregator, _fileName);
-            _aggregator = null;
-        }
+            aggregator.Start();
+            var quest = aggregator.Quests.First();
 
-        public void Start()
-        {
-            var aggregator = QuestAggregatorSaver.Load(_fileName);
-
-            if (aggregator is null)
-            {
-                Console.WriteLine("Something went wrong");
-                return;
-            }
-
-            _aggregator = aggregator;
-
-            _aggregator.Start();
-            var quest = _aggregator.Quests.First();
-
-            var curTask = quest.TaskBundles.First().Tasks.ElementAt(0);
+            var curTask = quest.TaskBundles.First().Tasks.First();
 
             Console.WriteLine(curTask.Name);
             Console.WriteLine(curTask.Description);
@@ -79,12 +53,14 @@ namespace Karpik.Quests.Example
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
             Console.WriteLine(curTask.Description);
-
             while (curTask.Status != ITask.TaskStatus.Completed)
             {
-                while (Console.ReadLine() != "Hello")
+                while (true)
                 {
-
+                    if (Console.ReadLine() == "Hello")
+                    {
+                        break;
+                    }
                 }
                 curTask.TryComplete();
             }
@@ -94,19 +70,13 @@ namespace Karpik.Quests.Example
             Console.WriteLine();
             Console.WriteLine(curTask.Name);
             Console.WriteLine(curTask.Description);
-
             while (curTask.Status != ITask.TaskStatus.Completed)
             {
                 Console.ReadKey();
                 Console.WriteLine();
                 curTask.TryComplete();
             }
-            Console.WriteLine("Post quest completed");
-        }
-
-        public void DeInit()
-        {
-            _aggregator.Clear();
+            
         }
 
         private void OnQuestComplete(IQuest quest)
