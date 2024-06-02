@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -14,6 +15,7 @@ namespace Karpik.Quests.QuestSample
         public bool IsReadOnly => false;
 
         [JsonProperty("Graphs")]
+        [SerializeThis("Graphs", IsReference = true)]
         private List<IGraph> _graphs = new List<IGraph>();
 
         #region list

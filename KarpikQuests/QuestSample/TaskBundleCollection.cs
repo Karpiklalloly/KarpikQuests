@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -15,6 +16,7 @@ namespace Karpik.Quests.QuestSample
     {
         
         [JsonProperty("Bundles")]
+        [SerializeThis("Bundles", IsReference = true)]
         private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
         
         #region list

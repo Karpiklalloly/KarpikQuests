@@ -6,6 +6,7 @@ using System.Linq;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 
 namespace Karpik.Quests.QuestSample
 {
@@ -13,6 +14,7 @@ namespace Karpik.Quests.QuestSample
     public class TaskCollection : ITaskCollection
     {
         [JsonProperty("Tasks")]
+        [SerializeThis("Tasks", IsReference = true)]
         private readonly List<ITask> _tasks = new List<ITask>();
 
         #region collection

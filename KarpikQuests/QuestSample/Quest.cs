@@ -30,7 +30,7 @@ namespace Karpik.Quests.QuestSample
         
         [JsonProperty("Id")]
         [SerializeThis("Id")]
-        private readonly Id _id;
+        private Id _id;
         [JsonProperty("Name")]
         [SerializeThis("Name")]
         private string _name;
@@ -51,7 +51,7 @@ namespace Karpik.Quests.QuestSample
         [SerializeThis("Status", IsReference = true)]
         private IStatus _status;
         [JsonProperty("Bundles")]
-        [SerializeThis("Bundles")]
+        [SerializeThis("Bundles", IsReference = true)]
         private ITaskBundleCollection _bundles;
 
         private bool _disposedValue;

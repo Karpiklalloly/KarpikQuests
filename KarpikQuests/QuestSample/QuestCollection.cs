@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
@@ -13,7 +14,8 @@ namespace Karpik.Quests.QuestSample
     public class QuestCollection : IQuestCollection
     {
         [JsonProperty("Data")]
-        private readonly List<IQuest> _data = new List<IQuest>();
+        [SerializeThis("Data", IsReference = true)]
+        private List<IQuest> _data = new List<IQuest>();
 
         public QuestCollection() {}
 

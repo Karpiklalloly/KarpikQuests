@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Karpik.Quests.Extensions;
-
-public static class EnumerableExtensions
+namespace Karpik.Quests.Extensions
 {
-    public static bool Has<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+    public static class EnumerableExtensions
     {
-        return collection.Any(predicate);
-    }
-
-    public static int IndexOf<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
-    {
-        int i = 0;
-        foreach (var item1 in collection)
+        public static bool Has<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
         {
-            if (predicate(item1)) return i;
-            i++;
+            return collection.Any(predicate);
         }
+
+        public static int IndexOf<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+        {
+            int i = 0;
+            foreach (var item1 in collection)
+            {
+                if (predicate(item1)) return i;
+                i++;
+            }
         
-        return -1;
+            return -1;
+        }
     }
 }

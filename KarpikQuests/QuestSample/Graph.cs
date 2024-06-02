@@ -24,7 +24,7 @@ namespace Karpik.Quests.QuestSample
         [SerializeThis("Quest_matrix")]
         private Dictionary<Id, List<IGraph.Connection>> _dependencies = new();
         [JsonProperty("Quests")]
-        [SerializeThis("Quests")]
+        [SerializeThis("Quests", IsReference = true)]
         private IQuestCollection _quests = new QuestCollection();
 
         public bool TryAdd(IQuest quest)

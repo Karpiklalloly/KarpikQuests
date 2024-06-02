@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.Extensions;
@@ -18,9 +19,10 @@ namespace Karpik.Quests.QuestSample
         public event Action<IQuest> QuestCompleted;
         
         [JsonIgnore] public IReadOnlyQuestCollection Quests => new QuestCollection(_graphs.SelectMany(graph => graph.Quests).ToList());
+        [JsonIgnore] public IGraphCollection Graphs => _graphs;
         
         [JsonProperty("Graphs")]
-        [SerializeThis("Graphs")]
+        [SerializeThis("Graphs", IsReference = true)]
         private IGraphCollection _graphs = new GraphCollection();
 
         public bool TryAddGraph(IGraph graph)
@@ -171,6 +173,7 @@ namespace Karpik.Quests.QuestSample
             {
                 graph.Clear();
             }
+            _graphs.Clear();
         }
         
         public bool Equals(IAggregator other)

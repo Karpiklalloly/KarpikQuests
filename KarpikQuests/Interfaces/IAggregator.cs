@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Interfaces
@@ -11,6 +12,7 @@ namespace Karpik.Quests.Interfaces
         public event Action<IQuest> QuestCompleted;
         
         public IReadOnlyQuestCollection Quests { get; }
+        public IGraphCollection Graphs { get; }
         
         public bool TryAddGraph(IGraph graph); 
         public bool TryAddQuest(IGraph graph, IQuest quest);

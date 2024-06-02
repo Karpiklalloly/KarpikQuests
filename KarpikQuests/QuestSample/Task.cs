@@ -24,7 +24,7 @@ namespace Karpik.Quests.QuestSample
 
         [JsonProperty("Key")]
         [SerializeThis("Key")]
-        private readonly Id _id;
+        private Id _id;
         [JsonProperty("Name")]
         [SerializeThis("Name")]
         private string _name;

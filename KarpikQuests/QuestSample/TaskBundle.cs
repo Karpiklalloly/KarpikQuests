@@ -39,16 +39,16 @@ namespace Karpik.Quests.QuestSample
         [JsonIgnore] public IStatus Status => _status;
 
         [JsonProperty("Tasks")]
-        [SerializeThis("Tasks")]
+        [SerializeThis("Tasks", IsReference = true)]
         private ITaskCollection _tasks = new TaskCollection();
         [JsonProperty("Processor")]
-        [SerializeThis("Processor")]
+        [SerializeThis("Processor", IsReference = true)]
         private IProcessorType _processor;
         [JsonProperty("CompletionType")]
-        [SerializeThis("CompletionType")]
+        [SerializeThis("CompletionType", IsReference = true)]
         private ICompletionType _completionType;
         [JsonProperty("Status")]
-        [SerializeThis("Status")]
+        [SerializeThis("Status", IsReference = true)]
         private IStatus _status;
 
         public TaskBundle() : this(
