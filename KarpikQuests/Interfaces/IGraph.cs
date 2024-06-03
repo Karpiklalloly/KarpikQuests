@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Karpik.Quests.ID;
 using Karpik.Quests.QuestSample;
+using Karpik.Quests.Saving;
 using Newtonsoft.Json;
 
 namespace Karpik.Quests.Interfaces
@@ -55,8 +56,10 @@ namespace Karpik.Quests.Interfaces
         public readonly struct Connection : IEquatable<Connection>
         {
             [JsonProperty("ID")]
+            [SerializeThis("Id")]
             public readonly Id QuestId;
             [JsonProperty("DependencyType")]
+            [SerializeThis("DependencyType", IsReference = true)]
             public readonly IDependencyType DependencyType;
 
             public Connection(string id, IDependencyType dependencyType) :

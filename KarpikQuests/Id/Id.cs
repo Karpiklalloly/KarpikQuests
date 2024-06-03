@@ -1,20 +1,24 @@
 using System;
 using System.ComponentModel;
 using Karpik.Quests.Saving;
+using Newtonsoft.Json;
 
 namespace Karpik.Quests.ID
 {
     [Serializable][TypeConverter(typeof(IdConverter))]
-    public readonly struct Id : IEquatable<Id>
+    public struct Id : IEquatable<Id>
     {
         public static readonly Id Empty = new Id("-1");
-        public readonly string Value;
+        public string Value => _value;
         private readonly string _toString;
+        [JsonProperty("Value")]
+        [SerializeThis("Value")]
+        private string _value;
     
         public Id(string value)
         {
-            Value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
-            _toString = $"ID: {Value}";
+            _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
+            _toString = $"ID: {_value}";
         }
 
         public static Id NewId() => IDGenerator.GenerateId();
@@ -36,16 +40,6 @@ namespace Karpik.Quests.ID
         }
 
         public static bool operator !=(Id left, Id right)
-        {
-            return !(left == right);
-        }
-        
-        public static bool operator ==(Id left, string right)
-        {
-            return left.Value == right;
-        }
-
-        public static bool operator !=(Id left, string right)
         {
             return !(left == right);
         }

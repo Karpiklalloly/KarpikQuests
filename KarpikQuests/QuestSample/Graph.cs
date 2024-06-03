@@ -139,7 +139,12 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return false;
             if (!Has(questId)) return false;
             
-            _dependencies[questId].Clear();
+            if (!_dependencies.TryGetValue(questId, out var deps))
+            {
+                return false;
+            }
+            
+            deps.Clear();
             return true;
         }
 
@@ -171,11 +176,16 @@ namespace Karpik.Quests.QuestSample
         {
             if (!questId.IsValid() || !dependencyQuestId.IsValid()) return false;
             if (!Has(questId) || !Has(dependencyQuestId)) return false;
+
+            if (!_dependencies.TryGetValue(questId, out var deps))
+            {
+                return false;
+            }
             
-            var index = _dependencies[questId].FindIndex(x => x.QuestId == dependencyQuestId);
+            var index = deps.FindIndex(x => x.QuestId == dependencyQuestId);
             if (index < 0) return false;
             
-            _dependencies[questId].RemoveAt(index);
+            deps.RemoveAt(index);
             
             return true;
         }
@@ -230,7 +240,12 @@ namespace Karpik.Quests.QuestSample
             if (!questId.IsValid()) return list;
             if (!Has(questId)) return list;
             
-            foreach (var connection in _dependencies[questId])
+            if (!_dependencies.TryGetValue(questId, out var deps))
+            {
+                return list;
+            }
+            
+            foreach (var connection in deps)
             {
                 list.Add( new ConnectionWithQuest(
                     dependentQuest: GetQuest(questId),
