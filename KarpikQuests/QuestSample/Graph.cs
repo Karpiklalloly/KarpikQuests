@@ -101,6 +101,7 @@ namespace Karpik.Quests.QuestSample
         {
             if (!questId.IsValid() || !dependencyQuestId.IsValid()) return false;
             if (!Has(questId) || !Has(dependencyQuestId)) return false;
+            if (questId == dependencyQuestId) return false;
             
             _dependencies[questId].Add(new IGraph.Connection(dependencyQuestId, dependencyType));
             
