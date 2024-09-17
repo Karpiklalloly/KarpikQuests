@@ -17,7 +17,7 @@ namespace Karpik.Quests.QuestSample
         
         [JsonProperty("Bundles")]
         [SerializeThis("Bundles", IsReference = true)]
-        private readonly List<ITaskBundle> _bundles = new List<ITaskBundle>();
+        private List<ITaskBundle> _bundles = new List<ITaskBundle>();
         
         #region list
         

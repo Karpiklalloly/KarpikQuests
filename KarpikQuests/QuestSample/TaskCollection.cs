@@ -15,7 +15,7 @@ namespace Karpik.Quests.QuestSample
     {
         [JsonProperty("Tasks")]
         [SerializeThis("Tasks", IsReference = true)]
-        private readonly List<ITask> _tasks = new List<ITask>();
+        private List<ITask> _tasks = new List<ITask>();
 
         #region collection
 
