@@ -1,7 +1,5 @@
 ﻿using Karpik.Quests.Interfaces;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Task = Karpik.Quests.QuestSample.Task;
 
 namespace Karpik.Quests.Tests;
