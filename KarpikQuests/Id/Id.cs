@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.ID
 {
@@ -9,9 +8,9 @@ namespace Karpik.Quests.ID
     public struct Id : IEquatable<Id>
     {
         public static readonly Id Empty = new Id("-1");
+        [DoNotSerializeThis][Property]
         public string Value => _value;
         private readonly string _toString;
-        [JsonProperty("Value")]
         [SerializeThis("Value")]
         private string _value;
     

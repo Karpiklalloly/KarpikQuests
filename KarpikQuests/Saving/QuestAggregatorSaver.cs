@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using Karpik.Quests.Interfaces;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.Saving
 {
     public static class QuestAggregatorSaver
     {
-        private static ISerializer<IAggregator> _serializer = new JsonResolver<IAggregator>();
+        private static ISerializer<IAggregator> _serializer;
 
         public static ISerializer<IAggregator> Serializer
         {
@@ -36,15 +35,14 @@ namespace Karpik.Quests.Saving
         [Serializable]
         public sealed class SaveData
         {
-            [JsonProperty("Version")]
             [SerializeThis("Version")]
-            public Version Version { get; set; }
-            [JsonProperty("Aggregator")]
+            public Version Version;
+
             [SerializeThis("Aggregator")]
-            public IAggregator Aggregator { get; set; }
-            [JsonProperty("AggregatorType")]
+            public IAggregator Aggregator;
+
             [SerializeThis("AggregatorType")]
-            public Type AggregatorType { get; set; }
+            public Type AggregatorType;
         }
     }
 }

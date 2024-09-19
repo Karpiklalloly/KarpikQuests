@@ -8,7 +8,6 @@ using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Saving;
 using Karpik.Quests.Statuses;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
@@ -18,36 +17,43 @@ namespace Karpik.Quests.QuestSample
         public event Action<ITaskBundle> Updated;
         public event Action<ITaskBundle> Completed;
         public event Action<ITaskBundle> Failed;
-
-        [JsonIgnore] public IReadOnlyTaskCollection Tasks => _tasks;
-
-        [JsonIgnore] public ICompletionType CompletionType
+        
+        [Property]
+        public IReadOnlyTaskCollection Tasks
+        {
+            get => _tasks;
+            private set => _tasks = (ITaskCollection)value;
+        }
+        
+        [Property]
+        public ICompletionType CompletionType
         {
             get => _completionType;
             private set => _completionType = value;
         }
-
-        [JsonIgnore] public IProcessorType Processor
+        
+        [Property]
+        public IProcessorType Processor
         {
             get => _processor;
-            private set
-            {
-                _processor = value;
-                _processor.Setup(this);
-            }
+            private set => _processor = value;
         }
-        [JsonIgnore] public IStatus Status => _status;
+        
+        [Property]
+        public IStatus Status
+        {
+            get => _status;
+            private set => _status = value;
+        }
 
-        [JsonProperty("Tasks")]
         [SerializeThis("Tasks", IsReference = true)]
         private ITaskCollection _tasks = new TaskCollection();
-        [JsonProperty("Processor")]
-        [SerializeThis("Processor", IsReference = true)]
-        private IProcessorType _processor;
-        [JsonProperty("CompletionType")]
         [SerializeThis("CompletionType", IsReference = true)]
         private ICompletionType _completionType;
-        [JsonProperty("Status")]
+
+        [SerializeThis("Processor", IsReference = true)]
+        private IProcessorType _processor;
+
         [SerializeThis("Status", IsReference = true)]
         private IStatus _status;
 
@@ -62,13 +68,14 @@ namespace Karpik.Quests.QuestSample
         {
             CompletionType = completionType;
             Processor = processor;
+            Processor.Setup(this);
 
-            _status = new UnStarted();
+            Status = new UnStarted();
         }
         
         public void Setup()
         {
-            _processor.Setup(this);
+            Processor.Setup(this);
         }
 
         public void ResetTasks()
@@ -88,7 +95,7 @@ namespace Karpik.Quests.QuestSample
             Completed = null;
             Failed = null;
 
-            _status = new UnStarted();
+            Status = new UnStarted();
         }
 
         public void ResetFirst()
@@ -102,7 +109,7 @@ namespace Karpik.Quests.QuestSample
 
 #region collection
 
-        [JsonIgnore] public int Count => _tasks.Count;
+        [DoNotSerializeThis] public int Count => _tasks.Count;
         
         public int IndexOf(ITask item)
         {
@@ -191,26 +198,27 @@ namespace Karpik.Quests.QuestSample
         
         private void UnSubscribe(ITask task)
         {
+            task.Started -= OnTaskUpdated;
             task.Completed -= OnTaskUpdated;
             task.Failed    -= OnTaskUpdated;
         }
         
         private void OnTaskUpdated(ITask task)
         {
-            var result = _completionType.Check(this);
-            if (_status.IsUnStarted())
+            var result = CompletionType.Check(this);
+            if (Status.IsUnStarted())
             {
-                _status = new Started();
+                Status = new Started();
             }
             
             if (result.IsCompleted())
             {
-                _status = new Completed();
+                Status = new Completed();
                 Completed?.Invoke(this);
             }
             else if (result.IsFailed())
             {
-                _status = new Failed();
+                Status = new Failed();
                 Failed?.Invoke(this);
             }
             

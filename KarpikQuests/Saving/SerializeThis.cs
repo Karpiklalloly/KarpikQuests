@@ -2,11 +2,11 @@
 
 namespace Karpik.Quests.Saving
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class SerializeThis : Attribute
     {
         public string Name;
-        public bool IsReference;
+        public bool IsReference = false;
 
         public SerializeThis(string name)
         {

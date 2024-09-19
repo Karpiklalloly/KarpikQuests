@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
@@ -18,10 +16,9 @@ namespace Karpik.Quests.QuestSample
         public event Action<IQuest> QuestFailed;
         public event Action<IQuest> QuestCompleted;
         
-        [JsonIgnore] public IReadOnlyQuestCollection Quests => new QuestCollection(_graphs.SelectMany(graph => graph.Quests).ToList());
-        [JsonIgnore] public IGraphCollection Graphs => _graphs;
+        [DoNotSerializeThis] public IReadOnlyQuestCollection Quests => new QuestCollection(_graphs.SelectMany(graph => graph.Quests).ToList());
+        [DoNotSerializeThis] public IGraphCollection Graphs => _graphs;
         
-        [JsonProperty("Graphs")]
         [SerializeThis("Graphs", IsReference = true)]
         private IGraphCollection _graphs = new GraphCollection();
 

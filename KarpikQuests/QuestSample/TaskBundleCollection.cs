@@ -4,26 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.Enumerators;
-using Karpik.Quests.Factories;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
     [Serializable]
     public sealed class TaskBundleCollection : ITaskBundleCollection
     {
-        
-        [JsonProperty("Bundles")]
         [SerializeThis("Bundles", IsReference = true)]
         private List<ITaskBundle> _bundles = new List<ITaskBundle>();
         
         #region list
         
-        [JsonIgnore] public int Count => _bundles.Count;
+        [DoNotSerializeThis] public int Count => _bundles.Count;
 
-        [JsonIgnore] public bool IsReadOnly => false;
+        [DoNotSerializeThis] public bool IsReadOnly => false;
 
         public void Add(ITaskBundle item)
         {

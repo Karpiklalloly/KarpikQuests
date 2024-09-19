@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Karpik.Quests.ID;
 using Karpik.Quests.QuestSample;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.Interfaces
 {
@@ -53,14 +52,17 @@ namespace Karpik.Quests.Interfaces
         }
         
         [Serializable]
-        public readonly struct Connection : IEquatable<Connection>
+        public struct Connection : IEquatable<Connection>
         {
-            [JsonProperty("ID")]
+            [DoNotSerializeThis]
+            public Id QuestId => _questId;
+            [DoNotSerializeThis]
+            public IDependencyType DependencyType => _dependencyType;
+            
             [SerializeThis("Id")]
-            public readonly Id QuestId;
-            [JsonProperty("DependencyType")]
+            private Id _questId;
             [SerializeThis("DependencyType", IsReference = true)]
-            public readonly IDependencyType DependencyType;
+            private IDependencyType _dependencyType;
 
             public Connection(string id, IDependencyType dependencyType) :
                 this(id == Id.Empty.Value ? Id.Empty : new Id(id), dependencyType)
@@ -70,13 +72,13 @@ namespace Karpik.Quests.Interfaces
         
             public Connection(Id questId, IDependencyType dependencyType)
             {
-                QuestId = questId;
-                DependencyType = dependencyType;
+                _questId = questId;
+                _dependencyType = dependencyType;
             }
 
             public bool Equals(Connection other)
             {
-                return QuestId.Equals(other.QuestId);
+                return _questId.Equals(other._questId);
             }
 
             public override bool Equals(object obj)
@@ -86,7 +88,7 @@ namespace Karpik.Quests.Interfaces
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(QuestId, DependencyType);
+                return HashCode.Combine(_questId, _dependencyType);
             }
 
             public static bool operator ==(Connection left, Connection right)

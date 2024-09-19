@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.Interfaces;
@@ -14,32 +13,67 @@ namespace Karpik.Quests.QuestSample
         public event Action<ITask> Started;
         public event Action<ITask> Completed;
         public event Action<ITask> Failed;
+        
+        [Property]
+        public Id Id
+        {
+            get => _id;
+            private set => _id = value;
+        }
 
-        [JsonIgnore] public Id Id => _id;
-        [JsonIgnore] public string Name => _name;
-        [JsonIgnore] public string Description => _description;
-        [JsonIgnore] public ITask.TaskStatus Status => _status;
-        [JsonIgnore] public bool CanBeCompleted => _canBeCompleted;
-        [JsonIgnore] public bool Inited => _inited;
+        [Property]
+        public string Name
+        {
+            get => _name;
+            private set => _name = value;
+        }
+        
+        [Property]
+        public string Description
+        {
+            get => _description;
+            private set => _description = value;
+        }
+        
+        [Property]
+        public ITask.TaskStatus Status
+        {
+            get => _status;
+            private set => _status = value;
+        }
+        
+        [Property]
+        public bool CanBeCompleted
+        {
+            get => _canBeCompleted;
+            private set => _canBeCompleted = value;
+        }
+        
+        [Property]
+        public bool Inited
+        {
+            get => _inited;
+            private set => _inited = value;
+        }
 
-        [JsonProperty("Key")]
         [SerializeThis("Key")]
         private Id _id;
-        [JsonProperty("Name")]
+        
         [SerializeThis("Name")]
         private string _name;
-        [JsonProperty("Description")]
+
         [SerializeThis("Description")]
         private string _description;
-        [JsonProperty("Status")]
+
         [SerializeThis("Status")]
         private ITask.TaskStatus _status;
-        [JsonProperty("CanBeCompleted")]
+
         [SerializeThis("CanBeCompleted")]
         private bool _canBeCompleted;
-        [JsonProperty("Inited")]
+
         [SerializeThis("Inited")]
         private bool _inited;
+
 
         public Task() : this(Id.NewId())
         {
@@ -48,9 +82,9 @@ namespace Karpik.Quests.QuestSample
 
         public Task(Id id)
         {
-            _id = id;
-            _name = string.Empty;
-            _description = string.Empty;
+            Id = id;
+            Name = string.Empty;
+            Description = string.Empty;
         }
 
         public void Init()
@@ -60,24 +94,24 @@ namespace Karpik.Quests.QuestSample
 
         public void Init(string name, string description = "")
         {
-            _name = !name.IsValid() ? "Task" : name;
-            _description = description ?? "Description";
+            Name = !name.IsValid() ? "Task" : name;
+            Description = description ?? "Description";
             
             Setup();
 
-            _inited = true;
+            Inited = true;
         }
 
         public void Setup()
         {
-            _canBeCompleted = false;
-            _status = ITask.TaskStatus.UnStarted;
+            CanBeCompleted = false;
+            Status = ITask.TaskStatus.UnStarted;
         }
 
         public void Start()
         {
-            _canBeCompleted = true;
-            _status = ITask.TaskStatus.Started;
+            CanBeCompleted = true;
+            Status = ITask.TaskStatus.Started;
             Started?.Invoke(this);
         }
 
@@ -91,7 +125,7 @@ namespace Karpik.Quests.QuestSample
 
         public bool TryComplete()
         {
-            if (!_canBeCompleted || Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
+            if (!CanBeCompleted || Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
 
             ForceComplete();
 
@@ -100,14 +134,14 @@ namespace Karpik.Quests.QuestSample
 
         public void ForceComplete()
         {
-            _canBeCompleted = false;
-            _status = ITask.TaskStatus.Completed;
+            CanBeCompleted = false;
+            Status = ITask.TaskStatus.Completed;
             Completed?.Invoke(this);
         }
 
         public bool TryFail()
         {
-            if (!_canBeCompleted || Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
+            if (!CanBeCompleted || Status == ITask.TaskStatus.Completed || Status == ITask.TaskStatus.Failed) return false;
             
             ForceFail();
 
@@ -116,8 +150,8 @@ namespace Karpik.Quests.QuestSample
 
         public void ForceFail()
         {
-            _canBeCompleted = false;
-            _status = ITask.TaskStatus.Failed;
+            CanBeCompleted = false;
+            Status = ITask.TaskStatus.Failed;
             Failed?.Invoke(this);
         }
         
@@ -128,17 +162,17 @@ namespace Karpik.Quests.QuestSample
         
         public bool Equals(ITask other)
         {
-            return !(other is null) && _id.Equals(other.Id);
+            return !(other is null) && Id.Equals(other.Id);
         }
         
         public override int GetHashCode()
         {
-            return _id.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{_id} {Name} ({Status})";
+            return $"{Id} {Name} ({Status})";
         }
 
         [OnDeserialized]

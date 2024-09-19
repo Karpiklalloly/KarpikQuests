@@ -6,14 +6,12 @@ using System.Linq;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
     [System.Serializable]
     public class QuestCollection : IQuestCollection
     {
-        [JsonProperty("Data")]
         [SerializeThis("Data", IsReference = true)]
         private List<IQuest> _data = new List<IQuest>();
 
@@ -29,10 +27,10 @@ namespace Karpik.Quests.QuestSample
 
 #region list
 
-        [JsonIgnore]
+        [DoNotSerializeThis]
         public int Count => _data.Count;
 
-        [JsonIgnore]
+        [DoNotSerializeThis]
         public bool IsReadOnly => false;
 
         public IQuest this[int index]

@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +12,14 @@ namespace Karpik.Quests.QuestSample
     [Serializable]
     public class TaskCollection : ITaskCollection
     {
-        [JsonProperty("Tasks")]
         [SerializeThis("Tasks", IsReference = true)]
         private List<ITask> _tasks = new List<ITask>();
 
         #region collection
 
-        [JsonIgnore] public int Count => _tasks.Count;
+        [DoNotSerializeThis] public int Count => _tasks.Count;
 
-        [JsonIgnore] public bool IsReadOnly => false;
+        [DoNotSerializeThis] public bool IsReadOnly => false;
 
         public void Add(ITask item)
         {

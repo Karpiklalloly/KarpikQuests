@@ -7,23 +7,20 @@ using Karpik.Quests.Extensions;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Saving;
-using Newtonsoft.Json;
 
 namespace Karpik.Quests.QuestSample
 {
     [Serializable]
     public class Graph : IGraph
     {
-        [JsonIgnore]
+        [DoNotSerializeThis]
         public IReadOnlyQuestCollection Quests => _quests;
 
-        [JsonIgnore]
+        [DoNotSerializeThis]
         public IReadOnlyQuestCollection StartQuests => new QuestCollection((_dependencies.Where(pair => pair.Value.Count == 0).Select(pair => GetQuest(pair.Key))).ToList());
         
-        [JsonProperty("Quest_matrix")]
         [SerializeThis("Quest_matrix")]
         private Dictionary<Id, List<IGraph.Connection>> _dependencies = new();
-        [JsonProperty("Quests")]
         [SerializeThis("Quests", IsReference = true)]
         private IQuestCollection _quests = new QuestCollection();
 
