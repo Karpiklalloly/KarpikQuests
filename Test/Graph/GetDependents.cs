@@ -1,7 +1,7 @@
-﻿using NewKarpikQuests;
-using NewKarpikQuests.Extensions;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Sample;
 
 namespace KarpikQuestsTests.GraphTests
 {

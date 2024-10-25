@@ -1,8 +1,8 @@
-﻿using NewKarpikQuests.ID;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Saving;
+﻿using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 
-namespace NewKarpikQuests
+namespace Karpik.Quests
 {
     [Serializable]
     public struct Connection : IEquatable<Connection>

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
-using NewKarpikQuests.ID;
+using Karpik.Quests.ID;
 
-namespace NewKarpikQuests.Saving
+namespace Karpik.Quests.Saving
 {
     public class IdConverter : TypeConverter
     {

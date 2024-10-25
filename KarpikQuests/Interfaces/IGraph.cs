@@ -1,7 +1,7 @@
-﻿using NewKarpikQuests.ID;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.ID;
+using Karpik.Quests.Sample;
 
-namespace NewKarpikQuests.Interfaces
+namespace Karpik.Quests.Interfaces
 {
     public interface IGraph : IDisposable
     {

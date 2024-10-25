@@ -1,11 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
-using NewKarpikQuests.CompletionTypes;
-using NewKarpikQuests.ID;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
-using NewKarpikQuests.Processors;
+using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Processors;
 
-namespace NewKarpikQuests
+namespace Karpik.Quests
 {
     public static class QuestBuilder
     {

@@ -1,4 +1,4 @@
-﻿using NewKarpikQuests;
+﻿using Karpik.Quests;
 
 namespace KarpikQuestsTests.QuestTests
 {

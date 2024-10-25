@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NewKarpikQuests.Saving
+namespace Karpik.Quests.Saving
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class Property : Attribute

@@ -1,6 +1,6 @@
-﻿using NewKarpikQuests;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Sample;
 
 namespace KarpikQuestsTests.BuilderTests
 {

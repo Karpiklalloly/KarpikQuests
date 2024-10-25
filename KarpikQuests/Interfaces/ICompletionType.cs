@@ -1,6 +1,6 @@
-﻿using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.Sample;
 
-namespace NewKarpikQuests.Interfaces
+namespace Karpik.Quests.Interfaces
 {
     public interface ICompletionType
     {

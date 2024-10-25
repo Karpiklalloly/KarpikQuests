@@ -1,11 +1,11 @@
-﻿using NewKarpikQuests.DependencyTypes;
-using NewKarpikQuests.Extensions;
-using NewKarpikQuests.ID;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
-using NewKarpikQuests.Saving;
+﻿using Karpik.Quests.DependencyTypes;
+using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Sample;
+using Karpik.Quests.Saving;
+using Karpik.Quests.Extensions;
 
-namespace NewKarpikQuests
+namespace Karpik.Quests
 {
     public class Graph : IGraph
     {
@@ -13,6 +13,7 @@ namespace NewKarpikQuests
         public event Action<Id>? QuestCompleted;
         public event Action<Id>? QuestFailed;
         public IEnumerable<Quest> Quests => _quests;
+        [DoNotSerializeThis]
         public IEnumerable<Quest> StartQuests => new QuestCollection((_dependencies.Where(pair => pair.Value.Count == 0).Select(pair => GetQuest(pair.Key))).ToList());
     
         [SerializeThis("Quest_matrix")]

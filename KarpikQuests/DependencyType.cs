@@ -1,4 +1,4 @@
-﻿namespace NewKarpikQuests
+﻿namespace Karpik.Quests
 {
     public enum DependencyType
     {

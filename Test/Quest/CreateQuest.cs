@@ -1,8 +1,8 @@
-﻿using NewKarpikQuests;
-using NewKarpikQuests.CompletionTypes;
-using NewKarpikQuests.ID;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Processors;
+﻿using Karpik.Quests;
+using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Processors;
 
 namespace KarpikQuestsTests.QuestTests
 {

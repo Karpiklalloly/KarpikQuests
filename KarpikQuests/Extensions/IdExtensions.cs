@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using NewKarpikQuests.ID;
+using Karpik.Quests.ID;
 
-namespace NewKarpikQuests.Extensions
+namespace Karpik.Quests.Extensions
 {
     public static class IdExtensions
     {

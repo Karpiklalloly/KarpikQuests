@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace NewKarpikQuests.Enumerators
+namespace Karpik.Quests.Enumerators
 {
     public abstract class Enumerator<T> : IEnumerator<T>
     {

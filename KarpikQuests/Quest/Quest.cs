@@ -1,14 +1,15 @@
-﻿using NewKarpikQuests.CompletionTypes;
-using NewKarpikQuests.Extensions;
-using NewKarpikQuests.ID;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
-using NewKarpikQuests.Processors;
+﻿using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Processors;
+using Karpik.Quests.Sample;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.Saving;
 
-namespace NewKarpikQuests
+namespace Karpik.Quests
 {
     //TODO: Add sub classes (check gpt)
-//TODo: Add auto notify when status changed
+    //TODo: Add auto notify when status changed
     [Serializable]
     public class Quest : IEquatable<Quest>
     {

@@ -1,7 +1,7 @@
-﻿using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.Interfaces;
+using Karpik.Quests.Sample;
 
-namespace NewKarpikQuests.Enumerators
+namespace Karpik.Quests.Enumerators
 {
     public class QuestCollectionEnumerator : Enumerator<Quest>
     {

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using NewKarpikQuests.Sample;
+using Karpik.Quests.Sample;
 
-namespace NewKarpikQuests.Extensions
+namespace Karpik.Quests.Extensions
 {
     public static class QuestExtensions
     {

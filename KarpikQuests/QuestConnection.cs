@@ -1,8 +1,7 @@
-﻿using NewKarpikQuests.ID;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
 
-namespace NewKarpikQuests
+namespace Karpik.Quests
 {
     public readonly struct QuestConnection : IEquatable<QuestConnection>
     {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using NewKarpikQuests.Saving;
+using Karpik.Quests.Saving;
 
-namespace NewKarpikQuests.ID
+namespace Karpik.Quests.ID
 {
     [Serializable][TypeConverter(typeof(IdConverter))]
     public struct Id : IEquatable<Id>

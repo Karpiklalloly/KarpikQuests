@@ -1,5 +1,5 @@
-﻿using NewKarpikQuests;
-using NewKarpikQuests.Extensions;
+﻿using Karpik.Quests;
+using Karpik.Quests.Extensions;
 
 namespace KarpikQuestsTests.QuestTests
 {

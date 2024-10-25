@@ -1,8 +1,5 @@
-﻿using System.Reflection;
-using NewKarpikQuests;
-using NewKarpikQuests.Extensions;
-using NewKarpikQuests.Sample;
-using Test;
+﻿using Karpik.Quests;
+using Karpik.Quests.Extensions;
 
 namespace KarpikQuestsTests.QuestTests
 {
