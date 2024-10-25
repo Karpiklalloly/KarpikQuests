@@ -1,13 +1,13 @@
-﻿using System;
-using Karpik.Quests.Interfaces;
-using Karpik.Quests.Extensions;
+﻿using NewKarpikQuests.Extensions;
+using NewKarpikQuests.Interfaces;
+using NewKarpikQuests.Sample;
 
-namespace Karpik.Quests.DependencyTypes
+namespace NewKarpikQuests.DependencyTypes
 {
     [Serializable]
     public class Fail : IDependencyType
     {
-        public bool IsOk(IQuest from)
+        public bool IsOk(Quest from)
         {
             return from.IsFailed();
         }

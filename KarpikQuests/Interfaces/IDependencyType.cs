@@ -1,7 +1,9 @@
-﻿namespace Karpik.Quests.Interfaces
+﻿using NewKarpikQuests.Sample;
+
+namespace NewKarpikQuests.Interfaces
 {
     public interface IDependencyType
     {
-        public bool IsOk(IQuest from);
+        public bool IsOk(Quest from);
     }
 }

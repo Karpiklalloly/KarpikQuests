@@ -1,8 +1,7 @@
-using System;
-using System.ComponentModel;
-using Karpik.Quests.Saving;
+﻿using System.ComponentModel;
+using NewKarpikQuests.Saving;
 
-namespace Karpik.Quests.ID
+namespace NewKarpikQuests.ID
 {
     [Serializable][TypeConverter(typeof(IdConverter))]
     public struct Id : IEquatable<Id>
@@ -24,7 +23,7 @@ namespace Karpik.Quests.ID
     
         public bool Equals(Id other) => Value == other.Value;
     
-        public override bool Equals(object obj) => obj is Id other && Equals(other);
+        public override bool Equals(object? obj) => obj is Id other && Equals(other);
     
         public override int GetHashCode() => Value.GetHashCode();
 
