@@ -14,15 +14,70 @@ namespace Karpik.Quests
     public class Quest : IEquatable<Quest>
     {
         public static readonly Quest Empty = new Quest(Id.Empty, string.Empty, string.Empty, null, null);
-    
-        public Id Id { get; private set; }
-        public Id ParentId { get; private set; }
-        public string Name { get; private set; }
-        public string Description { get; private set; }
-        public Status Status { get; private set; }
-        public ICompletionType CompletionType { get; private set; }
-        public IProcessorType Processor { get; private set; }
-    
+
+        [DoNotSerializeThis][Property]
+        public Id Id
+        {
+            get => _id;
+            private set => _id = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public Id ParentId
+        {
+            get => _parentId;
+            private set => _parentId = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public string Name
+        {
+            get => _name;
+            private set => _name = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public string Description
+        {
+            get => _description;
+            private set => _description = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public Status Status
+        {
+            get => _status;
+            private set => _status = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public ICompletionType CompletionType
+        {
+            get => _completionType;
+            private set => _completionType = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public IProcessorType Processor
+        {
+            get => _processor;
+            private set => _processor = value;
+        }
+
+        [DoNotSerializeThis][Property]
+        public IEnumerable<Quest> SubQuests
+        {
+            get => _subQuests;
+            private set => _subQuests = new QuestCollection(value);
+        }
+        
+        private Id _id;
+        private Id _parentId;
+        private string _name;
+        private string _description;
+        private Status _status;
+        private ICompletionType _completionType;
+        private IProcessorType _processor;
         private QuestCollection _subQuests = new();
 
         public Quest() : this(Id.NewId())

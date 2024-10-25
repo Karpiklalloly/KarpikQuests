@@ -39,8 +39,8 @@ namespace KarpikQuestsTests.QuestTests
         Assert.Multiple(() =>
         {
             Assert.That(quest.IsLocked());
-            Assert.That(quest.Quests().All(x => x.IsLocked()));
-            Assert.That(quest.Quests().SelectMany(x => x.Quests()).All(x => x.IsLocked()));
+            Assert.That(quest.SubQuests.All(x => x.IsLocked()));
+            Assert.That(quest.SubQuests.SelectMany(x => x.SubQuests).All(x => x.IsLocked()));
         });
     }
     }
