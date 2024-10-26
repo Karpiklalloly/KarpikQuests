@@ -36,7 +36,6 @@ namespace KarpikQuestsTests.QuestTests
         var was = quest.Status;
         
         //Condition
-        quest.UpdateStatus();
 
         //Result
         Assert.That(quest.Status, Is.EqualTo(was));
@@ -56,7 +55,6 @@ namespace KarpikQuestsTests.QuestTests
         subQuest2.ForceComplete();
         
         //Condition
-        quest.UpdateStatus();
 
         //Result
         Assert.That(quest.Status, Is.EqualTo(Status.Completed));
@@ -76,7 +74,6 @@ namespace KarpikQuestsTests.QuestTests
         subQuest2.ForceLock();
         
         //Condition
-        quest.UpdateStatus();
 
         //Result
         Assert.That(quest.Status, Is.EqualTo(Status.Locked));
@@ -96,7 +93,6 @@ namespace KarpikQuestsTests.QuestTests
         subQuest2.ForceUnlock();
         
         //Condition
-        quest.UpdateStatus();
 
         //Result
         Assert.That(quest.Status, Is.EqualTo(Status.Unlocked));
@@ -116,7 +112,6 @@ namespace KarpikQuestsTests.QuestTests
         subQuest2.ForceFail();
         
         //Condition
-        quest.UpdateStatus();
 
         //Result
         Assert.That(quest.Status, Is.EqualTo(Status.Failed));

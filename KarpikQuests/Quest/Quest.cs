@@ -9,11 +9,11 @@ using Karpik.Quests.Saving;
 namespace Karpik.Quests
 {
     //TODO: Add sub classes (check gpt)
-    //TODo: Add auto notify when status changed
+    //TODO: Add negative effect (like wrong poison used)
     [Serializable]
     public class Quest : IEquatable<Quest>
     {
-        public static readonly Quest Empty = new Quest(Id.Empty, string.Empty, string.Empty, null, null);
+        public static readonly Quest Empty = new(Id.Empty, null, null, null, null);
 
         [DoNotSerializeThis][Property]
         public Id Id
@@ -71,186 +71,256 @@ namespace Karpik.Quests
             private set => _subQuests = new QuestCollection(value);
         }
         
+        [SerializeThis("Id")]
         private Id _id;
-        private Id _parentId;
+        private Id _parentId = Id.Empty;
+        private Quest? _parentQuest = null;
+        private IGraph _graph;
+        [SerializeThis("Name")]
         private string _name;
+        [SerializeThis("Description")]
         private string _description;
+        [SerializeThis("Status")]
         private Status _status;
+        [SerializeThis("CompletionType")]
         private ICompletionType _completionType;
+        [SerializeThis("Processor")]
         private IProcessorType _processor;
+        [SerializeThis("SubQuests")]
         private QuestCollection _subQuests = new();
 
         public Quest() : this(Id.NewId())
-    {
-        
-    }
+        {
+            
+        }
 
         public Quest(Id id) : this(id, "Quest", "Description")
-    {
+        {
+            
+        }
         
-    }
+        public Quest(string name) : this(Id.NewId(), name, "Description")
+        {
+            
+        }
 
         public Quest(string name, string description) : this(Id.NewId(), name, description)
-    {
-        
-    }
+        {
+            
+        }
 
         public Quest(Id id, string name, string description) : this(id, name, description, null, null)
-    {
+        {
+            
+        }
         
-    }
+        public Quest(string name, string description, ICompletionType? completionType, IProcessorType? processor)
+            : this(Id.NewId(), name, description, completionType, processor)
+        {
+            
+        }
     
-        public Quest(Id id, string name, string description, ICompletionType? completionType, IProcessorType? processor)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-        CompletionType = completionType ?? new And();
-        Processor = processor ?? new Disorderly();
+        public Quest(Id id, string? name, string? description, ICompletionType? completionType, IProcessorType? processor)
+        {
+            Id = id;
+            _name = name ?? string.Empty;
+            _description = description ?? string.Empty;
+            _completionType = completionType ?? new And();
+            _processor = processor ?? new Disorderly();
+            
+            Status = Status.Locked;
+        }
         
-        Status = Status.Locked;
-    }
+        public Quest(string name, string description, ICompletionType? completionType, IProcessorType? processor, params Quest[] subQuests)
+            : this(Id.NewId(), name, description, completionType, processor)
+        {
+            Add(subQuests);
+        }
 
         public void Setup()
-    {
-        Status = Status.Locked;
-        for (int i = 0; i < _subQuests.Count; i++)
         {
-            _subQuests[i].Setup();
-        }
-    }
-
-        public void UpdateStatus()
-    {
-        if (_subQuests.Count <= 0) return;
-        for (int i = 0; i < _subQuests.Count; i++)
-        {
-            _subQuests[i].UpdateStatus();
-        }
-        Status = CompletionType.Check(_subQuests);
-        Processor.Update(_subQuests);
-    }
-
-        public void Add(Quest quest)
-    {
-        if (Has(quest)) return;
-        _subQuests.Add(quest);
-        quest.ParentId = Id;
-    }
-
-        public void Remove(Quest quest)
-    {
-        if (!Has(quest))
-        {
-            return;
-        }
-
-        if (!_subQuests.Remove(quest))
-        {
+            _status = Status.Locked;
             for (int i = 0; i < _subQuests.Count; i++)
             {
-                _subQuests[i].Remove(quest);
+                _subQuests[i].Setup();
             }
         }
-        quest.ParentId = Id.Empty;
-    }
+
+        public void Add(params Quest[] quests)
+        {
+            foreach (var quest in quests)
+            {
+                if (Has(quest)) continue;
+                if (!quest._id.IsValid())
+                {
+                    quest._parentQuest.Remove(quest);
+                }
+                _subQuests.Add(quest);
+                quest._parentId = _id;
+                quest._parentQuest = this;
+                quest._graph = _graph;
+            }
+        }
+
+        public void Remove(Quest quest)
+        {
+            if (!Has(quest))
+            {
+                return;
+            }
+
+            if (!_subQuests.Remove(quest))
+            {
+                for (int i = 0; i < _subQuests.Count; i++)
+                {
+                    _subQuests[i].Remove(quest);
+                }
+            }
+            quest._parentId = Id.Empty;
+            quest._parentQuest = null;
+            quest._graph = null;
+        }
 
         public void Clear()
-    {
-        _subQuests.Clear();
-    }
+        {
+            foreach (var quest in _subQuests.ToArray())
+            {
+                Remove(quest);
+            }
+        }
+
+        public void SetGraph(IGraph graph)
+        {
+            _graph = graph;
+            for (int i = 0; i < _subQuests.Count; i++)
+            {
+                _subQuests[i].SetGraph(graph);
+            }
+        }
     
         public bool Has(Quest quest)
-    {
-        if (!quest.IsValid()) return false;
-        
-        return _subQuests.Any(q => q.Equals(quest))
-               || _subQuests.Any(q => q.Has(quest));
-    }
+        {
+            if (!quest.IsValid()) return false;
+            
+            return _subQuests.Any(q => q.Equals(quest))
+                   || _subQuests.Any(q => q.Has(quest));
+        }
 
-        public bool TryComplete()
-    {
-        if (Status != Status.Unlocked) return false;
-        
-        ForceComplete();
-        return true;
-    }
-
-        public bool TryFail()
-    {
-        if (Status != Status.Unlocked) return false;
-        
-        ForceFail();
-        return true;
-    }
         public bool TryUnlock()
-    {
-        if (Status != Status.Locked) return false;
+        {
+            if (_status != Status.Locked) return false;
+            
+            ForceUnlock();
+            return true;
+        }
+        public bool TryComplete()
+        {
+            if (_status != Status.Unlocked) return false;
+            
+            ForceComplete();
+            return true;
+        }
+        public bool TryFail()
+        {
+            if (_status != Status.Unlocked) return false;
+            
+            ForceFail();
+            return true;
+        }
         
-        ForceUnlock();
-        return true;
-    }
         public void ForceLock()
-    {
-        Status = Status.Locked;
-        
-        for (var i = 0; i < _subQuests.Count; i++)
         {
-            var subQuest = _subQuests[i];
-            subQuest.ForceLock();
+            for (var i = 0; i < _subQuests.Count; i++)
+            {
+                var subQuest = _subQuests[i];
+                subQuest.ForceLock();
+            }
+            
+            _status = Status.Locked;
+
+            Notify();
         }
-    }
         public void ForceUnlock()
-    {
-        Status = Status.Unlocked;
-        Processor.Setup(_subQuests);
-    }
+        {
+            _processor.Setup(_subQuests);
+            _status = Status.Unlocked;
+            Notify();
+        }
         public void ForceComplete()
-    {
-        Status = Status.Completed;
-        
-        for (var i = 0; i < _subQuests.Count; i++)
         {
-            var subQuest = _subQuests[i];
-            if (subQuest.IsFinished()) continue;
-            subQuest.ForceLock();
+            var oldStatus = _status;
+            
+            for (var i = 0; i < _subQuests.Count; i++)
+            {
+                var subQuest = _subQuests[i];
+                if (subQuest.IsFinished()) continue;
+                subQuest.ForceLock();
+            }
+            _status = Status.Completed;
+            UpdateStatus(oldStatus);
         }
-    }
         public void ForceFail()
-    {
-        Status = Status.Failed;
-
-        for (var i = 0; i < _subQuests.Count; i++)
         {
-            var subQuest = _subQuests[i];
-            if (subQuest.IsFinished()) continue;
-            subQuest.ForceLock();
-        }
-    }
+            var oldStatus = _status;
+            
 
-        public bool Equals(Quest other)
-    {
-        return Id.Equals(other.Id);
-    }
+            for (var i = 0; i < _subQuests.Count; i++)
+            {
+                var subQuest = _subQuests[i];
+                if (subQuest.IsFinished()) continue;
+                subQuest.ForceLock();
+            }
+            _status = Status.Failed;
+            UpdateStatus(oldStatus);
+        }
+
+        public bool Equals(Quest? other)
+        {
+            return !ReferenceEquals(null, other) && _id.Equals(other.Id);
+        }
 
         public override bool Equals(object? obj)
-    {
-        return obj is Quest other && Equals(other);
-    }
+        {
+            return obj is Quest other && Equals(other);
+        }
 
         public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+        {
+            return _id.GetHashCode();
+        }
 
         public static bool operator ==(Quest left, Quest right)
-    {
-        return left.Equals(right);
-    }
+        {
+            return left.Equals(right);
+        }
 
         public static bool operator !=(Quest left, Quest right)
-    {
-        return !(left == right);
-    }
+        {
+            return !(left == right);
+        }
+        
+        private void UpdateStatus(Status oldStatus)
+        {
+            if (oldStatus == _status) return;
+            
+            Notify();
+        }
+
+        private void Notify()
+        {
+            _graph?.InternalUpdate(this, !_parentId.IsValid());
+            if (_parentQuest is not null)
+            {
+                _parentQuest.NotifyUpdate();
+            }
+        }
+
+        private void NotifyUpdate()
+        {
+            var oldStatus = _status;
+            _status = _completionType.Check(_subQuests);
+            _processor.Update(_subQuests);
+            UpdateStatus(oldStatus);
+        }
     }
 }

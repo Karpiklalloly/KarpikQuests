@@ -1,8 +1,8 @@
-﻿using NewKarpikQuests.Extensions;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.Interfaces;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.Sample;
 
-namespace NewKarpikQuests.DependencyTypes
+namespace Karpik.Quests.DependencyTypes
 {
     [Serializable]
     public class Completion : IDependencyType

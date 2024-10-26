@@ -9,9 +9,9 @@ namespace Karpik.Quests
 {
     public class Graph : IGraph
     {
-        public event Action<Id>? QuestUnlocked;
-        public event Action<Id>? QuestCompleted;
-        public event Action<Id>? QuestFailed;
+        public event Action<Quest>? QuestUnlocked;
+        public event Action<Quest>? QuestCompleted;
+        public event Action<Quest>? QuestFailed;
         public IEnumerable<Quest> Quests => _quests;
         [DoNotSerializeThis]
         public IEnumerable<Quest> StartQuests => new QuestCollection((_dependencies.Where(pair => pair.Value.Count == 0).Select(pair => GetQuest(pair.Key))).ToList());
@@ -44,6 +44,7 @@ namespace Karpik.Quests
             
             _dependencies.Add(quest.Id, new List<Connection>());
             _quests.Add(quest);
+            quest.SetGraph(this);
             
             return true;
         }
@@ -89,6 +90,19 @@ namespace Karpik.Quests
             return true;
         }
 
+        public void Setup()
+        {
+            for (int i = 0; i < _quests.Count; i++)
+            {
+                _quests[i].Setup();
+            }
+
+            foreach (var quest in StartQuests)
+            {
+                quest.ForceUnlock();
+            }
+        }
+
         public void Clear()
         {
             _quests.Clear();
@@ -110,44 +124,6 @@ namespace Karpik.Quests
             }
 
             return Quest.Empty;
-        }
-
-        public void Update(Id questId)
-        {
-            var quest = GetQuest(questId);
-
-            if (!quest.IsValid()) return;
-        
-            var oldStatus = quest.Status;
-            quest.UpdateStatus();
-            if (oldStatus == quest.Status) return;
-        
-            switch (quest.Status)
-            {
-                case Status.Unlocked:
-                    QuestUnlocked?.Invoke(questId);
-                    break;
-                
-                case Status.Completed:
-                    QuestCompleted?.Invoke(questId);
-                    break;
-                
-                case Status.Failed:
-                    QuestFailed?.Invoke(questId);
-                    break;
-                case Status.Locked:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        
-            var dependents = GetDependentsQuests(quest.Id);
-            foreach (var connection in dependents)
-            {
-                if (!connection.Dependency.IsOk(quest)) continue;
-                
-                connection.DependentQuest.TryUnlock();
-            }
         }
 
         public bool TryAddDependency(Id questId, Id dependencyQuestId, IDependencyType dependencyType)
@@ -318,6 +294,39 @@ namespace Karpik.Quests
             _quests.Clear();
             _quests = null;
         }
+
+        void IGraph.InternalUpdate(Quest quest, bool inGraph)
+        {
+            switch (quest.Status)
+            {
+                case Status.Unlocked:
+                    QuestUnlocked?.Invoke(quest);
+                    break;
+                
+                case Status.Completed:
+                    QuestCompleted?.Invoke(quest);
+                    break;
+                
+                case Status.Failed:
+                    QuestFailed?.Invoke(quest);
+                    break;
+                
+                case Status.Locked:
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            if (!inGraph) return;
+            
+            var dependents = GetDependentsQuests(quest.Id);
+            foreach (var connection in dependents)
+            {
+                if (!connection.Dependency.IsOk(quest)) continue;
+                
+                connection.DependentQuest.TryUnlock();
+            }
+        }
     
         private bool IsCyclicUtil(in Quest quest, Dictionary<Quest, bool> visited, Dictionary<Quest, bool> recStack)
         {
@@ -338,7 +347,5 @@ namespace Karpik.Quests
 
             return false;
         }
-
-
     }
 }

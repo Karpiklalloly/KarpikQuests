@@ -1,13 +1,12 @@
-﻿using NewKarpikQuests.ID;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.ID;
 
-namespace NewKarpikQuests.Interfaces
+namespace Karpik.Quests.Interfaces
 {
     public interface IGraph : IDisposable
     {
-        public event Action<Id> QuestUnlocked; 
-        public event Action<Id> QuestCompleted;
-        public event Action<Id> QuestFailed;
+        public event Action<Quest> QuestUnlocked; 
+        public event Action<Quest> QuestCompleted;
+        public event Action<Quest> QuestFailed;
     
         public IEnumerable<Quest> Quests { get; }
         public IEnumerable<Quest> StartQuests { get; }
@@ -19,13 +18,14 @@ namespace NewKarpikQuests.Interfaces
         public bool TryRemove(Id quest);
     
         public bool TryReplace(Quest from, Quest to);
+
+        public void Setup();
+        
         public void Clear();
     
         public bool Has(Id questId);
         
         public Quest GetQuest(Id questId);
-    
-        public void Update(Id questId);
     
         public bool TryAddDependency(Id questId, Id dependencyQuestId, IDependencyType dependencyType);
         public bool TryAddDependency(Id questId, Id dependencyQuestId, DependencyType dependencyType);
@@ -39,5 +39,7 @@ namespace NewKarpikQuests.Interfaces
         public IEnumerable<QuestConnection> GetDependentsQuests(Id questId);
     
         public bool IsCyclic();
+
+        internal void InternalUpdate(Quest quest, bool inGraph);
     }
 }

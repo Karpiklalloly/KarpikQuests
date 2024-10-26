@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NewKarpikQuests.Saving
+namespace Karpik.Quests.Saving
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class SerializeThis : Attribute

@@ -1,6 +1,5 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.Extensions;
-using Karpik.Quests.Sample;
 
 namespace KarpikQuestsTests.GraphTests
 {
@@ -15,15 +14,13 @@ namespace KarpikQuestsTests.GraphTests
         //Action
         var graph = new Graph();
         var subQuest = new Quest();
-        
-        var quest1 = QuestBuilder.Start("name1", "description1")
-            .SetGraph(graph)
-            .AddSubQuest(subQuest)
-            .Build();
 
-        var quest2 = QuestBuilder.Start("name2", "description2")
-            .SetGraph(graph)
-            .Build();
+        var quest1 = new Quest("name1", "description1");
+        quest1.Add(subQuest);
+        graph.TryAdd(quest1);
+
+        var quest2 = new Quest("name2", "description2");
+        graph.TryAdd(quest2);
         
         graph.TryAddDependency(quest2, quest1, dependency);
         
@@ -42,8 +39,6 @@ namespace KarpikQuestsTests.GraphTests
             default:
                 throw new ArgumentOutOfRangeException(nameof(dependency), dependency, null);
         }
-        
-        graph.Update(quest1.Id);
 
         //Result
         Assert.That(quest2.IsUnlocked());

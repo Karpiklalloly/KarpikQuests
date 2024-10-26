@@ -1,8 +1,8 @@
-﻿using NewKarpikQuests.Extensions;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+﻿using Karpik.Quests.Interfaces;
+using Karpik.Quests.Sample;
+using Karpik.Quests.Extensions;
 
-namespace NewKarpikQuests.Processors
+namespace Karpik.Quests.Processors
 {
     [Serializable]
     public class Orderly : IProcessorType

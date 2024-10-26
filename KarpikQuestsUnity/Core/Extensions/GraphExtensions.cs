@@ -1,63 +1,63 @@
 ﻿using System.Runtime.CompilerServices;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Sample;
+using Karpik.Quests.ID;
+using Karpik.Quests.Interfaces;
 
-namespace NewKarpikQuests.Extensions
+namespace Karpik.Quests.Extensions
 {
     public static class GraphExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryRemove(this IGraph graph, Quest quest)
-    {
-        return graph.TryRemove(quest.Id);
-    }
+        {
+            return graph.TryRemove(quest.Id);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Has(this IGraph graph, Quest quest)
-    {
-        return graph.Has(quest.Id);
-    }
+        {
+            return graph.Has(quest.Id);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryAddDependency(this IGraph graph, Quest quest, Quest dependencyQuest, IDependencyType dependencyType)
-    {
-        return graph.TryAddDependency(quest.Id, dependencyQuest.Id, dependencyType);
-    }
+        {
+            return graph.TryAddDependency(quest.Id, dependencyQuest.Id, dependencyType);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryAddDependency(this IGraph graph, Quest quest, Quest dependencyQuest, DependencyType dependencyType)
-    {
-        return graph.TryAddDependency(quest.Id, dependencyQuest.Id, dependencyType);
-    }
+        {
+            return graph.TryAddDependency(quest.Id, dependencyQuest.Id, dependencyType);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryRemoveDependencies(this IGraph graph, Quest quest)
-    {
-        return graph.TryRemoveDependencies(quest.Id);
-    }
+        {
+            return graph.TryRemoveDependencies(quest.Id);
+        }
     
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryRemoveDependents(this IGraph graph, Quest quest)
-    {
-        return graph.TryRemoveDependents(quest.Id);
-    }
+        {
+            return graph.TryRemoveDependents(quest.Id);
+        }
     
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryRemoveDependency(this IGraph graph, Quest quest, Quest dependencyQuest)
-    {
-        return graph.TryRemoveDependency(quest.Id, dependencyQuest.Id);
-    }
+        {
+            return graph.TryRemoveDependency(quest.Id, dependencyQuest.Id);
+        }
     
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<QuestConnection> GetDependenciesQuests(this IGraph graph, Quest quest)
-    {
-        return graph.GetDependenciesQuests(quest.Id);
-    }
+        {
+            return graph.GetDependenciesQuests(quest.Id);
+        }
     
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<QuestConnection> GetDependentsQuests(this IGraph graph, Quest quest)
-    {
-        return graph.GetDependentsQuests(quest.Id);
-    }
+        {
+            return graph.GetDependentsQuests(quest.Id);
+        }
     }
 }

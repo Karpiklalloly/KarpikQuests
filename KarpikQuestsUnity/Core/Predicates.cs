@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
-using NewKarpikQuests.Extensions;
-using NewKarpikQuests.Sample;
+using Karpik.Quests.Extensions;
+using Karpik.Quests.Sample;
 
-namespace NewKarpikQuests
+namespace Karpik.Quests
 {
     public static class Predicates
     {

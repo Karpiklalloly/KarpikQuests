@@ -1,6 +1,6 @@
-﻿using NewKarpikQuests.Interfaces;
+﻿using Karpik.Quests.Interfaces;
 
-namespace NewKarpikQuests.CompletionTypes
+namespace Karpik.Quests.CompletionTypes
 {
     [Serializable]
     public class NeededCount : ICompletionType

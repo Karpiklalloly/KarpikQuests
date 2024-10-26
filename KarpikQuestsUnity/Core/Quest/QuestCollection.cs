@@ -4,11 +4,11 @@ using Unity.Properties;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Text;
-using NewKarpikQuests.Enumerators;
-using NewKarpikQuests.Interfaces;
-using NewKarpikQuests.Saving;
+using Karpik.Quests.Enumerators;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 
-namespace NewKarpikQuests.Sample
+namespace Karpik.Quests.Sample
 {
     [Serializable]
     public class QuestCollection : IQuestCollection

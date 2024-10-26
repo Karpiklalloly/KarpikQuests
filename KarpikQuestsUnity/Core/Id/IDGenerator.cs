@@ -1,4 +1,4 @@
-﻿namespace NewKarpikQuests.ID
+﻿namespace Karpik.Quests.ID
 {
     public static class IDGenerator
     {
