@@ -1,24 +1,34 @@
 ﻿using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Saving;
 
 namespace Karpik.Quests
 {
-    public readonly struct QuestConnection : IEquatable<QuestConnection>
+    public class QuestConnection : IEquatable<QuestConnection>
     {
-        public Quest DependencyQuest => _graph.GetQuest(_dependencyId);
-        public Quest DependentQuest => _graph.GetQuest(_dependentId);
-        public readonly IDependencyType Dependency;
+        [Property]
+        public Quest DependencyQuest => _dependencyQuest;
+        [Property]
+        public Quest DependentQuest => _dependentQuest;
+        [Property]
+        public IDependencyType Dependency
+        {
+            get => _dependency;
+            private set => _dependency = value;
+        }
     
-        private readonly Id _dependencyId;
-        private readonly Id _dependentId;
-        private readonly IGraph _graph;
+        [SerializeThis("DependencyQuest")]
+        private Quest _dependencyQuest;
+        [SerializeThis("DependentQuest")]
+        private Quest _dependentQuest;
+        [SerializeThis("Dependency")]
+        private IDependencyType _dependency;
 
-        public QuestConnection(Id dependencyId, Id dependentId, IDependencyType dependency, IGraph graph)
+        public QuestConnection(Quest dependencyQuest, Quest dependentQuest, IDependencyType dependency)
     {
-        _dependencyId = dependencyId;
-        _dependentId = dependentId;
+        _dependencyQuest = dependencyQuest;
+        _dependentQuest = dependentQuest;
         Dependency = dependency;
-        _graph = graph;
     }
 
         public bool Equals(QuestConnection other)

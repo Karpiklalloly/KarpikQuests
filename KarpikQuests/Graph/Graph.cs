@@ -223,10 +223,9 @@ namespace Karpik.Quests
             foreach (var connection in deps)
             {
                 list.Add(new QuestConnection(
-                    dependentId: questId,
-                    dependencyId: connection.QuestId,
-                    dependency: connection.DependencyType,
-                    graph: this));
+                    dependentQuest: GetQuest(questId),
+                    dependencyQuest: GetQuest(connection.QuestId),
+                    dependency: connection.DependencyType));
             }
 
             return list;
@@ -253,10 +252,9 @@ namespace Karpik.Quests
                 }
                 if (index < 0) continue;
                 list.Add(new QuestConnection(
-                    dependentId: pair.Key,
-                    dependencyId: pair.Value[index].QuestId,
-                    dependency: pair.Value[index].DependencyType,
-                    graph: this));
+                    dependentQuest: GetQuest(pair.Key),
+                    dependencyQuest: GetQuest(pair.Value[index].QuestId),
+                    dependency: pair.Value[index].DependencyType));
             }
             
             return list;
