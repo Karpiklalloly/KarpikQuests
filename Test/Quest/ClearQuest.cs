@@ -20,8 +20,8 @@ namespace KarpikQuestsTests.QuestTests
         //Result
         Assert.Multiple(() =>
         {
-            Assert.That(!quest.Has(task1));
-            Assert.That(!quest.Has(task2));
+            Assert.That(!quest.Has(task1.Id));
+            Assert.That(!quest.Has(task2.Id));
         });
     }
     }

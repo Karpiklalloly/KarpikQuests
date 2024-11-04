@@ -30,8 +30,8 @@ namespace KarpikQuestsTests.GraphTests
         
         Assert.Multiple(() =>
         {
-            Assert.That(dependencies.Find(x => x.Equals(quest2)), Is.Not.EqualTo(null));
-            Assert.That(dependencies.Find(x => x.Equals(quest3)), Is.Not.EqualTo(null));
+            Assert.That(dependencies.Find(x => x.DependencyQuest.Equals(quest2)), Is.Not.EqualTo(null));
+            Assert.That(dependencies.Find(x => x.DependencyQuest.Equals(quest3)), Is.Not.EqualTo(null));
             Assert.That(!d2.Any());
             Assert.That(!d3.Any());
         });

@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
-        <RootNamespace>NewKarpikQuests</RootNamespace>
+        <RootNamespace>Karpik.Quests</RootNamespace>
     </PropertyGroup>
     
     <Target Name="UnityBuild" AfterTargets="Build">

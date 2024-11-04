@@ -1,6 +1,7 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Extensions;
+using Karpik.Quests.ID;
 using Karpik.Quests.Processors;
 
 namespace HowTo._2._Linear_Quest;
@@ -10,11 +11,13 @@ public class LinearQuest : IProgram
     public void Run()
     {
         var mainQuest = new Quest(
+            new Id("Main"),
             "Main Quest",
             "Go and kill the dragon!",
             new And(),
             new Orderly(),
             new Quest(
+                new Id("Go"),
                 "Go",
                 "You should take your equipment",
                 new And(),
@@ -26,6 +29,7 @@ public class LinearQuest : IProgram
                 new Quest(
                     "Potion")),
             new Quest(
+                new Id("Kill"),
                 "Kill",
                 "Kill the dragon!",
                 new Or(),

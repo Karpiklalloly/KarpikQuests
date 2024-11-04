@@ -9,6 +9,16 @@ public static class Printer
         Print(quest, 0, blackFilter);
     }
 
+    public static void Print(Graph graph, params Status[] blackFilter)
+    {
+        var quests = graph.Quests;
+        Console.WriteLine("Graph:");
+        foreach (var quest in quests)
+        {
+            Print(quest, 0, blackFilter);
+        }
+    }
+
     public static void SubQuests(Quest quest)
     {
         int i = 1;

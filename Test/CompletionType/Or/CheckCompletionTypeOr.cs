@@ -1,6 +1,7 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Interfaces;
+using Karpik.Quests.Requirements;
 using Karpik.Quests.Sample;
 
 namespace Test.CompletionType
@@ -9,253 +10,311 @@ namespace Test.CompletionType
     {
         [Test]
         public void WhenOr_AndCheckEmpty_ThenCompleted()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection();
+        {
+            //Action
+            ICompletionType type = new Or();
+            var collection = new List<IRequirement>();
 
-        //Condition
-        var result = type.Check(collection);
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Completed));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Completed));
+        }
     
         [Test]
         public void WhenOr_AndCheckSingleLocked_ThenLocked()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new()
-        };
-        collection[0].ForceLock();
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+            };
+            collectionQ[0].ForceLock();
 
-        //Condition
-        var result = type.Check(collection);
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Locked));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Locked));
+        }
     
         [Test]
-        public void WhenOr_AndCheckSingleUnlocked_ThenUnlocked()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
+        public void WhenOr_AndCheckSingleUnlocked_ThenLocked()
         {
-            new()
-        };
-        collection[0].ForceUnlock();
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+            };
+            collectionQ[0].ForceUnlock();
 
-        //Condition
-        var result = type.Check(collection);
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Unlocked));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Locked));
+        }
     
         [Test]
         public void WhenOr_AndCheckSingleCompleted_ThenCompleted()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new()
-        };
-        collection[0].ForceComplete();
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+            };
+            collectionQ[0].ForceComplete();
 
-        //Condition
-        var result = type.Check(collection);
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Completed));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Completed));
+        }
     
         [Test]
         public void WhenOr_AndCheckSingleFailed_ThenFailed()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new()
-        };
-        collection[0].ForceFail();
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+            };
+            collectionQ[0].ForceFail();
 
-        //Condition
-        var result = type.Check(collection);
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Failed));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Failed));
+        }
     
         [Test]
         public void WhenOr_AndCheckMultipleLocked_ThenLocked()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        foreach (var quest in collection)
-        {
-            quest.ForceLock();    
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            foreach (var quest in collectionQ)
+            {
+                quest.ForceLock();    
+            }
+
+            //Condition
+            var result = type.Check(collection);
+
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Locked));
         }
-
-        //Condition
-        var result = type.Check(collection);
-
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Locked));
-    }
     
         [Test]
-        public void WhenOr_AndCheckMultipleUnlocked_ThenUnlocked()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
+        public void WhenOr_AndCheckMultipleUnlocked_ThenLocked()
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        foreach (var quest in collection)
-        {
-            quest.ForceUnlock();    
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            foreach (var quest in collectionQ)
+            {
+                quest.ForceUnlock();    
+            }
+
+            //Condition
+            var result = type.Check(collection);
+
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Locked));
         }
-
-        //Condition
-        var result = type.Check(collection);
-
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Unlocked));
-    }
     
         [Test]
         public void WhenOr_AndCheckMultipleCompleted_ThenCompleted()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        foreach (var quest in collection)
-        {
-            quest.ForceComplete();    
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            foreach (var quest in collectionQ)
+            {
+                quest.ForceComplete();    
+            }
+
+            //Condition
+            var result = type.Check(collection);
+
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Completed));
         }
-
-        //Condition
-        var result = type.Check(collection);
-
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Completed));
-    }
     
         [Test]
         public void WhenOr_AndCheckMultipleFailed_ThenFailed()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        foreach (var quest in collection)
-        {
-            quest.ForceFail();    
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            foreach (var quest in collectionQ)
+            {
+                quest.ForceFail();    
+            }
+
+            //Condition
+            var result = type.Check(collection);
+
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Failed));
         }
-
-        //Condition
-        var result = type.Check(collection);
-
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Failed));
-    }
     
         [Test]
         public void WhenOr_AndCheckOneCompleted_ThenCompleted()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        collection[0].ForceFail();
-        collection[1].ForceComplete();
-        collection[2].ForceUnlock();
-        
-        //Condition
-        var result = type.Check(collection);
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            collectionQ[0].ForceFail();
+            collectionQ[1].ForceComplete();
+            collectionQ[2].ForceUnlock();
+            
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Completed));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Completed));
+        }
     
         [Test]
-        public void WhenOr_AndCheckFailedLockedUnlocked_ThenUnlocked()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
+        public void WhenOr_AndCheckFailedLockedUnlocked_ThenFailed()
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        collection[0].ForceFail();
-        collection[1].ForceLock();
-        collection[2].ForceUnlock();
-        
-        //Condition
-        var result = type.Check(collection);
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            collectionQ[0].ForceFail();
+            collectionQ[1].ForceLock();
+            collectionQ[2].ForceUnlock();
+            
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Unlocked));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Failed));
+        }
     
         [Test]
-        public void WhenOr_AndCheckOneFailed_ThenUnlocked()
-    {
-        //Action
-        ICompletionType type = new Or();
-        var collection = new QuestCollection
+        public void WhenOr_AndCheckOneFailed_ThenFailed()
         {
-            new(),
-            new(),
-            new()
-        };
-        
-        collection[0].ForceFail();
-        collection[1].ForceLock();
-        collection[2].ForceUnlock();
-        
-        //Condition
-        var result = type.Check(collection);
+            //Action
+            ICompletionType type = new Or();
+            var collectionQ = new QuestCollection
+            {
+                new(),
+                new(),
+                new()
+            };
+            var collection = new List<IRequirement>
+            {
+                new QuestHasStatus(collectionQ[0]),
+                new QuestHasStatus(collectionQ[1]),
+                new QuestHasStatus(collectionQ[2]),
+            };
+            
+            collectionQ[0].ForceFail();
+            collectionQ[1].ForceLock();
+            collectionQ[2].ForceUnlock();
+            
+            //Condition
+            var result = type.Check(collection);
 
-        //Result
-        Assert.That(result, Is.EqualTo(Status.Unlocked));
-    }
+            //Result
+            Assert.That(result, Is.EqualTo(Status.Failed));
+        }
     }
 }

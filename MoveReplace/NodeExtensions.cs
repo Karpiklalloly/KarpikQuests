@@ -39,19 +39,16 @@ public static class NodeExtensions
             .First(e => e.Name() == attributeName);
     }
 
-    public static AttributeSyntax AddParameter(this AttributeSyntax attribute, string name, string value)
+    public static AttributeSyntax AddParameter(this AttributeSyntax attribute, string? name, string value)
     {
-        var param = $"{name} = {value}";
-        
-        var attributeArgument = SyntaxFactory.AttributeArgument(
-            SyntaxFactory.LiteralExpression(
-                SyntaxKind.StringLiteralExpression,
-                SyntaxFactory.Token(
-                    default,
-                    SyntaxKind.StringLiteralToken, 
-                    param,
-                    param, 
-                    default)));
+        var attributeArgument = SyntaxFactory
+            .AttributeArgument(
+                SyntaxFactory.LiteralExpression(
+                    SyntaxKind.StringLiteralExpression,
+                    SyntaxFactory.Literal(value)));
+        if (name != null)
+            attributeArgument =
+                attributeArgument.WithNameEquals(SyntaxFactory.NameEquals(SyntaxFactory.IdentifierName(name)));
 
         var otherList = new SeparatedSyntaxList<AttributeArgumentSyntax>();
         otherList = otherList.Add(attributeArgument);

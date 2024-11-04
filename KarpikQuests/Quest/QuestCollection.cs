@@ -2,7 +2,7 @@
 using System.Text;
 using Karpik.Quests.Enumerators;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.Saving;
+using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests.Sample
 {
@@ -112,7 +112,7 @@ namespace Karpik.Quests.Sample
         {
             if (!(obj is QuestCollection collection)) return false;
 
-            return Equals(this, collection);
+            return Equals(collection);
         }
 
         public override int GetHashCode()

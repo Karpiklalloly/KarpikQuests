@@ -1,0 +1,21 @@
+﻿using Karpik.Quests.Interfaces;
+
+namespace Karpik.Quests.CompletionTypes
+{
+    [Serializable]
+    public class Xor : ICompletionType
+    {
+        public Status Check(IEnumerable<IRequirement> requirements)
+        {
+            if (!requirements.Any()) return Status.Completed;
+            var satisfied = requirements.Count(Predicates.IsSatisfied);
+            var failed = requirements.Count(Predicates.IsRuined);
+            
+            if (satisfied == 1) return Status.Completed;
+            if (satisfied > 1) return Status.Failed;
+            if (failed > 0) return Status.Failed;
+            
+            return Status.Locked;
+        }
+    }
+}

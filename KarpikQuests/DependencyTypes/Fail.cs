@@ -1,6 +1,5 @@
 ﻿using Karpik.Quests.Interfaces;
 using Karpik.Quests.Extensions;
-using Karpik.Quests.Sample;
 
 namespace Karpik.Quests.DependencyTypes
 {

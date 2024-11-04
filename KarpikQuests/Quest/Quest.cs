@@ -1,15 +1,15 @@
-﻿using Karpik.Quests.CompletionTypes;
+﻿using System.Runtime.Serialization;
+using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
 using Karpik.Quests.Processors;
 using Karpik.Quests.Sample;
 using Karpik.Quests.Extensions;
-using Karpik.Quests.Saving;
+using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests
 {
     //TODO: Add sub classes (check gpt)
-    //TODO: Add negative effect (like wrong poison used)
     [Serializable]
     public class Quest : IEquatable<Quest>
     {
@@ -70,6 +70,13 @@ namespace Karpik.Quests
             get => _subQuests;
             private set => _subQuests = new QuestCollection(value);
         }
+
+        [DoNotSerializeThis][Property]
+        public IEnumerable<IRequirement> Requirements
+        {
+            get => _requirements;
+            private set => _requirements = new List<IRequirement>(value);
+        }
         
         [SerializeThis("Id")]
         private Id _id;
@@ -82,58 +89,39 @@ namespace Karpik.Quests
         private string _description;
         [SerializeThis("Status")]
         private Status _status;
-        [SerializeThis("CompletionType")]
+        [SerializeThis("CompletionType", IsReference = true)]
         private ICompletionType _completionType;
-        [SerializeThis("Processor")]
+        [SerializeThis("Processor", IsReference = true)]
         private IProcessorType _processor;
         [SerializeThis("SubQuests")]
         private QuestCollection _subQuests = new();
+        [SerializeThis("Requirements", IsReference = true)]
+        private List<IRequirement> _requirements = new();
 
-        public Quest() : this(Id.NewId())
+        public Quest() : this(Id.NewId(), null, null, null, null)
         {
             
         }
 
-        public Quest(Id id) : this(id, "Quest", "Description")
+        public Quest(string name) : this(Id.NewId(), name, null, null, null)
+        {
+            
+        }
+
+        public Quest(string name, string description) : this(Id.NewId(), name, description, null, null)
         {
             
         }
         
-        public Quest(string name) : this(Id.NewId(), name, "Description")
-        {
-            
-        }
-
-        public Quest(string name, string description) : this(Id.NewId(), name, description)
-        {
-            
-        }
-
-        public Quest(Id id, string name, string description) : this(id, name, description, null, null)
-        {
-            
-        }
-        
-        public Quest(string name, string description, ICompletionType? completionType, IProcessorType? processor)
-            : this(Id.NewId(), name, description, completionType, processor)
-        {
-            
-        }
-    
-        public Quest(Id id, string? name, string? description, ICompletionType? completionType, IProcessorType? processor)
+        public Quest(Id id, string? name, string? description, ICompletionType? completionType, IProcessorType? processor, params QuestAndRequirement[] subQuests)
         {
             Id = id;
-            _name = name ?? string.Empty;
-            _description = description ?? string.Empty;
+            _name = name ?? "Quest";
+            _description = description ?? "Description";
             _completionType = completionType ?? new And();
             _processor = processor ?? new Disorderly();
             
             Status = Status.Locked;
-        }
-        
-        public Quest(string name, string description, ICompletionType? completionType, IProcessorType? processor, params Quest[] subQuests)
-            : this(Id.NewId(), name, description, completionType, processor)
-        {
             Add(subQuests);
         }
 
@@ -146,11 +134,12 @@ namespace Karpik.Quests
             }
         }
 
-        public void Add(params Quest[] quests)
+        public void Add(params QuestAndRequirement[] qAndR)
         {
-            foreach (var quest in quests)
+            foreach (var pair in qAndR)
             {
-                if (Has(quest)) continue;
+                var quest = pair.Quest;
+                if (Has(quest.Id)) continue;
                 if (!quest._id.IsValid())
                 {
                     quest._parentQuest.Remove(quest);
@@ -159,12 +148,14 @@ namespace Karpik.Quests
                 quest._parentId = _id;
                 quest._parentQuest = this;
                 quest._graph = _graph;
+                
+                _requirements.Add(pair.Requirement);
             }
         }
 
         public void Remove(Quest quest)
         {
-            if (!Has(quest))
+            if (!Has(quest.Id))
             {
                 return;
             }
@@ -196,14 +187,43 @@ namespace Karpik.Quests
             {
                 _subQuests[i].SetGraph(graph);
             }
+
+            for (int i = 0; i < _requirements.Count; i++)
+            {
+                _requirements[i].SetGraph(graph);
+            }
         }
     
-        public bool Has(Quest quest)
+        public bool Has(Id id)
         {
-            if (!quest.IsValid()) return false;
+            if (!id.IsValid()) return false;
             
-            return _subQuests.Any(q => q.Equals(quest))
-                   || _subQuests.Any(q => q.Has(quest));
+            return _subQuests.Any(q => q.Id == id)
+                   || _subQuests.Any(q => q.Has(id));
+        }
+
+        public bool TryGet(Id id, out Quest? quest)
+        {
+            if (!id.IsValid())
+            {
+                quest = Empty;
+                return false;
+            }
+
+            if (_subQuests.Any(q => q.Id == id))
+            {
+                quest = _subQuests.First(q => q.Id == id);
+                return true;
+            }
+            
+            if (_subQuests.Any(q => q.Has(id)))
+            {
+                var q = _subQuests.First(q => q.Has(id));
+                return q.TryGet(id, out quest);
+            }
+
+            quest = Empty;
+            return false;
         }
 
         public bool TryUnlock()
@@ -230,6 +250,7 @@ namespace Karpik.Quests
         
         public void ForceLock()
         {
+            var oldStatus = _status;
             for (var i = 0; i < _subQuests.Count; i++)
             {
                 var subQuest = _subQuests[i];
@@ -238,13 +259,15 @@ namespace Karpik.Quests
             
             _status = Status.Locked;
 
-            Notify();
+            UpdateStatus(oldStatus);
         }
         public void ForceUnlock()
         {
+            var oldStatus = _status;
+            
             _processor.Setup(_subQuests);
             _status = Status.Unlocked;
-            Notify();
+            UpdateStatus(oldStatus);
         }
         public void ForceComplete()
         {
@@ -262,7 +285,6 @@ namespace Karpik.Quests
         public void ForceFail()
         {
             var oldStatus = _status;
-            
 
             for (var i = 0; i < _subQuests.Count; i++)
             {
@@ -311,16 +333,26 @@ namespace Karpik.Quests
             _graph?.InternalUpdate(this, !_parentId.IsValid());
             if (_parentQuest is not null)
             {
-                _parentQuest.NotifyUpdate();
+                _parentQuest.NotifyFromChild();
             }
         }
 
-        private void NotifyUpdate()
+        private void NotifyFromChild()
         {
             var oldStatus = _status;
-            _status = _completionType.Check(_subQuests);
+            _status = _completionType.Check(_requirements);
+            if (_status == Status.Locked) _status = Status.Unlocked;
             _processor.Update(_subQuests);
             UpdateStatus(oldStatus);
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            for (int i = 0; i < _subQuests.Count; i++)
+            {
+                _subQuests[i]._parentId = _id;
+            }
         }
     }
 }

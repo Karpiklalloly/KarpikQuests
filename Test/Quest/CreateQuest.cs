@@ -15,7 +15,7 @@ namespace KarpikQuestsTests.QuestTests
         Id id = Id.NewId();
 
         //Condition
-        var quest = new Quest(id);
+        var quest = new Quest(id, null, null, null, null);
 
         //Result
         Assert.That(quest.Id, Is.EqualTo(id));

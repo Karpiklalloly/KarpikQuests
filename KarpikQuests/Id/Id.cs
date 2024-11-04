@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Karpik.Quests.Saving;
+using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests.ID
 {
@@ -9,14 +9,12 @@ namespace Karpik.Quests.ID
         public static readonly Id Empty = new Id("-1");
         [DoNotSerializeThis][Property]
         public string Value => _value;
-        private readonly string _toString;
         [SerializeThis("Value")]
         private string _value;
     
         public Id(string value)
         {
             _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
-            _toString = $"ID: {_value}";
         }
 
         public static Id NewId() => IDGenerator.GenerateId();
@@ -25,11 +23,11 @@ namespace Karpik.Quests.ID
     
         public override bool Equals(object? obj) => obj is Id other && Equals(other);
     
-        public override int GetHashCode() => Value.GetHashCode();
+        public override int GetHashCode() => _value.GetHashCode();
 
         public override string ToString()
         {
-            return _toString;
+            return $"ID: {_value}";
         }
 
         public static bool operator ==(Id left, Id right)

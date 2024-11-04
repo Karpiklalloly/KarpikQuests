@@ -1,4 +1,5 @@
 ﻿using Karpik.Quests;
+using Karpik.Quests.ID;
 
 namespace KarpikQuestsTests.QuestTests
 {
@@ -12,7 +13,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Add(new Quest());
 
         //Condition
-        var result = quest.Has(new Quest());
+        var result = quest.Has(Id.NewId());
 
         //Result
         Assert.That(result, Is.EqualTo(false));
@@ -27,7 +28,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Add(subQuest);
 
         //Condition
-        var result = quest.Has(subQuest);
+        var result = quest.Has(subQuest.Id);
 
         //Result
         Assert.That(result, Is.EqualTo(true));
@@ -44,7 +45,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Add(subQuest);
 
         //Condition
-        var result = quest.Has(subSubQuest);
+        var result = quest.Has(subSubQuest.Id);
 
         //Result
         Assert.That(result, Is.EqualTo(true));

@@ -15,7 +15,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Add(subQuest);
 
         //Result
-        Assert.That(quest.Has(subQuest));
+        Assert.That(quest.Has(subQuest.Id));
     }
 
         [Test]
@@ -31,7 +31,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Add(subQuest);
 
         //Result
-        Assert.That(quest.Has(subSubQuest));
+        Assert.That(quest.Has(subSubQuest.Id));
     }
     }
 }

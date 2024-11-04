@@ -1,7 +1,9 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Extensions;
+using Karpik.Quests.ID;
 using Karpik.Quests.Processors;
+using Karpik.Quests.Requirements;
 
 namespace HowTo._3._Veriative_Quest;
 
@@ -13,6 +15,7 @@ public class VariativeQuest : IProgram
     {
         Graph graph = new Graph();
         Quest quest = new Quest(
+            new Id("Variative"),
             "Variative quest",
             "You can choose",
             new And(),
@@ -23,6 +26,7 @@ public class VariativeQuest : IProgram
         graph.TryAdd(quest);
         graph.QuestCompleted += completedQuest =>
         {
+            Console.WriteLine(completedQuest.Id);
             if (completedQuest.Id == quest.Id)
             {
                 Console.WriteLine("You completed Quest");
@@ -67,23 +71,17 @@ public class VariativeQuest : IProgram
             }
 
             Console.WriteLine($"You gave {input}");
-            if (inputQuest.Name != "Dirty water")
-            {
-                inputQuest.TryComplete();
-            }
-            else
-            {
-                quest.ForceFail();
-            }
+            inputQuest.TryComplete();
         }
     }
 
     private Quest CreateLeatherQuest()
     {
-        var quest = new Quest(
+        var quest = QuestCreator.Create(
+            new Id("Leather"),
             "Leather",
             "Choose leather",
-            new Or(),
+            new Xor(),
             new Disorderly(),
             new Quest("Bear leather"),
             new Quest("Rabbit leather"),
@@ -100,6 +98,7 @@ public class VariativeQuest : IProgram
     private Quest CreateNecessaryQuest()
     {
         var quest = new Quest(
+            new Id("Resources"),
             "Resources",
             "Sticks, Leaves, Stones",
             new And(),
@@ -119,13 +118,14 @@ public class VariativeQuest : IProgram
     private Quest CreateWaterQuest()
     {
         var quest = new Quest(
+            new Id("Water"),
             "Water",
             "Select water",
-            new Or(),
+            new Xor(),
             new Disorderly(),
             new Quest("Purified water"),
             new Quest("Salt water"),
-            new Quest("Dirty water"));
+            new QuestHasStatus(new Quest("Dirty water"), Status.Failed, Status.Completed));
         
         foreach (var subQuest in quest.SubQuests)
         {

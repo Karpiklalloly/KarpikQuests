@@ -1,11 +1,21 @@
-﻿using Karpik.Quests.Interfaces;
+﻿using System.Runtime.Serialization;
+using Karpik.Quests.Interfaces;
+using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests.CompletionTypes
 {
     [Serializable]
     public class NeededCount : ICompletionType
     {
-        public int Count { get; set; }
+        [DoNotSerializeThis][Property]
+        public int Count
+        {
+            get => _count;
+            set => _count = value;
+        }
+
+        [SerializeThis("Count")]
+        private int _count;
 
         public NeededCount() : this(0)
         {
@@ -14,21 +24,20 @@ namespace Karpik.Quests.CompletionTypes
 
         public NeededCount(int count)
         {
-            Count = count;
+            _count = count;
         }
 
-        public Status Check(IEnumerable<Quest> quests)
+        public Status Check(IEnumerable<IRequirement> quests)
         {
             if (Count == 0) return Status.Completed;
             if (!quests.Any()) return Status.Unlocked;
 
-            var completedCount = quests.Count(Predicates.QuestIsCompleted);
-            var failedCount = quests.Count(Predicates.QuestIsFailed);
-            var unlockedCount = quests.Count(Predicates.QuestIsUnlocked);
+            var satisfied = quests.Count(Predicates.IsSatisfied);
+            var failed = quests.Count(Predicates.IsRuined);
             
-            if (completedCount >= Count) return Status.Completed;
-            if (quests.Count() - failedCount < Count) return Status.Failed;
-            if (completedCount > 0 || failedCount > 0 || unlockedCount > 0) return Status.Unlocked;
+            if (satisfied >= Count) return Status.Completed;
+            if (failed > 0) return Status.Failed;
+            if (satisfied > 0) return Status.Unlocked;
             
             return Status.Locked;
         }

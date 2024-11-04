@@ -8,16 +8,38 @@ class Program
 {
     static void Main(string[] args)
     {
-        var solutionPath = args[0];
+        string solutionPath = null;
+        if (args.Length > 0)
+        {
+            solutionPath = args[0];
+        }
+        else
+        {
+            solutionPath = @"C:\Users\artem\source\repos\KarpikQuests\";
+        }
 
         var from = Path.Combine(solutionPath, "KarpikQuests");
-        var to = Path.Combine(solutionPath, "KarpikQuestsUnity", "Core");
+        var to = Path.Combine(solutionPath, "KarpikQuestsUnity");
+        var to2 = Path.Combine(solutionPath, "Builded", "Core");
 
         FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", to, solutionPath);
-        Directory.Delete(Path.Combine(solutionPath, "KarpikQuestsUnity"), true);
+
+        Do(from, to);
+        Do(from, to2);
+        
+        FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", solutionPath, to);
+        
+        Console.WriteLine("Complete");
+    }
+
+    static void Do(string from, string to)
+    {
+        Directory.Delete(to, true);
+        Directory.CreateDirectory(to);
         FileManipulator.CopyDirectory(from, to, true);
         Directory.Delete(Path.Combine(to, "bin"), true);
         Directory.Delete(Path.Combine(to, "obj"), true);
+        
         File.Delete(Path.Combine(to, ".editorconfig"));
         File.Delete(Path.Combine(to, "KarpikQuests.csproj"));
         File.Delete(Path.Combine(to, "Newtonsoft.Json.dll"));
@@ -43,7 +65,8 @@ class Program
                     var serializeThis = field.GetAttribute("SerializeThis");
                     var arguments = serializeThis.ArgumentList.Arguments;
 
-                    var serializeThisAttribute = new SerializeThis(arguments.First().ToString());
+                    var n = arguments.First().Value();
+                    var serializeThisAttribute = new SerializeThis(n.Substring(1, n.Length - 2));
 
                     foreach (var argument in arguments)
                     {
@@ -52,14 +75,12 @@ class Program
                             case nameof(SerializeThis.IsReference):
                                 serializeThisAttribute.IsReference = argument.Value() == "true";
                                 break;
-                            case nameof(SerializeThis.IsProperty):
-                                serializeThisAttribute.IsProperty = argument.Value() == "true";
-                                break;
                         }
                     }
 
                     changed = true;
                     
+#if UNITY
                     if (field.TypeName().Contains("Dictionary"))
                     {
                         var type = field.Type() as GenericNameSyntax;
@@ -77,12 +98,21 @@ class Program
                         root,
                         ref field,
                         serializeThisAttribute.IsReference ? "SerializeReference" : "SerializeField");
-
+#endif
+#if NEWTONSOFTJSON
                     root = AttributeAdder.AddCustomAttribute(
                         root,
                         ref field,
                         "JsonProperty",
                         new AttributeAdder.AttributeParam("PropertyName", serializeThisAttribute.Name));
+#endif
+#if TEXTJSON
+                    root = AttributeAdder.AddCustomAttribute(
+                        root,
+                        ref field,
+                        "JsonPropertyName",
+                        new AttributeAdder.AttributeParam(null, serializeThisAttribute.Name));
+#endif
 
 
                 }
@@ -105,14 +135,18 @@ class Program
                 if (property.HasAttribute("Property"))
                 {
                     changed = true;
+#if UNITY
                     root = AttributeAdder.AddCustomAttribute(
                         root,
                         ref property,
                         "CreateProperty");
+#endif
+#if NEWTONSOFTJSON
                     root = AttributeAdder.AddCustomAttribute(
                         root,
                         ref property,
                         "JsonIgnore");
+#endif
                 }
                 
                 if (property.HasAttribute("DoNotSerializeThis"))
@@ -131,17 +165,22 @@ class Program
 
             if (changed)
             {
-                File.WriteAllText(file, "using UnityEngine;\n"
-                                        + "using Karpik.UIExtension;\n"
-                                        + "using Unity.Properties;\n"
-                                        + "using Newtonsoft.Json;\n"
-                                        + root.SyntaxTree.ToString());
+                File.WriteAllText(file,
+                    #if UNITY
+                    "using UnityEngine;\n" +
+                    "using Karpik.UIExtension;\n" +
+                    "using Unity.Properties;\n" +
+#endif
+#if NEWTONSOFTJSON
+                    "using Newtonsoft.Json;\n" +
+#endif
+#if TEXTJSON
+                    "using System.Text.Json.Serialization;\n" +        
+#endif
+
+                    root.SyntaxTree.ToString());
             }
             
         }
-
-        FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", solutionPath, to);
-
-        Console.WriteLine("Complete");
     }
 }

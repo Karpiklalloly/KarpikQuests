@@ -16,7 +16,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(bundle);
 
         //Result
-        Assert.That(!quest.Has(bundle));
+        Assert.That(!quest.Has(bundle.Id));
     }
     
         [Test]
@@ -32,7 +32,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(bundle);
 
         //Result
-        Assert.That(!quest.Has(bundle));
+        Assert.That(!quest.Has(bundle.Id));
     }
     
         [Test]
@@ -49,7 +49,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(bundle);
 
         //Result
-        Assert.That(!quest.Has(task));
+        Assert.That(!quest.Has(task.Id));
     }
     
         [Test]
@@ -63,7 +63,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(bundle);
 
         //Result
-        Assert.That(!quest.Has(bundle));
+        Assert.That(!quest.Has(bundle.Id));
     }
     
         [Test]
@@ -79,7 +79,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(task);
 
         //Result
-        Assert.That(!quest.Has(task));
+        Assert.That(!quest.Has(task.Id));
     }
     
         [Test]
@@ -95,7 +95,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(bundle);
 
         //Result
-        Assert.That(!quest.Has(bundle));
+        Assert.That(!quest.Has(bundle.Id));
     }
     
         [Test]
@@ -113,7 +113,7 @@ namespace KarpikQuestsTests.QuestTests
         quest.Remove(task);
 
         //Result
-        Assert.That(!quest.Has(task));
+        Assert.That(!quest.Has(task.Id));
     }
     }
 }

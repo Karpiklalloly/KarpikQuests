@@ -1,5 +1,6 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
+using Karpik.Quests.ID;
 using Karpik.Quests.Processors;
 
 namespace HowTo._1._Begin;
@@ -10,12 +11,14 @@ public class Begin : IProgram
     {
         // Create epic quest
         var mainQuest = new Quest(
+            new Id("Main"),
             "Main Quest",
             "Go and kill the dragon!",
             new And(),
             new Orderly());
 
         var go = new Quest(
+            new Id("Go"),
             "Go",
             "You should take your equipment",
             new And(),
@@ -36,6 +39,7 @@ public class Begin : IProgram
         go.Add(e1, e2, e3);
         
         var kill = new Quest(
+            new Id("Kill"),
             "Kill",
             "Kill the dragon!",
             new Or(),

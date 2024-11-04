@@ -15,13 +15,15 @@ public static class AttributeAdder
             attributeSyntax = attributeSyntax.AddParameter(attributeParam.Name, attributeParam.Value);
         }
 
+        attributeSyntax = attributeSyntax.NormalizeWhitespace();
+
         var memberDeclaration = Find(root, syntaxNode);
 
         if (memberDeclaration == null) return root;
         
-        var newClassDeclaration = memberDeclaration.AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(attributeSyntax));
+        var newClassDeclaration = memberDeclaration.AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(attributeSyntax)).NormalizeWhitespace();
         syntaxNode = newClassDeclaration;
-        return root.ReplaceNode(memberDeclaration, newClassDeclaration);
+        return root.ReplaceNode(memberDeclaration, newClassDeclaration).NormalizeWhitespace();
     }
     
     public static SyntaxNode AddCustomAttribute(SyntaxNode root, ref PropertyDeclarationSyntax syntaxNode, string attributeName, params AttributeParam[] attributeParams)
@@ -32,6 +34,8 @@ public static class AttributeAdder
         {
             attributeSyntax = attributeSyntax.AddParameter(attributeParam.Name, attributeParam.Value);
         }
+        
+        attributeSyntax = attributeSyntax.NormalizeWhitespace();
 
         var node = syntaxNode;
 
@@ -41,9 +45,9 @@ public static class AttributeAdder
 
         if (memberDeclaration == null) return root;
         
-        var newClassDeclaration = memberDeclaration.AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(attributeSyntax));
+        var newClassDeclaration = memberDeclaration.AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(attributeSyntax)).NormalizeWhitespace();
         syntaxNode = newClassDeclaration;
-        return root.ReplaceNode(memberDeclaration, newClassDeclaration);
+        return root.ReplaceNode(memberDeclaration, newClassDeclaration).NormalizeWhitespace();
     }
 
     public static bool Equal(FieldDeclarationSyntax t1, FieldDeclarationSyntax t2)
@@ -89,10 +93,10 @@ public static class AttributeAdder
 
     public class AttributeParam
     {
-        public string Name;
+        public string? Name;
         public string Value;
 
-        public AttributeParam(string name, string value)
+        public AttributeParam(string? name, string value)
         {
             Name = name;
             Value = value;

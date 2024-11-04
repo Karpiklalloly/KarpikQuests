@@ -1,11 +1,11 @@
 ﻿using Karpik.Quests.ID;
 using Karpik.Quests.Interfaces;
-using Karpik.Quests.Saving;
+using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests
 {
     [Serializable]
-    public struct Connection : IEquatable<Connection>
+    public class Connection : IEquatable<Connection>
     {
         [DoNotSerializeThis]
         public Id QuestId => _questId;
