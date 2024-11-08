@@ -1,6 +1,4 @@
-﻿using Karpik.Quests.Sample;
-
-namespace Karpik.Quests.Interfaces
+﻿namespace Karpik.Quests
 {
     public interface IReadOnlyQuestCollection : IEnumerable<Quest>, IEquatable<IReadOnlyQuestCollection>
     {

@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Extensions
 {

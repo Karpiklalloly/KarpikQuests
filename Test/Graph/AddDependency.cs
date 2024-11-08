@@ -13,10 +13,8 @@ namespace KarpikQuestsTests.GraphTests
     {
         //Action
         var graph = new Graph();
-        var subQuest = new Quest();
 
         var quest1 = new Quest("name1", "description1");
-        quest1.Add(subQuest);
         graph.TryAdd(quest1);
 
         var quest2 = new Quest("name2", "description2");
@@ -28,13 +26,13 @@ namespace KarpikQuestsTests.GraphTests
         switch (dependency)
         {
             case DependencyType.Completion:
-                subQuest.ForceComplete();
+                quest1.ForceComplete();
                 break;
             case DependencyType.Fail:
-                subQuest.ForceFail();
+                quest1.ForceFail();
                 break;
             case DependencyType.Unlocked:
-                subQuest.ForceUnlock();
+                quest1.ForceUnlock();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(dependency), dependency, null);

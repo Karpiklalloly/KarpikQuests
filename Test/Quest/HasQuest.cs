@@ -1,5 +1,4 @@
 ﻿using Karpik.Quests;
-using Karpik.Quests.ID;
 
 namespace KarpikQuestsTests.QuestTests
 {

@@ -80,7 +80,7 @@ namespace KarpikQuestsTests.QuestTests
     }
     
         [Test]
-        public void WhenUpdateStatus_AndAllSubQuestsAreUnlocked_ThenStatusIsUnlocked()
+        public void WhenUpdateStatus_AndAllSubQuestsAreUnlocked_ThenStatusIsLocked()
     {
         //Action
         var quest = new Quest();
@@ -95,7 +95,7 @@ namespace KarpikQuestsTests.QuestTests
         //Condition
 
         //Result
-        Assert.That(quest.Status, Is.EqualTo(Status.Unlocked));
+        Assert.That(quest.Status, Is.EqualTo(Status.Locked));
     }
     
         [Test]

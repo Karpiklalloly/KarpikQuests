@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Karpik.Quests.Serialization;
 
-namespace Karpik.Quests.ID
+namespace Karpik.Quests
 {
     [Serializable][TypeConverter(typeof(IdConverter))]
     public struct Id : IEquatable<Id>
@@ -17,7 +17,7 @@ namespace Karpik.Quests.ID
             _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
         }
 
-        public static Id NewId() => IDGenerator.GenerateId();
+        public static Id NewId() => new Id(Guid.NewGuid().ToString());
     
         public bool Equals(Id other) => Value == other.Value;
     

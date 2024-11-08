@@ -1,5 +1,4 @@
-﻿using Karpik.Quests.Interfaces;
-using Karpik.Quests.Requirements;
+﻿using Karpik.Quests.Requirements;
 using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests

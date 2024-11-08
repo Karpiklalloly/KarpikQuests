@@ -1,4 +1,4 @@
-﻿namespace Karpik.Quests.Interfaces;
+﻿namespace Karpik.Quests;
 
 public interface IRequirement
 {

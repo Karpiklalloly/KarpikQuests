@@ -1,8 +1,6 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.Extensions;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Processors;
-using Karpik.Quests.Sample;
 
 namespace Test.Processor
 {

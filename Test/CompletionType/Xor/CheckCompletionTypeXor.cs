@@ -1,8 +1,5 @@
 ﻿using Karpik.Quests;
-using Karpik.Quests.CompletionTypes;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Requirements;
-using Karpik.Quests.Sample;
 
 namespace Test.CompletionType
 {
