@@ -1,9 +1,7 @@
 using Newtonsoft.Json;
-using System.Runtime.Serialization;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Serialization;
 
-namespace Karpik.Quests.CompletionTypes
+namespace Karpik.Quests
 {
     [Serializable]
     public class NeededCount : ICompletionType

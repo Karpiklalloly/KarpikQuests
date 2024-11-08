@@ -1,7 +1,6 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Extensions;
-using Karpik.Quests.ID;
 using Karpik.Quests.Processors;
 
 namespace HowTo._2._Linear_Quest;

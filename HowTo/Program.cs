@@ -1,6 +1,5 @@
-﻿using HowTo._2._Linear_Quest;
-using HowTo._3._Veriative_Quest;
-using HowTo._4._Serialization;
+﻿using HowTo._4._Serialization;
+using HowTo._5._Custom_Quest;
 
 namespace HowTo;
 
@@ -8,7 +7,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        IProgram program = new Serialization();
+        IProgram program = new CustomQuest();
         program.Run();
     }
 }

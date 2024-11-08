@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Requirements;
 using Karpik.Quests.Serialization;
 

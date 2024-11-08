@@ -1,6 +1,5 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
-using Karpik.Quests.ID;
 using Karpik.Quests.Processors;
 using Karpik.Quests.Requirements;
 using Newtonsoft.Json;
@@ -43,7 +42,7 @@ public class Serialization : IProgram
     
     private Quest CreateLeatherQuest()
     {
-        var quest = QuestCreator.Create(
+        var quest = new Quest(
             new Id("Leather"),
             "Leather",
             "Choose leather",

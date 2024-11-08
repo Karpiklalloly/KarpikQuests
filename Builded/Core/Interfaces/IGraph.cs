@@ -1,8 +1,6 @@
-﻿using Karpik.Quests.ID;
-
-namespace Karpik.Quests.Interfaces
+﻿namespace Karpik.Quests
 {
-    public interface IGraph : IDisposable
+    public interface IGraph
     {
         public event Action<Quest> QuestUnlocked; 
         public event Action<Quest> QuestCompleted;
@@ -11,7 +9,7 @@ namespace Karpik.Quests.Interfaces
         public IEnumerable<Quest> Quests { get; }
         public IEnumerable<Quest> StartQuests { get; }
 
-        public IEnumerable<Quest> StatusQuests(Status status);
+        public IEnumerable<Quest> QuestsWithStatus(Status status);
     
         public bool TryAdd(Quest quest);
 
@@ -41,6 +39,6 @@ namespace Karpik.Quests.Interfaces
     
         public bool IsCyclic();
 
-        internal void InternalUpdate(Quest quest, bool inGraph);
+        public void Update(Quest quest, bool inGraph);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Karpik.Quests;
 using Karpik.Quests.CompletionTypes;
-using Karpik.Quests.ID;
 using Karpik.Quests.Processors;
 
 namespace HowTo._1._Begin;

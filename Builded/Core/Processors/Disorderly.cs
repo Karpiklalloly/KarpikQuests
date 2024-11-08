@@ -1,7 +1,4 @@
-﻿using Karpik.Quests.Interfaces;
-using Karpik.Quests.Sample;
-
-namespace Karpik.Quests.Processors
+﻿namespace Karpik.Quests.Processors
 {
     [Serializable]
     public class Disorderly : IProcessorType

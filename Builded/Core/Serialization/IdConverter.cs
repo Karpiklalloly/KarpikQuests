@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
-using Karpik.Quests.ID;
 
 namespace Karpik.Quests.Serialization
 {

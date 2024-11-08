@@ -1,9 +1,6 @@
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using Karpik.Quests.DependencyTypes;
-using Karpik.Quests.ID;
-using Karpik.Quests.Interfaces;
-using Karpik.Quests.Sample;
 using Karpik.Quests.Serialization;
 using Karpik.Quests.Extensions;
 
@@ -29,7 +26,7 @@ namespace Karpik.Quests
         [SerializeThis("Quests")]
         [JsonProperty(PropertyName = "Quests")]
         private IQuestCollection _quests = new QuestCollection();
-        public IEnumerable<Quest> StatusQuests(Status status)
+        public IEnumerable<Quest> QuestsWithStatus(Status status)
         {
             var quests = new QuestCollection();
             for (int i = 0; i < _quests.Count; i++)
@@ -112,7 +109,11 @@ namespace Karpik.Quests
 
         public void Clear()
         {
+            QuestUnlocked = null;
+            QuestCompleted = null;
+            QuestFailed = null;
             _quests.Clear();
+            _dependencies.Clear();
         }
 
         public bool Has(Id questId)
@@ -135,7 +136,7 @@ namespace Karpik.Quests
 
         public Quest GetQuestDeep(Id questId)
         {
-            Quest quest = Quest.Empty;
+            Quest quest;
             for (int i = 0; i < _quests.Count; i++)
             {
                 if (_quests[i].Id == questId)
@@ -309,18 +310,7 @@ namespace Karpik.Quests
             return visited.Any(x => x.Value != true);
         }
 
-        public void Dispose()
-        {
-            QuestUnlocked = null;
-            QuestCompleted = null;
-            QuestFailed = null;
-            _dependencies.Clear();
-            _dependencies = null;
-            _quests.Clear();
-            _quests = null;
-        }
-
-        void IGraph.InternalUpdate(Quest quest, bool inGraph)
+        public void Update(Quest quest, bool inGraph)
         {
             switch (quest.Status)
             {

@@ -1,6 +1,4 @@
-﻿using Karpik.Quests.Interfaces;
-
-namespace Karpik.Quests.CompletionTypes
+﻿namespace Karpik.Quests
 {
     [Serializable]
     public class Or : ICompletionType

@@ -1,16 +1,11 @@
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using Karpik.Quests.CompletionTypes;
-using Karpik.Quests.ID;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Processors;
-using Karpik.Quests.Sample;
 using Karpik.Quests.Extensions;
 using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests
 {
-    //TODO: Add sub classes (check gpt)
     [Serializable]
     public class Quest : IEquatable<Quest>
     {
@@ -139,6 +134,14 @@ namespace Karpik.Quests
             }
         }
 
+        public void Add(params IRequirement[] requirements)
+        {
+            foreach (var requirement in requirements)
+            {
+                _requirements.Add(requirement);
+            }
+        }
+
         public void Remove(Quest quest)
         {
             if (!Has(quest.Id))
@@ -188,7 +191,7 @@ namespace Karpik.Quests
             return _subQuests.Any(q => q.Id == id) || _subQuests.Any(q => q.Has(id));
         }
 
-        public bool TryGet(Id id, out Quest? quest)
+        public bool TryGet(Id id, out Quest quest)
         {
             if (!id.IsValid())
             {
@@ -224,6 +227,13 @@ namespace Karpik.Quests
         {
             if (_status != Status.Unlocked)
                 return false;
+            for (int i = 0; i < _subQuests.Count; i++)
+            {
+                _subQuests[i].TryComplete();
+            }
+
+            if (_completionType.Check(_requirements) != Status.Completed)
+                return false;
             ForceComplete();
             return true;
         }
@@ -231,6 +241,13 @@ namespace Karpik.Quests
         public bool TryFail()
         {
             if (_status != Status.Unlocked)
+                return false;
+            for (int i = 0; i < _subQuests.Count; i++)
+            {
+                _subQuests[i].TryFail();
+            }
+
+            if (_completionType.Check(_requirements) != Status.Failed)
                 return false;
             ForceFail();
             return true;
@@ -321,7 +338,7 @@ namespace Karpik.Quests
 
         private void Notify()
         {
-            _graph?.InternalUpdate(this, !_parentId.IsValid());
+            _graph?.Update(this, !_parentId.IsValid());
             if (_parentQuest is not null)
             {
                 _parentQuest.NotifyFromChild();
@@ -332,8 +349,6 @@ namespace Karpik.Quests
         {
             var oldStatus = _status;
             _status = _completionType.Check(_requirements);
-            if (_status == Status.Locked)
-                _status = Status.Unlocked;
             _processor.Update(_subQuests);
             UpdateStatus(oldStatus);
         }

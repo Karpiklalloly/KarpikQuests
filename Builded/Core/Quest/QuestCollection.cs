@@ -1,11 +1,9 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Text;
-using Karpik.Quests.Enumerators;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Serialization;
 
-namespace Karpik.Quests.Sample
+namespace Karpik.Quests
 {
     [Serializable]
     public class QuestCollection : IQuestCollection
@@ -60,12 +58,12 @@ namespace Karpik.Quests.Sample
 
         public IEnumerator<Quest> GetEnumerator()
         {
-            return new QuestCollectionEnumerator(this);
+            return _data.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new QuestCollectionEnumerator(this);
+            return _data.GetEnumerator();
         }
 
         public bool Remove(Quest item)

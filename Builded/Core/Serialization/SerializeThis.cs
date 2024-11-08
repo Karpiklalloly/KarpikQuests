@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Karpik.Quests.Serialization
+﻿namespace Karpik.Quests.Serialization
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class SerializeThis : Attribute
