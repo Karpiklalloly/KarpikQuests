@@ -10,13 +10,27 @@ public static class NodeExtensions
     {
         return root.DescendantNodes().OfType<T>();
     }
-
+    
+    public static IEnumerable<SyntaxNode> All(this SyntaxNode root, Type type)
+    {
+        return root.DescendantNodes().Where(node => node.GetType().IsAssignableTo(type));
+    }
+    
+    public static string Name(this FieldDeclarationSyntax attribute)
+    {
+        return attribute.Declaration.Variables.First().Identifier.Text;
+    }
+    
+    public static string Name(this PropertyDeclarationSyntax attribute)
+    {
+        return attribute.Identifier.Text;
+    }
+    
     public static string Name(this AttributeSyntax attribute)
     {
         return attribute.Name.NormalizeWhitespace().ToFullString();
     }
     
-    //public static IEnumerable<T> With<T>(IEnumerable<T> root)
     public static string Value(this AttributeArgumentSyntax ats)
     {
         return ats.Expression.NormalizeWhitespace().ToFullString();
@@ -70,5 +84,4 @@ public static class NodeExtensions
     {
         return AttributeAdder.Find(root, field);
     }
-
 }

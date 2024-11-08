@@ -11,3 +11,15 @@ public class SerializeThis : Attribute
         Name = name;
     }
 }
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+public class DoNotSerializeThis : Attribute
+{
+    
+}
+
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+public class Property : Attribute
+{
+    
+}

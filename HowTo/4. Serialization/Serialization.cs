@@ -1,5 +1,4 @@
 ﻿using Karpik.Quests;
-using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Processors;
 using Karpik.Quests.Requirements;
 using Newtonsoft.Json;

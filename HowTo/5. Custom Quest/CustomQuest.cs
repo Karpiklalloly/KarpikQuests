@@ -1,5 +1,4 @@
 ﻿using Karpik.Quests;
-using Karpik.Quests.CompletionTypes;
 using Karpik.Quests.Processors;
 
 namespace HowTo._5._Custom_Quest;
