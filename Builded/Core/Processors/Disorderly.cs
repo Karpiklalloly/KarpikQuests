@@ -1,4 +1,7 @@
-﻿namespace Karpik.Quests.Processors
+using Newtonsoft.Json;
+using System;
+
+namespace Karpik.Quests.Processors
 {
     [Serializable]
     public class Disorderly : IProcessorType

@@ -1,4 +1,6 @@
-﻿namespace Karpik.Quests.Processors
+﻿using System;
+
+namespace Karpik.Quests.Processors
 {
     [Serializable]
     public class Disorderly : IProcessorType

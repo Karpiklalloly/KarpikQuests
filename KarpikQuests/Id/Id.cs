@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests

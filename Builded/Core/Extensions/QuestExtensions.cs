@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
 
 namespace Karpik.Quests.Extensions
 {

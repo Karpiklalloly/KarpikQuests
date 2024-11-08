@@ -1,4 +1,5 @@
-﻿using Karpik.Quests.Serialization;
+﻿using System;
+using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests
 {

@@ -1,4 +1,8 @@
-﻿namespace Karpik.Quests
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+
+namespace Karpik.Quests
 {
     public interface IGraph
     {

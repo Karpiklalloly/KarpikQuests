@@ -1,4 +1,6 @@
-﻿namespace Karpik.Quests
+﻿using System.Collections.Generic;
+
+namespace Karpik.Quests
 {
     public interface ICompletionType
     {

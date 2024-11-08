@@ -84,4 +84,9 @@ public static class NodeExtensions
     {
         return AttributeAdder.Find(root, field);
     }
+    
+    public static PropertyDeclarationSyntax? Find(this SyntaxNode root, PropertyDeclarationSyntax property)
+    {
+        return AttributeAdder.Find(root, property);
+    }
 }

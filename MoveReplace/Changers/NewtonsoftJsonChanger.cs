@@ -7,47 +7,98 @@ public class NewtonsoftJsonChanger : IChanger
 {
     public SyntaxNode OnSerializeThis(SerializeThis attr, SyntaxNode root, SyntaxNode member)
     {
-        root = member switch
+        var attributeName = "JsonProperty";
+        var name = "PropertyName";
+        switch (member)
         {
-            FieldDeclarationSyntax field => AttributeAdder
-                .AddCustomAttribute(root, ref field, "JsonProperty",
-                    new AttributeAdder.AttributeParam("PropertyName", attr.Name)),
-            
-            PropertyDeclarationSyntax property => AttributeAdder.
-                AddCustomAttribute(root, ref property, "JsonProperty",
-                    new AttributeAdder.AttributeParam("PropertyName", attr.Name)),
-            _ => root
-        };
+            case FieldDeclarationSyntax field:
+                field = root.Find(field);
+                if (!field.HasAttribute(attributeName))
+                {
+                    root = AttributeAdder.AddCustomAttribute(root, ref field, attributeName,
+                        new AttributeAdder.AttributeParam(name, attr.Name));
+                }
+                break;
+            case PropertyDeclarationSyntax property:
+                property = root.Find(property);
+                if (!property.HasAttribute(attributeName))
+                {
+                    root = AttributeAdder.AddCustomAttribute(root, ref property, attributeName,
+                        new AttributeAdder.AttributeParam(name, attr.Name));
+                }
+                break;
+        }
 
         return root;
     }
 
     public SyntaxNode OnDoNotSerializeThis(DoNotSerializeThis attr, SyntaxNode root, SyntaxNode member)
     {
-        root = member switch
+        var name = "JsonIgnore";
+        switch (member)
         {
-            FieldDeclarationSyntax field => AttributeAdder.AddCustomAttribute(root, ref field, "JsonIgnore"),
-            PropertyDeclarationSyntax property => AttributeAdder.AddCustomAttribute(root, ref property, "JsonIgnore"),
-            _ => root
-        };
+            case FieldDeclarationSyntax field:
+            {
+                field = root.Find(field);
+                if (!field.HasAttribute(name))
+                {
+                    root = AttributeAdder.AddCustomAttribute(root, ref field, name);
+                }
+        
+                break;
+            }
+            case PropertyDeclarationSyntax property:
+            {
+                property = root.Find(property);
+                if (!property.HasAttribute(name))
+                {
+                    root = AttributeAdder.AddCustomAttribute(root, ref property, name);
+                }
+        
+                break;
+            }
+        }
 
         return root;
     }
 
     public SyntaxNode OnProperty(Property attr, SyntaxNode root, SyntaxNode member)
     {
-        root = member switch
+        var name = "JsonIgnore";
+        switch (member)
         {
-            FieldDeclarationSyntax field => AttributeAdder.AddCustomAttribute(root, ref field, "JsonIgnore"),
-            PropertyDeclarationSyntax property => AttributeAdder.AddCustomAttribute(root, ref property, "JsonIgnore"),
-            _ => root
-        };
+            case FieldDeclarationSyntax field:
+            {
+                field = root.Find(field);
+                if (!field.HasAttribute(name))
+                {
+                    root = AttributeAdder.AddCustomAttribute(root, ref field, name);
+                }
         
+                break;
+            }
+            case PropertyDeclarationSyntax property:
+            {
+                property = root.Find(property);
+                if (!property.HasAttribute(name))
+                {
+                    root = AttributeAdder.AddCustomAttribute(root, ref property, name);
+                }
+
+                break;
+            }
+        }
+
         return root;
     }
 
     public SyntaxNode OnSyntaxNode(SyntaxNode root, SyntaxNode member)
     {
         return root;
+    }
+
+    public string GetUsings()
+    {
+        return "using Newtonsoft.Json;\n";
     }
 }

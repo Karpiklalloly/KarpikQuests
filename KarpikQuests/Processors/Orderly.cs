@@ -1,4 +1,6 @@
-﻿using Karpik.Quests.Extensions;
+﻿using System;
+using System.Linq;
+using Karpik.Quests.Extensions;
 
 namespace Karpik.Quests.Processors
 {

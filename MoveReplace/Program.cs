@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using System.Text;
+using Microsoft.CodeAnalysis.CSharp;
 using MoveReplace.Changers;
 
 namespace MoveReplace;
@@ -14,7 +15,7 @@ class Program
         }
         else
         {
-            solutionPath = @"C:\Users\artem\source\repos\KarpikQuests\";
+            solutionPath = @"..\..\..\..\..\KarpikQuests\";
         }
 
         var from = Path.Combine(solutionPath, "KarpikQuests");
@@ -23,15 +24,15 @@ class Program
 
         FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", to, solutionPath);
 
-        Do(from, to);
-        Do(from, to2);
+        Do(from, to, new UnityChanger(), new NewtonsoftJsonChanger());
+        Do(from, to2, new NewtonsoftJsonChanger());
         
         FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", solutionPath, to);
         
         Console.WriteLine("Complete");
     }
 
-    static void Do(string from, string to)
+    static void Do(string from, string to, params IChanger[] changers)
     {
         Directory.Delete(to, true);
         Directory.CreateDirectory(to);
@@ -44,19 +45,6 @@ class Program
         File.Delete(Path.Combine(to, "Newtonsoft.Json.dll"));
 
         var files = Directory.GetFiles(to, "*.cs", SearchOption.AllDirectories);
-
-        IChanger[] changers =
-        [
-#if UNITY
-            new UnityChanger(),
-#endif
-#if NEWTONSOFTJSON
-            new NewtonsoftJsonChanger(),
-#endif
-#if TEXTJSON
-            new TextJsonChanger(),
-#endif
-        ];
         
 
         foreach (var file in files)
@@ -74,21 +62,15 @@ class Program
 
             var root = runner.Run(tree);
             
-            File.WriteAllText(file,
-#if UNITY
-                    "using UnityEngine;\n" +
-                    "using Karpik.UIExtension;\n" +
-                    "using Unity.Properties;\n" +
-#endif
-#if NEWTONSOFTJSON
-                "using Newtonsoft.Json;\n" +
-#endif
-#if TEXTJSON
-                    "using System.Text.Json.Serialization;\n" +        
-#endif
+            StringBuilder builder = new StringBuilder();
+            foreach (var changer in changers)
+            {
+                builder.Append(changer.GetUsings());
+            }
+            builder.Append(root.SyntaxTree.ToString());
 
-                root.SyntaxTree.ToString());
-            
+            File.WriteAllText(file, builder.ToString());
+
         }
 
         Console.WriteLine();

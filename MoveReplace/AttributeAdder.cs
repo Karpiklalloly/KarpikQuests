@@ -41,7 +41,7 @@ public static class AttributeAdder
 
         PropertyDeclarationSyntax? memberDeclaration = root.DescendantNodes()
             .OfType<PropertyDeclarationSyntax>()
-            .FirstOrDefault(x => x.IsEquivalentTo(node));
+            .FirstOrDefault(x => Equal(x, node));
 
         if (memberDeclaration == null) return root;
         
@@ -75,11 +75,29 @@ public static class AttributeAdder
                 equal = false;
                 break;
             }
-            
-            
         }
         
         return equal;
+    }
+    
+    public static bool Equal(PropertyDeclarationSyntax t1, PropertyDeclarationSyntax t2)
+    {
+        if (t1.GetType() != t2.GetType())
+        {
+            return false; 
+        }
+        
+        if (t1.Name() != t2.Name())
+        {
+            return false;
+        }
+
+        if (t1.Parent.GetType() != t2.Parent.GetType())
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     public static FieldDeclarationSyntax? Find(SyntaxNode root, FieldDeclarationSyntax node)
@@ -89,6 +107,13 @@ public static class AttributeAdder
             .FirstOrDefault(x =>
                 x.Declaration.Variables.Count == node.Declaration.Variables.Count
                 && Equal(x, node));
+    }
+    
+    public static PropertyDeclarationSyntax? Find(SyntaxNode root, PropertyDeclarationSyntax node)
+    {
+        return root.DescendantNodes()
+            .OfType<PropertyDeclarationSyntax>()
+            .FirstOrDefault(x => Equal(x, node));
     }
 
     public class AttributeParam

@@ -1,4 +1,8 @@
-﻿namespace Karpik.Quests
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Karpik.Quests
 {
     [Serializable]
     public class Or : ICompletionType

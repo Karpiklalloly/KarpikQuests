@@ -7,12 +7,17 @@ public class UnityChanger : IChanger
 {
     public SyntaxNode OnSerializeThis(SerializeThis attr, SyntaxNode root, SyntaxNode member)
     {
+        var name = attr.IsReference ? "SerializeReference" : "SerializeField";
         if (member is FieldDeclarationSyntax field)
         {
-            root = AttributeAdder.AddCustomAttribute(
-                root,
-                ref field,
-                attr.IsReference ? "SerializeReference" : "SerializeField");
+            field = root.Find(field);
+            if (!field.HasAttribute(name))
+            {
+                root = AttributeAdder.AddCustomAttribute(
+                    root,
+                    ref field,
+                    name);
+            }
         }
 
         return root;
@@ -25,12 +30,17 @@ public class UnityChanger : IChanger
 
     public SyntaxNode OnProperty(Property attr, SyntaxNode root, SyntaxNode member)
     {
+        var name = "CreateProperty";
         if (member is PropertyDeclarationSyntax property)
         {
-            root = AttributeAdder.AddCustomAttribute(
-                root,
-                ref property,
-                "CreateProperty");
+            property = root.Find(property);
+            if (!property.HasAttribute(name))
+            {
+                root = AttributeAdder.AddCustomAttribute(
+                    root,
+                    ref property,
+                    name);
+            }
         }
         
         return root;
@@ -40,6 +50,7 @@ public class UnityChanger : IChanger
     {
         if (member is FieldDeclarationSyntax field)
         {
+            field = root.Find(field);
             if (field.TypeName().Contains("Dictionary"))
             {
                 var type = field.Type() as GenericNameSyntax;
@@ -55,5 +66,12 @@ public class UnityChanger : IChanger
         }
 
         return root;
+    }
+
+    public string GetUsings()
+    {
+        return "using UnityEngine;\n" +
+               "using Karpik.UIExtension;\n" +
+               "using Unity.Properties;\n";
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+using Newtonsoft.Json;
+using System;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Karpik.Quests.Serialization

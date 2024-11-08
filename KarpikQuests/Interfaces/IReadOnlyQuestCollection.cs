@@ -1,4 +1,7 @@
-﻿namespace Karpik.Quests
+﻿using System;
+using System.Collections.Generic;
+
+namespace Karpik.Quests
 {
     public interface IReadOnlyQuestCollection : IEnumerable<Quest>, IEquatable<IReadOnlyQuestCollection>
     {

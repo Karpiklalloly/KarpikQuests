@@ -1,4 +1,5 @@
-﻿namespace Karpik.Quests
+using Newtonsoft.Json;
+namespace Karpik.Quests
 {
     public interface IDependencyType
     {

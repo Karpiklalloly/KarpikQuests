@@ -1,4 +1,7 @@
-﻿namespace Karpik.Quests
+using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace Karpik.Quests
 {
     public interface ICompletionType
     {

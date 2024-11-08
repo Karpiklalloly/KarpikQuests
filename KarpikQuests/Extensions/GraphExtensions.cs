@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Karpik.Quests.Extensions
 {
@@ -56,6 +57,30 @@ namespace Karpik.Quests.Extensions
         public static IEnumerable<QuestConnection> GetDependentsQuests(this IGraph graph, Quest quest)
         {
             return graph.GetDependentsQuests(quest.Id);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryReplaceDependency(this IGraph graph, Id quest, Id dependency, IDependencyType dependencyType)
+        {
+            return graph.TryRemoveDependency(quest, dependency) && graph.TryAddDependency(quest, dependency, dependencyType);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryReplaceDependency(this IGraph graph, Quest quest, Quest dependency, IDependencyType dependencyType)
+        {
+            return graph.TryRemoveDependency(quest, dependency) && graph.TryAddDependency(quest, dependency, dependencyType);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryReplaceDependency(this IGraph graph, Id quest, Id dependency, DependencyType dependencyType)
+        {
+            return graph.TryRemoveDependency(quest, dependency) && graph.TryAddDependency(quest, dependency, dependencyType);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryReplaceDependency(this IGraph graph, Quest quest, Quest dependency, DependencyType dependencyType)
+        {
+            return graph.TryRemoveDependency(quest, dependency) && graph.TryAddDependency(quest, dependency, dependencyType);
         }
     }
 }
