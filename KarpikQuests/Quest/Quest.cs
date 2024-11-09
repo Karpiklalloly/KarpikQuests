@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.Processors;
 using Karpik.Quests.Extensions;
+using Karpik.Quests.Requirements;
 using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests
@@ -173,6 +174,17 @@ namespace Karpik.Quests
                     _subQuests[i].Remove(quest);
                 }
             }
+
+            for (int i = 0; i < _requirements.Count; i++)
+            {
+                var requirement = _requirements[i];
+                if (requirement is QuestHasStatus questHasStatus && questHasStatus.Quest == quest)
+                {
+                    _requirements.RemoveAt(i);
+                    break;
+                }
+            }
+            
             quest._parentId = Id.Empty;
             quest._parentQuest = null;
             quest._graph = null;

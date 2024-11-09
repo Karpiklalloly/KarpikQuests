@@ -13,7 +13,7 @@ namespace Karpik.Quests
     {
         [SerializeThis("Data")]
         [JsonProperty(PropertyName = "Data")]
-        private List<Quest> _data = new List<Quest>();
+        private List<Quest> _data = new();
         public QuestCollection()
         {
         }
@@ -136,11 +136,6 @@ namespace Karpik.Quests
             }
 
             return true;
-        }
-
-        public int GetHashCode(IReadOnlyQuestCollection obj)
-        {
-            return obj.GetHashCode();
         }
     }
 }

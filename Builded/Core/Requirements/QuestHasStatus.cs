@@ -8,6 +8,10 @@ namespace Karpik.Quests.Requirements
     [Serializable]
     public class QuestHasStatus : IRequirement
     {
+        [DoNotSerializeThis]
+        [JsonIgnore]
+        public Quest Quest => _quest;
+
         private Quest _quest;
         [SerializeThis("Satisfied")]
         [JsonProperty(PropertyName = "Satisfied")]

@@ -7,6 +7,9 @@ namespace Karpik.Quests.Requirements
     [Serializable]
     public class QuestHasStatus : IRequirement
     {
+        [DoNotSerializeThis]
+        public Quest Quest => _quest;
+        
         private Quest _quest;
         [SerializeThis("Satisfied")]
         private Status _satisfiedStatus;
