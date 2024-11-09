@@ -80,7 +80,7 @@ namespace Karpik.Quests
         [SerializeThis("Id")]
         private Id _id;
         private Id _parentId = Id.Empty;
-        private Quest? _parentQuest = null;
+        private Quest _parentQuest;
         private IGraph _graph;
         [SerializeThis("Name")]
         private string _name;
@@ -112,7 +112,7 @@ namespace Karpik.Quests
             
         }
         
-        public Quest(Id id, string? name, string? description, ICompletionType? completionType, IProcessorType? processor, params QuestAndRequirement[] subQuests)
+        public Quest(Id id, string name, string description, ICompletionType completionType, IProcessorType processor, params QuestAndRequirement[] subQuests)
         {
             Id = id;
             _name = name ?? "Quest";
@@ -324,23 +324,26 @@ namespace Karpik.Quests
             UpdateStatus(oldStatus);
         }
 
-        public bool Equals(Quest? other)
+        public bool Equals(Quest other)
         {
             return !ReferenceEquals(null, other) && _id.Equals(other.Id);
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is Quest other && Equals(other);
         }
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return _id.GetHashCode();
         }
 
         public static bool operator ==(Quest left, Quest right)
         {
+            if (left is null) return right is null;
+            
             return left.Equals(right);
         }
 

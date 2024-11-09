@@ -11,9 +11,9 @@ namespace Karpik.Quests
     [Serializable]
     public class Graph : IGraph
     {
-        public event Action<Quest>? QuestUnlocked;
-        public event Action<Quest>? QuestCompleted;
-        public event Action<Quest>? QuestFailed;
+        public event Action<Quest> QuestUnlocked;
+        public event Action<Quest> QuestCompleted;
+        public event Action<Quest> QuestFailed;
         [DoNotSerializeThis]
         public IEnumerable<Quest> Quests => _quests;
         [DoNotSerializeThis]
