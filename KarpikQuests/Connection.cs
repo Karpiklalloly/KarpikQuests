@@ -15,12 +15,6 @@ namespace Karpik.Quests
         private Id _questId;
         [SerializeThis("DependencyType", IsReference = true)]
         private IDependencyType _dependencyType;
-
-        public Connection(string id, IDependencyType dependencyType) :
-            this(id == Id.Empty.Value ? Id.Empty : new Id(id), dependencyType)
-        {
-                
-        }
         
         public Connection(Id questId, IDependencyType dependencyType)
         {
