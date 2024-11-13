@@ -26,13 +26,9 @@ class Program
         Directory.Delete(Path.Combine(to, "bin"), true);
         Directory.Delete(Path.Combine(to, "obj"), true);
         
-        File.Delete(Path.Combine(to, ".editorconfig"));
         File.Delete(Path.Combine(to, "KarpikQuests.csproj"));
-        File.Delete(Path.Combine(to, "Newtonsoft.Json.dll"));
 
         var files = Directory.GetFiles(to, "*.cs", SearchOption.AllDirectories);
-        
-
         foreach (var file in files)
         {
             var text = File.ReadAllText(file);
