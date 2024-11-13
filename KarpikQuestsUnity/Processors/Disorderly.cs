@@ -1,5 +1,8 @@
-﻿using Karpik.Quests.Interfaces;
-using Karpik.Quests.Sample;
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+using System;
 
 namespace Karpik.Quests.Processors
 {

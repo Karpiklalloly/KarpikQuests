@@ -1,5 +1,8 @@
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
 using Newtonsoft.Json;
-using Karpik.Quests.Interfaces;
+using System;
 using Karpik.Quests.Requirements;
 using Karpik.Quests.Serialization;
 
@@ -11,17 +14,21 @@ namespace Karpik.Quests
         [DoNotSerializeThis]
         [Property]
         [JsonIgnore]
+        [CreateProperty]
         public Quest Quest { get => _quest; private set => _quest = value; }
 
         [DoNotSerializeThis]
         [Property]
         [JsonIgnore]
+        [CreateProperty]
         public IRequirement Requirement { get => _requirement; private set => _requirement = value; }
 
         [SerializeThis("Quest")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Quest")]
         private Quest _quest;
         [SerializeThis("Requirement")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Requirement")]
         private IRequirement _requirement;
         public QuestAndRequirement(Quest quest, IRequirement requirement)

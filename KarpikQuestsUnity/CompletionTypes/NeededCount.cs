@@ -1,9 +1,13 @@
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
 using Newtonsoft.Json;
-using System.Runtime.Serialization;
-using Karpik.Quests.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Karpik.Quests.Serialization;
 
-namespace Karpik.Quests.CompletionTypes
+namespace Karpik.Quests
 {
     [Serializable]
     public class NeededCount : ICompletionType
@@ -11,9 +15,11 @@ namespace Karpik.Quests.CompletionTypes
         [DoNotSerializeThis]
         [Property]
         [JsonIgnore]
+        [CreateProperty]
         public int Count { get => _count; set => _count = value; }
 
         [SerializeThis("Count")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Count")]
         private int _count;
         public NeededCount() : this(0)

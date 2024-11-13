@@ -1,8 +1,13 @@
-﻿namespace Karpik.Quests.Interfaces;
-
-public interface IRequirement
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+namespace Karpik.Quests
 {
-    public bool IsSatisfied();
-    public bool IsRuined();
-    public void SetGraph(IGraph graph);
+    public interface IRequirement
+    {
+        public bool IsSatisfied();
+        public bool IsRuined();
+        public void SetGraph(IGraph graph);
+    }
 }

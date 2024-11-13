@@ -1,20 +1,22 @@
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.DependencyTypes;
-using Karpik.Quests.ID;
-using Karpik.Quests.Interfaces;
-using Karpik.Quests.Sample;
 using Karpik.Quests.Serialization;
-using Karpik.Quests.Extensions;
 
 namespace Karpik.Quests
 {
     [Serializable]
     public class Graph : IGraph
     {
-        public event Action<Quest>? QuestUnlocked;
-        public event Action<Quest>? QuestCompleted;
-        public event Action<Quest>? QuestFailed;
+        public event Action<Quest> QuestUnlocked;
+        public event Action<Quest> QuestCompleted;
+        public event Action<Quest> QuestFailed;
         [DoNotSerializeThis]
         [JsonIgnore]
         public IEnumerable<Quest> Quests => _quests;
@@ -24,12 +26,14 @@ namespace Karpik.Quests
         public IEnumerable<Quest> StartQuests => new QuestCollection(_dependencies.Where(pair => pair.Value.Count == 0).Select(pair => GetQuest(pair.Key)).ToList());
 
         [SerializeThis("Quest_matrix")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Quest_matrix")]
         private Dictionary<Id, List<Connection>> _dependencies = new();
         [SerializeThis("Quests")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Quests")]
         private IQuestCollection _quests = new QuestCollection();
-        public IEnumerable<Quest> StatusQuests(Status status)
+        public IEnumerable<Quest> QuestsWithStatus(Status status)
         {
             var quests = new QuestCollection();
             for (int i = 0; i < _quests.Count; i++)
@@ -112,7 +116,11 @@ namespace Karpik.Quests
 
         public void Clear()
         {
+            QuestUnlocked = null;
+            QuestCompleted = null;
+            QuestFailed = null;
             _quests.Clear();
+            _dependencies.Clear();
         }
 
         public bool Has(Id questId)
@@ -135,7 +143,7 @@ namespace Karpik.Quests
 
         public Quest GetQuestDeep(Id questId)
         {
-            Quest quest = Quest.Empty;
+            Quest quest;
             for (int i = 0; i < _quests.Count; i++)
             {
                 if (_quests[i].Id == questId)
@@ -309,18 +317,7 @@ namespace Karpik.Quests
             return visited.Any(x => x.Value != true);
         }
 
-        public void Dispose()
-        {
-            QuestUnlocked = null;
-            QuestCompleted = null;
-            QuestFailed = null;
-            _dependencies.Clear();
-            _dependencies = null;
-            _quests.Clear();
-            _quests = null;
-        }
-
-        void IGraph.InternalUpdate(Quest quest, bool inGraph)
+        public void Update(Quest quest, bool inGraph)
         {
             switch (quest.Status)
             {

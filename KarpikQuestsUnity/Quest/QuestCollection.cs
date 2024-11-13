@@ -1,18 +1,23 @@
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
 using Newtonsoft.Json;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Karpik.Quests.Enumerators;
-using Karpik.Quests.Interfaces;
 using Karpik.Quests.Serialization;
 
-namespace Karpik.Quests.Sample
+namespace Karpik.Quests
 {
     [Serializable]
     public class QuestCollection : IQuestCollection
     {
         [SerializeThis("Data")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Data")]
-        private List<Quest> _data = new List<Quest>();
+        private List<Quest> _data = new();
         public QuestCollection()
         {
         }
@@ -60,12 +65,12 @@ namespace Karpik.Quests.Sample
 
         public IEnumerator<Quest> GetEnumerator()
         {
-            return new QuestCollectionEnumerator(this);
+            return _data.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new QuestCollectionEnumerator(this);
+            return _data.GetEnumerator();
         }
 
         public bool Remove(Quest item)
@@ -135,11 +140,6 @@ namespace Karpik.Quests.Sample
             }
 
             return true;
-        }
-
-        public int GetHashCode(IReadOnlyQuestCollection obj)
-        {
-            return obj.GetHashCode();
         }
     }
 }

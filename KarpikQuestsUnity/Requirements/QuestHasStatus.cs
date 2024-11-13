@@ -1,7 +1,8 @@
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
 using Newtonsoft.Json;
-using Karpik.Quests.Extensions;
-using Karpik.Quests.ID;
-using Karpik.Quests.Interfaces;
+using System;
 using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests.Requirements
@@ -9,14 +10,21 @@ namespace Karpik.Quests.Requirements
     [Serializable]
     public class QuestHasStatus : IRequirement
     {
+        [DoNotSerializeThis]
+        [JsonIgnore]
+        public Quest Quest => _quest;
+
         private Quest _quest;
         [SerializeThis("Satisfied")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Satisfied")]
         private Status _satisfiedStatus;
         [SerializeThis("Ruined")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Ruined")]
         private Status _ruinedStatus;
         [SerializeThis("Id")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Id")]
         private Id _questId;
         public QuestHasStatus(Quest quest, Status satisfiedStatus = Status.Completed, Status ruinedStatus = Status.Failed)

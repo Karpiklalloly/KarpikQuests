@@ -1,6 +1,12 @@
-﻿using Karpik.Quests.Interfaces;
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Karpik.Quests.CompletionTypes
+namespace Karpik.Quests
 {
     [Serializable]
     public class Xor : ICompletionType

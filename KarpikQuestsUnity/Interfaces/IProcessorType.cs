@@ -1,6 +1,8 @@
-﻿using Karpik.Quests.Sample;
-
-namespace Karpik.Quests.Interfaces
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+namespace Karpik.Quests
 {
     public interface IProcessorType
     {

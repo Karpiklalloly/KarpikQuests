@@ -1,6 +1,11 @@
-﻿using Karpik.Quests.Sample;
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
-namespace Karpik.Quests.Interfaces
+namespace Karpik.Quests
 {
     public interface IReadOnlyQuestCollection : IEnumerable<Quest>, IEquatable<IReadOnlyQuestCollection>
     {

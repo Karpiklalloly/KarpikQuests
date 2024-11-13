@@ -1,6 +1,8 @@
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
 using Newtonsoft.Json;
-using Karpik.Quests.ID;
-using Karpik.Quests.Interfaces;
+using System;
 using Karpik.Quests.Serialization;
 
 namespace Karpik.Quests
@@ -17,9 +19,11 @@ namespace Karpik.Quests
         public IDependencyType DependencyType => _dependencyType;
 
         [SerializeThis("Id")]
+        [SerializeField]
         [JsonProperty(PropertyName = "Id")]
         private Id _questId;
         [SerializeThis("DependencyType", IsReference = true)]
+        [SerializeReference]
         [JsonProperty(PropertyName = "DependencyType")]
         private IDependencyType _dependencyType;
         public Connection(string id, IDependencyType dependencyType) : this(id == Id.Empty.Value ? Id.Empty : new Id(id), dependencyType)
@@ -34,6 +38,8 @@ namespace Karpik.Quests
 
         public bool Equals(Connection other)
         {
+            if (other is null)
+                return false;
             return _questId.Equals(other._questId);
         }
 
@@ -49,6 +55,8 @@ namespace Karpik.Quests
 
         public static bool operator ==(Connection left, Connection right)
         {
+            if (left is null)
+                return right is null;
             return left.Equals(right);
         }
 

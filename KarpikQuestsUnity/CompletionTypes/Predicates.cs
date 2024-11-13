@@ -1,5 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using Karpik.Quests.Interfaces;
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
 
 namespace Karpik.Quests
 {

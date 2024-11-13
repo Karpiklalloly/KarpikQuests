@@ -1,6 +1,10 @@
-﻿using Karpik.Quests.Sample;
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
-namespace Karpik.Quests.Interfaces
+namespace Karpik.Quests
 {
     public interface ICompletionType
     {

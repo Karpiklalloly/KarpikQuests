@@ -1,7 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using Karpik.Quests.ID;
+using UnityEngine;
+using Karpik.UIExtension;
+using Unity.Properties;
+using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
 
-namespace Karpik.Quests.Extensions
+namespace Karpik.Quests
 {
     public static class IdExtensions
     {
