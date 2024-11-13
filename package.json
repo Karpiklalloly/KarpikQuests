@@ -1,0 +1,11 @@
+{
+    "name": "com.karpik.quests",
+    "version": "0.8.0",
+    "displayName": "Karpik.Quests",
+    "description": "Add quest system",
+    "unity": "2021.3",
+    "author": {
+      "name": "Karpik",
+      "url": "https://github.com/Karpiklalloly"
+    }
+  }
