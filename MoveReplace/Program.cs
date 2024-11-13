@@ -12,15 +12,17 @@ class Program
 
         var from = Path.Combine(solutionPath, "KarpikQuests");
         var to = Path.Combine(solutionPath, "DemoBuild", "Core");
-
+        var toUnity = Path.Combine(solutionPath, "UnityBuild");
+        
         Do(from, to, new NewtonsoftJsonChanger());
+        Do(from, toUnity, new NewtonsoftJsonChanger(), new UnityChanger());
         
         Console.WriteLine("Complete");
     }
 
     static void Do(string from, string to, params IChanger[] changers)
     {
-        Directory.Delete(to, true);
+        if (Directory.Exists(to)) Directory.Delete(to, true);
         Directory.CreateDirectory(to);
         FileManipulator.CopyDirectory(from, to, true);
         Directory.Delete(Path.Combine(to, "bin"), true);
