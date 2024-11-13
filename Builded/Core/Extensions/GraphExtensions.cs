@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Karpik.Quests.Extensions
+namespace Karpik.Quests
 {
     public static class GraphExtensions
     {

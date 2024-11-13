@@ -1,5 +1,4 @@
 ﻿using System;
-using Karpik.Quests.Extensions;
 
 namespace Karpik.Quests.DependencyTypes
 {

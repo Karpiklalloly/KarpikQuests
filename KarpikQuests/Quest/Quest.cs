@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.Processors;
-using Karpik.Quests.Extensions;
 using Karpik.Quests.Requirements;
 using Karpik.Quests.Serialization;
 
@@ -114,13 +113,13 @@ namespace Karpik.Quests
         
         public Quest(Id id, string name, string description, ICompletionType completionType, IProcessorType processor, params QuestAndRequirement[] subQuests)
         {
-            Id = id;
+            _id = id;
             _name = name ?? "Quest";
             _description = description ?? "Description";
             _completionType = completionType ?? new And();
             _processor = processor ?? new Disorderly();
             
-            Status = Status.Locked;
+            _status = Status.Locked;
             Add(subQuests);
         }
 
@@ -138,7 +137,7 @@ namespace Karpik.Quests
             foreach (var pair in qAndR)
             {
                 var quest = pair.Quest;
-                if (Has(quest.Id)) continue;
+                if (Has(quest._id)) continue;
                 if (!quest._id.IsValid())
                 {
                     quest._parentQuest.Remove(quest);
@@ -162,7 +161,7 @@ namespace Karpik.Quests
 
         public void Remove(Quest quest)
         {
-            if (!Has(quest.Id))
+            if (!Has(quest._id))
             {
                 return;
             }
@@ -251,6 +250,7 @@ namespace Karpik.Quests
             ForceUnlock();
             return true;
         }
+        
         public bool TryComplete()
         {
             if (_status != Status.Unlocked) return false;
@@ -263,6 +263,7 @@ namespace Karpik.Quests
             ForceComplete();
             return true;
         }
+        
         public bool TryFail()
         {
             if (_status != Status.Unlocked) return false;
@@ -289,6 +290,7 @@ namespace Karpik.Quests
 
             UpdateStatus(oldStatus);
         }
+        
         public void ForceUnlock()
         {
             var oldStatus = _status;
@@ -297,6 +299,7 @@ namespace Karpik.Quests
             _status = Status.Unlocked;
             UpdateStatus(oldStatus);
         }
+        
         public void ForceComplete()
         {
             var oldStatus = _status;
@@ -310,6 +313,7 @@ namespace Karpik.Quests
             _status = Status.Completed;
             UpdateStatus(oldStatus);
         }
+        
         public void ForceFail()
         {
             var oldStatus = _status;
@@ -326,7 +330,7 @@ namespace Karpik.Quests
 
         public bool Equals(Quest other)
         {
-            return !ReferenceEquals(null, other) && _id.Equals(other.Id);
+            return other is not null && _id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
@@ -362,10 +366,7 @@ namespace Karpik.Quests
         private void Notify()
         {
             _graph?.Update(this, !_parentId.IsValid());
-            if (_parentQuest is not null)
-            {
-                _parentQuest.NotifyFromChild();
-            }
+            _parentQuest?.NotifyFromChild();
         }
 
         private void NotifyFromChild()

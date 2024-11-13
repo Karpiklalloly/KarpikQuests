@@ -35,12 +35,14 @@ namespace Karpik.Quests
         {
             _dependencyQuest = dependencyQuest;
             _dependentQuest = dependentQuest;
-            Dependency = dependency;
+            _dependency = dependency;
         }
 
         public bool Equals(QuestConnection other)
         {
-            return Equals(DependencyQuest, other.DependencyQuest) && Equals(DependentQuest, other.DependentQuest) && Dependency.GetType() == other.Dependency.GetType();
+            if (other is null)
+                return false;
+            return Equals(_dependencyQuest, other._dependencyQuest) && Equals(_dependentQuest, other._dependentQuest) && _dependency.GetType() == other._dependency.GetType();
         }
 
         public override bool Equals(object obj)
@@ -50,11 +52,13 @@ namespace Karpik.Quests
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(DependencyQuest, DependentQuest, Dependency);
+            return HashCode.Combine(_dependencyQuest, _dependentQuest, _dependency);
         }
 
         public static bool operator ==(QuestConnection left, QuestConnection right)
         {
+            if (left is null)
+                return right is null;
             return left.Equals(right);
         }
 

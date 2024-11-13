@@ -33,6 +33,8 @@ namespace Karpik.Quests
 
         public bool Equals(Connection other)
         {
+            if (other is null)
+                return false;
             return _questId.Equals(other._questId);
         }
 
@@ -48,6 +50,8 @@ namespace Karpik.Quests
 
         public static bool operator ==(Connection left, Connection right)
         {
+            if (left is null)
+                return right is null;
             return left.Equals(right);
         }
 

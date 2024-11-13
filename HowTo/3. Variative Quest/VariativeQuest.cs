@@ -1,9 +1,8 @@
 ﻿using Karpik.Quests;
-using Karpik.Quests.Extensions;
 using Karpik.Quests.Processors;
 using Karpik.Quests.Requirements;
 
-namespace HowTo._3._Veriative_Quest;
+namespace HowTo._3._Variative_Quest;
 
 public class VariativeQuest : IProgram
 {

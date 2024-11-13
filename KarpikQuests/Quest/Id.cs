@@ -13,12 +13,9 @@ namespace Karpik.Quests
         [SerializeThis("Value")]
         private string _value;
     
-        public Id(string value)
-        {
-            _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
-        }
+        public Id(string value) => _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
 
-        public static Id NewId() => new Id(Guid.NewGuid().ToString());
+        public static Id NewId() => new(Guid.NewGuid().ToString());
     
         public bool Equals(Id other) => Value == other.Value;
     
@@ -26,19 +23,10 @@ namespace Karpik.Quests
     
         public override int GetHashCode() => _value.GetHashCode();
 
-        public override string ToString()
-        {
-            return $"ID: {_value}";
-        }
+        public override string ToString() => $"ID: {_value}";
 
-        public static bool operator ==(Id left, Id right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(Id left, Id right) => left.Equals(right);
 
-        public static bool operator !=(Id left, Id right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(Id left, Id right) => !(left == right);
     }
 }

@@ -18,28 +18,13 @@ namespace Karpik.Quests
         [SerializeThis("Value")]
         [JsonProperty(PropertyName = "Value")]
         private string _value;
-        public Id(string value)
-        {
-            _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
-        }
-
-        public static Id NewId() => new Id(Guid.NewGuid().ToString());
+        public Id(string value) => _value = string.IsNullOrWhiteSpace(value) || value == Empty.Value ? Empty.Value : value;
+        public static Id NewId() => new(Guid.NewGuid().ToString());
         public bool Equals(Id other) => Value == other.Value;
-        public override bool Equals(object? obj) => obj is Id other && Equals(other);
+        public override bool Equals(object obj) => obj is Id other && Equals(other);
         public override int GetHashCode() => _value.GetHashCode();
-        public override string ToString()
-        {
-            return $"ID: {_value}";
-        }
-
-        public static bool operator ==(Id left, Id right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Id left, Id right)
-        {
-            return !(left == right);
-        }
+        public override string ToString() => $"ID: {_value}";
+        public static bool operator ==(Id left, Id right) => left.Equals(right);
+        public static bool operator !=(Id left, Id right) => !(left == right);
     }
 }

@@ -5,16 +5,15 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.DependencyTypes;
 using Karpik.Quests.Serialization;
-using Karpik.Quests.Extensions;
 
 namespace Karpik.Quests
 {
     [Serializable]
     public class Graph : IGraph
     {
-        public event Action<Quest>? QuestUnlocked;
-        public event Action<Quest>? QuestCompleted;
-        public event Action<Quest>? QuestFailed;
+        public event Action<Quest> QuestUnlocked;
+        public event Action<Quest> QuestCompleted;
+        public event Action<Quest> QuestFailed;
         [DoNotSerializeThis]
         [JsonIgnore]
         public IEnumerable<Quest> Quests => _quests;

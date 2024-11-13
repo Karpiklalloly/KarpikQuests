@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Karpik.Quests.Processors;
-using Karpik.Quests.Extensions;
 using Karpik.Quests.Requirements;
 using Karpik.Quests.Serialization;
 
@@ -63,7 +62,7 @@ namespace Karpik.Quests
         [JsonProperty(PropertyName = "Id")]
         private Id _id;
         private Id _parentId = Id.Empty;
-        private Quest? _parentQuest = null;
+        private Quest _parentQuest;
         private IGraph _graph;
         [SerializeThis("Name")]
         [JsonProperty(PropertyName = "Name")]
@@ -98,14 +97,14 @@ namespace Karpik.Quests
         {
         }
 
-        public Quest(Id id, string? name, string? description, ICompletionType? completionType, IProcessorType? processor, params QuestAndRequirement[] subQuests)
+        public Quest(Id id, string name, string description, ICompletionType completionType, IProcessorType processor, params QuestAndRequirement[] subQuests)
         {
-            Id = id;
+            _id = id;
             _name = name ?? "Quest";
             _description = description ?? "Description";
             _completionType = completionType ?? new And();
             _processor = processor ?? new Disorderly();
-            Status = Status.Locked;
+            _status = Status.Locked;
             Add(subQuests);
         }
 
@@ -123,7 +122,7 @@ namespace Karpik.Quests
             foreach (var pair in qAndR)
             {
                 var quest = pair.Quest;
-                if (Has(quest.Id))
+                if (Has(quest._id))
                     continue;
                 if (!quest._id.IsValid())
                 {
@@ -148,7 +147,7 @@ namespace Karpik.Quests
 
         public void Remove(Quest quest)
         {
-            if (!Has(quest.Id))
+            if (!Has(quest._id))
             {
                 return;
             }
@@ -318,23 +317,26 @@ namespace Karpik.Quests
             UpdateStatus(oldStatus);
         }
 
-        public bool Equals(Quest? other)
+        public bool Equals(Quest other)
         {
-            return !ReferenceEquals(null, other) && _id.Equals(other.Id);
+            return other is not null && _id.Equals(other.Id);
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is Quest other && Equals(other);
         }
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return _id.GetHashCode();
         }
 
         public static bool operator ==(Quest left, Quest right)
         {
+            if (left is null)
+                return right is null;
             return left.Equals(right);
         }
 
@@ -353,10 +355,7 @@ namespace Karpik.Quests
         private void Notify()
         {
             _graph?.Update(this, !_parentId.IsValid());
-            if (_parentQuest is not null)
-            {
-                _parentQuest.NotifyFromChild();
-            }
+            _parentQuest?.NotifyFromChild();
         }
 
         private void NotifyFromChild()

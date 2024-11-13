@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 
-namespace Karpik.Quests.Extensions
+namespace Karpik.Quests
 {
     public static class QuestExtensions
     {
@@ -44,7 +44,7 @@ namespace Karpik.Quests.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this Quest quest)
         {
-            return !(quest is null) && quest.Id.IsValid();
+            return quest is not null && quest.Id.IsValid();
         }
     }
 }
