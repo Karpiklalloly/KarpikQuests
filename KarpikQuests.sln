@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveReplace", "MoveReplace\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HowTo", "HowTo\HowTo.csproj", "{2B0530E7-C2F3-404B-8B46-5D7720699911}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builded", "Builded\Builded.csproj", "{DB248F29-C234-4E0C-8219-867F1BB58D5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoBuild", "DemoBuild\DemoBuild.csproj", "{DB248F29-C234-4E0C-8219-867F1BB58D5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

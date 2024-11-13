@@ -8,26 +8,12 @@ class Program
 {
     static void Main(string[] args)
     {
-        string solutionPath = null;
-        if (args.Length > 0)
-        {
-            solutionPath = args[0];
-        }
-        else
-        {
-            solutionPath = @"..\..\..\..\..\KarpikQuests\";
-        }
+        string solutionPath = args.Length > 0 ? args[0] : @"..\..\..\..\..\KarpikQuests\";
 
         var from = Path.Combine(solutionPath, "KarpikQuests");
-        var to = Path.Combine(solutionPath, "KarpikQuestsUnity");
-        var to2 = Path.Combine(solutionPath, "Builded", "Core");
+        var to = Path.Combine(solutionPath, "DemoBuild", "Core");
 
-        FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", to, solutionPath);
-
-        Do(from, to, new UnityChanger(), new NewtonsoftJsonChanger());
-        Do(from, to2, new NewtonsoftJsonChanger());
-        
-        FileManipulator.MoveIfPossible("Karpik.Quests.asmdef", solutionPath, to);
+        Do(from, to, new NewtonsoftJsonChanger());
         
         Console.WriteLine("Complete");
     }
